@@ -136,9 +136,10 @@ export interface Sources {
 /** "workshop.date|proposal.date": the first source that has something wins. */
 function lookup(sources: Sources, from: string): string {
   for (const one of from.split("|")) {
-    const [record, field] = one.trim().split(".");
-    const src = (sources as unknown as Record<string, Rec | undefined>)[record];
-    const v = src?.[field];
+    // "proposal.kitQty.spark" reads into an object on the record
+    const [record, ...path] = one.trim().split(".");
+    let v: unknown = (sources as unknown as Record<string, Rec | undefined>)[record];
+    for (const key of path) v = v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>)[key] : undefined;
     if (v === undefined || v === null || v === false || v === "" || v === 0) continue;
     const text = Array.isArray(v) ? v.join(", ") : String(v).trim();
     if (text) return text;

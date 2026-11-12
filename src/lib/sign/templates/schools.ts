@@ -1,5 +1,7 @@
 /**
- * What a school signs for a workshop: the service agreement with its three schedules, the booking confirmation, the
+ * What a school signs. Since Nov 2026 a school orders kits and teacher training and signs the Order Confirmation
+ * (kitsTrainingOrder, below). The papers for a student JOVE Day stay for bookings made before then:
+ * the service agreement with its three schedules, the booking confirmation, the
  * filming and venue permission, the school's confirmation of parent consent, the completion certificate signed at the
  * end of the day, the Media Pack receipt and the testimonial release. (The drone permission letter is in drone.ts.)
  *
@@ -15,7 +17,7 @@
  * (src/lib/content/business.ts) and are never typed here. Where the library leaves a point open there is a box, and the
  * open point is in the template's "lawyer" list.
  */
-import { clubRules, gradeBands, joveDayRules, mediaPack, type GradeBandId } from "@/lib/content/business";
+import { clubRules, gradeBands, joveDayRules, kits, mediaPack, teacherTraining, trainingFilm, trainingRules, type GradeBandId } from "@/lib/content/business";
 import { addressee, b, companyIntro, dateOf, docDate, fill, inr, jove, joveSign, line, listAnd, money, num, or, partySign, plain, signedBy, val } from "../text";
 import type { Block, DocContext, SignBlock, SignField, SignTemplate } from "../types";
 
@@ -185,6 +187,144 @@ const cancellationLines = (ctx: DocContext): string[] => [
   `7 days or less before the date, or on the day: the advance is kept in full. ${jove(ctx)} may, at its discretion, credit it to a new date within 90 days.`,
 ];
 
+/* ───────────────────────────── 0 · order confirmation: kits + teacher training (since Nov 2026) ───────────────────────────── */
+
+const KIT_FIELDS: SignField[] = kits.map((k) => ({ key: `kit_${k.id}`, label: `${k.name}: kits`, kind: "number", from: `proposal.kitQty.${k.id}|workshop.kits_${k.id}`, half: true }));
+const KIT_PRICE_FIELDS: SignField[] = kits.map((k) => ({ key: `kitp_${k.id}`, label: `${k.name}: price per kit, incl. GST`, kind: "money", default: String(k.schoolPrice), half: true, help: `The school price from the price book (MRP ${inr(k.mrp)} below ${trainingRules.minimumKits} kits).` }));
+
+export const kitsTrainingOrder: SignTemplate = {
+  id: "kits-training-order",
+  version: "1.0",
+  title: "Order Confirmation: Kits and Teacher Training",
+  name: "Order confirmation",
+  group: "school",
+  kind: "letter",
+  parties: ["school"],
+  signs: "both",
+  blurb: "The written confirmation when a school orders: the kits by kind and number, the teachers to train and the training date, the prices, the advance and balance, what the school provides, filming of the training, and the terms for a change or a cancellation.",
+  when: "Within a day of the school's yes, with the advance invoice",
+  series: "SCH",
+  source: "Website Terms of Service and Refund & Cancellation Policy (Nov 2026)",
+  keep: "Contract term + 8 years",
+  requiredForSchools: true,
+  lawyer: [
+    "This letter follows the website's Terms and Refund & Cancellation Policy as changed in Nov 2026 for kits and teacher training (training rescheduled free up to 7 days before; 25% of the training advance kept between 7 days and 48 hours; nothing refunded within 48 hours except force majeure; the kit advance refunded in full if the order is cancelled before dispatch). Confirm these terms.",
+    "Kit prices include GST; the training is priced before GST. Confirm the GST treatment of kits (goods) and of training (a service) with your CA, and whether one invoice or two is better.",
+    "Who owns a kit and when: the letter says a kit becomes the School's when it is paid for in full. Confirm.",
+    "The film of the training shows teachers, not students. The letter asks the School to confirm that its teachers have agreed, and lets any teacher be left out. Confirm against the DPDP Act, 2023.",
+    "Check the School's legal name (the school, or its trust or society) and that the person signing is authorised.",
+  ],
+  fields: [
+    ...KIT_FIELDS,
+    ...KIT_PRICE_FIELDS,
+    { key: "teachers", label: "Teachers to train", kind: "number", from: "workshop.teachers|proposal.teachers", half: true },
+    { key: "day", label: "Training date", kind: "date", from: "workshop.date", half: true },
+    { key: "startTime", label: "Training starts at", kind: "text", from: "workshop.startTime", default: "09:00", half: true },
+    { key: "delivery", label: "Kits delivered by (optional)", kind: "date", from: "workshop.kitsDelivered", half: true },
+    DISCOUNT,
+    { key: "total", label: "Agreed total incl. GST (optional)", kind: "money", from: "proposal.grandTotal", half: true, help: "Left empty, the letter shows the sum the kits, teachers and prices give." },
+    PROPOSAL_NO,
+    PROPOSAL_DATE,
+  ],
+  build(ctx) {
+    const J = jove(ctx);
+    const p = ctx.party;
+    const rules = joveDayRules;
+    const proposal = val(ctx, "proposalNo") || ctx.blank;
+    const proposalRef = `no. ${fill(ctx, "proposalNo", 30)}${val(ctx, "proposalDate") || ctx.blank ? ` dated ${dateOf(ctx, "proposalDate")}` : ""}`;
+    const venue = [or(p.name, 60), flat(p.address) || p.city].filter(Boolean).join(", ");
+
+    // the kits: one row a kind; with nothing filled in, every kind is a line to write on
+    const qty = kits.map((k) => num(ctx, `kit_${k.id}`));
+    const someKits = qty.some((n) => n !== null && n > 0);
+    const rows: string[][] = [];
+    let kitsTotal: number | null = 0;
+    let kitCount = 0;
+    kits.forEach((k, i) => {
+      const n = qty[i] ?? (someKits && !ctx.blank ? 0 : null);
+      if (n === 0) return;
+      const price = num(ctx, `kitp_${k.id}`);
+      const amount = n !== null && price !== null ? n * price : null;
+      if (n !== null) kitCount += n;
+      kitsTotal = kitsTotal === null || amount === null ? null : kitsTotal + amount;
+      rows.push([paper(`${k.name} (${k.grades.split("·")[0].trim()})`, J), n === null ? line(14) : count(n), price === null ? `₹ ${line(14)}` : `${inr(price)} incl. GST`, amount === null ? `₹ ${line(20)}` : inr(amount)]);
+    });
+
+    // the training: the smallest group is billed when fewer teachers come
+    const teachers = num(ctx, "teachers");
+    const billed = teachers === null ? null : teachers > 0 ? Math.max(teachers, teacherTraining.minimumTeachers) : 0;
+    const trainingFee = billed === null ? null : billed * teacherTraining.pricePerTeacher;
+    const trainingGst = trainingFee === null ? null : Math.round((trainingFee * rules.gstPercent) / 100);
+    if (billed !== 0)
+      rows.push([
+        paper(teacherTraining.name, J),
+        billed === null ? line(14) : `${count(billed)} teachers`,
+        `${inr(teacherTraining.pricePerTeacher)} + GST`,
+        trainingFee === null ? `₹ ${line(20)}` : `${inr(trainingFee)} + GST ${inr(trainingGst ?? 0)}`,
+      ]);
+
+    const percent = Math.min(100, Math.max(0, num(ctx, "discount") ?? 0));
+    const sum = kitsTotal === null || trainingFee === null ? null : kitsTotal + (trainingFee ?? 0) + (trainingGst ?? 0);
+    const less = sum !== null && percent > 0 ? Math.round((sum * percent) / 100) : null;
+    if (percent > 0) rows.push([`Discount of ${fill(ctx, "discount", 10)}%`, "", "", less === null ? `less ₹ ${line(20)}` : `less ${inr(less)}`]);
+    const total = num(ctx, "total") ?? (sum === null ? null : sum - (less ?? 0));
+    rows.push([b("Total, GST included"), "", "", b(total === null ? `₹ ${line(24)}` : inr(total))]);
+    const advance = total === null ? null : Math.round((total * rules.advancePercent) / 100);
+
+    return [
+      { t: "to", lines: addressee(ctx) },
+      { t: "subject", text: `Confirmation of your order: ${J} kits and teacher training` },
+      { t: "p", text: "Respected Sir / Madam," },
+      { t: "p", text: `Thank you for choosing ${J}. We are glad to confirm your order${proposal ? `, as in our proposal ${proposalRef}` : ""}. The details and the terms are set out below.` },
+      { t: "table", head: ["Item", "Quantity", "Price", "Amount"], widths: [40, 18, 20, 22], rows },
+      {
+        t: "table",
+        widths: [20, 80],
+        rows: [
+          ["Prices", `Kit prices include GST. The school price applies from ${count(trainingRules.minimumKits)} kits in one order. The training is priced before GST; ${gstLine(ctx)}. A training is for ${count(teacherTraining.minimumTeachers)} teachers or more; when fewer attend, ${count(teacherTraining.minimumTeachers)} are billed.`],
+          ["Advance", `${rules.advancePercent}% of the total${advance === null ? "" : `, that is ${inr(advance)}`}, against our advance invoice. The order is confirmed when we receive it.`],
+          ["Balance", `The rest within ${rules.balanceDueDays} days of the training (or of delivery, if no training is ordered), against ${invoiceWord(ctx)}.`],
+          ["Delivery", `${val(ctx, "delivery") ? `The kits reach the School by ${b(dateOf(ctx, "delivery"))}.` : "The kits reach the School before the training."} The School checks the count against the delivery note. Damaged, defective or missing parts reported within 7 days of delivery are replaced free of charge. A kit becomes the School's when it is paid for in full.`],
+          ["Training", billed === 0 ? "No training is ordered." : `On ${b(dateOf(ctx, "day"))} from ${clock(ctx, "startTime")}, for about ${count(teacherTraining.hours)} hours, at ${venue}. Every teacher who completes it receives a ${J} certificate, with lesson plans for the kits ordered.`],
+        ],
+      },
+      { t: "h", text: "What we need from the School" },
+      { t: "p", text: "A room with tables, power points and a projector or screen for the training; the teachers free for the training hours and their names for the certificates; a coordinator; and someone to receive the kits." },
+      ...(billed === 0
+        ? []
+        : ([
+            { t: "h", text: "Filming the training" },
+            {
+              t: "p",
+              text: `${paper(trainingFilm.name, J)}: ${listAnd(trainingFilm.items.map((i) => paper(i.title, J).toLowerCase()))}, at no extra charge when kits and training are ordered together. We film only with the School's permission and the consent of the teachers shown, and any teacher may ask to be left out. ${paper(trainingFilm.rights, J)} By signing, the School confirms that it permits filming and has told its teachers.`,
+            },
+          ] as Block[])),
+      { t: "h", text: "Change of date and cancellation" },
+      {
+        t: "table",
+        widths: [24, 76],
+        rows: [
+          ["Training date", "Moved free of charge with at least 7 days' notice, to a date we both agree. With less notice we try to find a new date but cannot promise one."],
+          ["The School cancels the training", "More than 7 days before: the training advance is refunded in full. Between 7 days and 48 hours before: 25% of the training advance is kept. Within 48 hours: the training advance is not refunded, except for an event outside anyone's control."],
+          ["The School cancels the kits", "Before we dispatch them: the kit advance is refunded in full. After dispatch, the order stands, and faulty parts are always replaced."],
+          [`${J} cancels`, "If we must cancel or move the training, you choose a new date or a full refund of what you paid for it."],
+          ["Events outside our control", "If severe weather, a closure order or a similar event stops the training, we move it to a new date at no charge or refund the training advance, as you prefer."],
+        ],
+      },
+      { t: "p", text: `Our Terms of Service and Refund & Cancellation Policy, on our website, also apply; where they differ from this letter, this letter applies.` },
+      { t: "p", text: `To accept, kindly sign and seal below and return this letter. By signing, the School accepts this order on the terms above.` },
+      { t: "p", text: "Yours sincerely," },
+      { t: "sign", blocks: [...joveSign(ctx, { lines: [] }), schoolSign(ctx, "Accepted for the School")] },
+    ];
+  },
+  cover(ctx) {
+    const J = jove(ctx);
+    return plain(
+      `Respected Sir / Madam, thank you for ordering from ${J}. The attached letter confirms your order: the kits, the teacher training and its date, the prices and the terms. Kindly sign and seal the acceptance and send it back, or reply "Accepted" by email. Our advance invoice comes with it, and the order is confirmed once the advance reaches us.`,
+    );
+  },
+};
+
 /* ───────────────────────────── 1 · school service agreement ───────────────────────────── */
 
 export const schoolServiceAgreement: SignTemplate = {
@@ -202,7 +342,8 @@ export const schoolServiceAgreement: SignTemplate = {
   source: "18_LEGAL_CONSENT/02_School_Service_Agreement.md",
   keep: "Contract term + 8 years",
   initials: true,
-  requiredForSchools: true,
+  // a JOVE Day paper (before Nov 2026): no longer asked of every school
+  requiredForSchools: false,
   lawyer: [
     "Stamp duty in Karnataka, and whether the Agreement should be on stamp paper. It is signed in two originals.",
     "Clause 11.2 limits liability to the fees for the affected workshop and clause 11.3 excludes indirect loss. Have both reviewed, above all for an injury to a child. The limit can be switched off in its box.",
@@ -502,7 +643,8 @@ export const bookingConfirmation: SignTemplate = {
   series: "SCH",
   source: "03_SOP/05_Booking_Confirmation_and_Contracting_SOP.md",
   keep: "Contract term + 8 years",
-  requiredForSchools: true,
+  // a JOVE Day paper (before Nov 2026): no longer asked of every school
+  requiredForSchools: false,
   lawyer: [
     "The cancellation figures (5% charge, 50% kept, ₹5,000 reschedule fee) and the 90 days to move a date after an event outside anyone's control are the library's proposed terms, not confirmed ones. Keep the boxes the same here and in the School Service Agreement.",
     "SOP-05 section 4 has older and different cancellation terms: the whole advance kept on any cancellation, costs billed at actuals for a late change of date, and a new date within 30 days if the company cancels. This letter follows the Workshop Terms and Cancellation Policy instead. Bring the SOP in line.",
@@ -619,7 +761,8 @@ export const filmingVenuePermission: SignTemplate = {
   series: "SCH",
   source: "26_TEMPLATES/03_Letter_Templates.md",
   keep: "Contract term + 8 years",
-  requiredForSchools: true,
+  // a JOVE Day paper (before Nov 2026): no longer asked of every school
+  requiredForSchools: false,
   lawyer: [
     "This letter is the school's permission to film on its premises. It is not the parents' consent: each child still needs the signed parent form. Confirm that the two together are enough under the Digital Personal Data Protection Act, 2023.",
     "If a school refuses photography and filming, no Media Pack can be made. The library does not say what then happens to the booking or the price. Decide, and tell the school before the day.",
@@ -710,7 +853,8 @@ export const consentConfirmation: SignTemplate = {
   source: "18_LEGAL_CONSENT/02_School_Service_Agreement.md",
   keep: "3 years after the workshop",
   scanNote: "This paper names children. Keep the scan with the parent consent forms in the school's Legal folder, and nowhere else.",
-  requiredForSchools: true,
+  // a JOVE Day paper (before Nov 2026): no longer asked of every school
+  requiredForSchools: false,
   lawyer: [
     "The Service Agreement makes the School responsible for verifiable parental consent. Confirm that this signed confirmation, with the parent forms, is enough under the rules in force under the Digital Personal Data Protection Act, 2023.",
     "The School collects consent to take part on its own form (SOP-13); only the media consent is on JOVE's form. Confirm with the advocate that this confirmation, with the School's own form, is enough.",
@@ -944,4 +1088,4 @@ export const testimonialRelease: SignTemplate = {
 };
 
 /** The templates of this file, in the order HQ lists them. */
-export const SCHOOL_DOCS: SignTemplate[] = [schoolServiceAgreement, bookingConfirmation, filmingVenuePermission, consentConfirmation, completionCertificate, mediaPackReceipt, testimonialRelease];
+export const SCHOOL_DOCS: SignTemplate[] = [kitsTrainingOrder, schoolServiceAgreement, bookingConfirmation, filmingVenuePermission, consentConfirmation, completionCertificate, mediaPackReceipt, testimonialRelease];

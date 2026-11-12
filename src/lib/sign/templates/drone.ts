@@ -19,7 +19,8 @@ export const dronePermission: SignTemplate = {
   series: "SCH",
   source: "18_LEGAL_CONSENT/09_Drone_Permission_Letter_to_School.md",
   keep: "Contract term + 8 years",
-  requiredForSchools: true,
+  // drones flew only at JOVE Days (before Nov 2026)
+  requiredForSchools: false,
   lawyer: [
     "Drone Rules, 2021 and the Digital Sky airspace map: confirm what the drone's weight class and the school's location need before every flight.",
     "Most drones need a UIN on Digital Sky, and most flights for a business need a remote pilot certificate; very small (nano) drones may be exempt. Confirm what this drone and this operator need, and fill both boxes, before the letter goes. The letter prints them only when they are filled.",
