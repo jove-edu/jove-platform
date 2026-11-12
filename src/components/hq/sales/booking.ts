@@ -1,5 +1,5 @@
 /**
- * "Book it": an accepted proposal becomes the workshop dates, the draft invoice and the school's papers.
+ * "Book it": an accepted proposal becomes the training (or workshop) dates, the draft invoice and the school's papers.
  * Pure functions only; the modal in BookingModal.tsx saves what these build.
  *
  * One invoice covers the whole proposal, with the advance stated on it. The advance is recorded against it as a
@@ -14,11 +14,12 @@ import type { PriceLine, ProposalPackageId, ProposalPricing } from "./pricing";
 import { titleFor } from "../workshops/logic";
 
 /** Workshop days a package is booked as (Quarter = 3 JOVE Days, Year = 8 sessions; a Club books its first session). */
-export const SESSIONS: Record<ProposalPackageId, number> = { "jove-day": 1, "jove-quarter": 3, "jove-year": 8, "jove-club": 1, custom: 1 };
+export const SESSIONS: Record<ProposalPackageId, number> = { "kits-training": 1, "jove-day": 1, "jove-quarter": 3, "jove-year": 8, "jove-club": 1, custom: 1 };
 
 export function sessionLabel(pkg: ProposalPackageId, i: number) {
   const n = SESSIONS[pkg];
   if (pkg === "jove-club") return "First club session";
+  if (pkg === "kits-training") return "Training date";
   if (n === 1) return "Workshop date";
   return `${pkg === "jove-quarter" ? "JOVE Day" : "Session"} ${i + 1} of ${n}`;
 }
@@ -51,11 +52,13 @@ export function workshopsFromProposal(
       schoolId: str(proposal.schoolId),
       package: p.packageId,
       date,
-      startTime: startTime || "07:30",
+      startTime: startTime || (p.packageId === "kits-training" ? "09:00" : "07:30"),
       status: "tentative",
-      ...Object.fromEntries(p.bands.map(({ band, students }) => [BAND_FIELDS[band.id], students || ""])),
+      ...(p.packageId === "kits-training"
+        ? { teachers: p.teachers || "", kitsOrdered: p.kitCount || "" }
+        : Object.fromEntries(p.bands.map(({ band, students }) => [BAND_FIELDS[band.id], students || ""]))),
       agreedAmount: shares[i] || "",
-      mediaPack: i < p.mediaPacks,
+      mediaPack: p.packageId === "kits-training" ? p.teachers > 0 && p.kitCount > 0 : i < p.mediaPacks,
       distanceKm: Number(school?.distanceKm) > 0 ? Number(school?.distanceKm) : "",
       schoolContact: contact ? (role ? `${contact} (${role})` : contact) : "",
       schoolContactPhone: str(school?.phone),
@@ -80,8 +83,8 @@ export function invoiceFromProposal(
   const items: LineItem[] = lines.map((l) => ({ description: lineText(p.pkg.name, l), qty: l.qty, rate: l.rate, sac }));
   const dueBase = ctx.lastDate && ctx.lastDate > ctx.today ? ctx.lastDate : ctx.today;
   const notes = [
-    `As per proposal ${str(proposal.number)}: ${p.pkg.name}${p.students ? ` for ${formatNumber(p.students)} students` : ""}.`,
-    `Advance of ${formatINR(p.advance)} (${joveDayRules.advancePercent}% of the total) confirms the date${SESSIONS[p.packageId] > 1 ? "s" : ""}; the balance of ${formatINR(p.balance)} is due within ${joveDayRules.balanceDueDays} days of the workshop.`,
+    `As per proposal ${str(proposal.number)}: ${p.pkg.name}${p.students ? ` for ${formatNumber(p.students)} students` : ""}${p.kitCount ? `, ${formatNumber(p.kitCount)} kits` : ""}${p.teachers ? `, ${formatNumber(p.teachers)} teachers trained` : ""}.`,
+    `Advance of ${formatINR(p.advance)} (${joveDayRules.advancePercent}% of the total) confirms the ${p.packageId === "kits-training" ? "order" : `date${SESSIONS[p.packageId] > 1 ? "s" : ""}`}; the balance of ${formatINR(p.balance)} is due within ${joveDayRules.balanceDueDays} days of the ${p.packageId === "kits-training" ? "training" : "workshop"}.`,
     p.mediaPacks ? `Includes ${p.mediaPacks} JOVE Media Pack${p.mediaPacks > 1 ? "s" : ""} at no extra cost.` : "",
   ]
     .filter(Boolean)

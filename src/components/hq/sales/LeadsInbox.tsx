@@ -7,6 +7,7 @@ import { ArrowRight, CheckCheck, FileSignature, Loader2, MessageCircle, Pencil, 
 import { getCollection, type BaseRecord, type CollectionDef } from "@/lib/hq/collections";
 import { appliedFor, cleanApplication, type Application } from "@/lib/content/careers";
 import { cleanEstimate } from "@/lib/estimate";
+import { cleanKitQuote } from "@/lib/kit-quote";
 import { can } from "@/lib/hq/roles";
 import { Badge, statusTone } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -282,7 +283,7 @@ function LeadDrawer({ leadId, onClose }: { leadId: string | null; onClose: () =>
 
   const status = str(lead?.status) || "new";
   const canConvert = !!lead && lead.kind !== "trainer" && status !== "converted";
-  const hasEstimate = !!lead && lead.kind === "workshop" && !!cleanEstimate(lead.estimate);
+  const hasEstimate = !!lead && lead.kind === "workshop" && (!!cleanKitQuote(lead.quote) || !!cleanEstimate(lead.estimate));
   const canProposal = can(user, getCollection("proposals")!.write);
 
   return (
@@ -366,6 +367,8 @@ function LeadDetail({ lead, canWrite }: { lead: BaseRecord; canWrite: boolean })
       ["city", str(lead.city)],
       ["phone", lead.phone ? <span className="tabular">{str(lead.phone)}</span> : ""],
       ["email", lead.email ? <span className="break-all">{str(lead.email)}</span> : ""],
+      ["teachers", Number(lead.teachers) > 0 ? formatNumber(Number(lead.teachers)) : ""],
+      ["kits", Number(lead.kits) > 0 ? formatNumber(Number(lead.kits)) : ""],
       ["students", Number(lead.students) > 0 ? formatNumber(Number(lead.students)) : ""],
       ["gradeBands", bands.join(", ")],
       ["package", lead.package ? packageName(lead.package) : ""],

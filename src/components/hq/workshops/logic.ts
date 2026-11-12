@@ -11,6 +11,7 @@ import {
   kits,
   mediaPack,
   showpieces,
+  teacherTraining,
   type GradeBand,
   type GradeBandId,
   type Kit,
@@ -140,9 +141,14 @@ export function rateFor(pkg: string, band: GradeBand) {
   }
 }
 
-/** Computed value of a workshop from its student counts and package (ex-GST). */
+/** Computed value of a workshop from its student counts and package (ex-GST); a training from its teachers. */
 export function workshopValue(r: Record<string, unknown>) {
   const pkg = str(r.package) || "jove-day";
+  if (isTraining(r)) {
+    const teachers = num(r.teachers);
+    const billed = teachers > 0 ? Math.max(teachers, teacherTraining.minimumTeachers) : 0;
+    return { pkg, lines: [], subtotal: billed * teacherTraining.pricePerTeacher, minimumApplies: false, value: billed * teacherTraining.pricePerTeacher, students: 0 };
+  }
   const lines = gradeBands
     .map((band) => {
       const students = bandStudents(r, band.id);
@@ -191,6 +197,11 @@ export function dayWarnings(r: Record<string, unknown>) {
   const out: string[] = [];
   const students = studentsOf(r);
   const pkg = str(r.package) || "jove-day";
+  if (isTraining(r)) {
+    const teachers = num(r.teachers);
+    if (teachers > 0 && teachers < teacherTraining.minimumTeachers) out.push(`${teachers} teachers is below the smallest training (${teacherTraining.minimumTeachers}); ${teacherTraining.minimumTeachers} are billed.`);
+    return out;
+  }
   if (pkg === "jove-day" && students > 0 && students < joveDayRules.minimumStudents)
     out.push(`Below the ${joveDayRules.minimumStudents}-student minimum — minimum billing of ₹${joveDayRules.minimumBilling.toLocaleString("en-IN")} applies.`);
   if (students > joveDayRules.maxStudentsPerDay) out.push(`${students} students is above the ${joveDayRules.maxStudentsPerDay}-student daily capacity — split across two days.`);
@@ -326,6 +337,91 @@ export const CHECKLIST: ChecklistPhase[] = [
   },
 ];
 
+/**
+ * A teacher training (since Nov 2026): the kits go first, then a trainer and the film crew spend a few hours on campus
+ * with the school's teachers. Item ids are stored on the record — never rename them.
+ */
+export const TRAINING_CHECKLIST: ChecklistPhase[] = [
+  {
+    id: "t14",
+    code: "T-14",
+    label: "Two weeks out",
+    offset: -14,
+    items: [
+      { id: "tr-confirm", label: "Order confirmed in writing", detail: "Kits by kind, the number of teachers and the training date, from the principal.", owner: "Sales" },
+      { id: "tr-advance", label: `${joveDayRules.advancePercent}% advance received`, detail: "The order and the date are held once the advance lands. Record it on the training.", owner: "Finance" },
+      { id: "tr-kits-stock", label: "Kits in stock or ordered from the supplier", detail: "Check stock against the order; order the shortfall now.", owner: "Ops" },
+      { id: "tr-teachers", label: "Teachers' names received", detail: "For the certificates and the attendance list.", owner: "Sales" },
+      { id: "tr-trainer", label: "Trainer and media crew assigned", owner: "Ops" },
+    ],
+  },
+  {
+    id: "t7",
+    code: "T-7",
+    label: "One week out",
+    offset: -7,
+    items: [
+      { id: "tr-kits-sent", label: "Kits packed, counted and dispatched", detail: "Every box checked against its parts list; delivery note signed by the school.", owner: "Ops" },
+      { id: "tr-lessons", label: "Lesson plans and teacher guides printed", detail: "A set for every teacher, for the kits the school ordered.", owner: "Ops" },
+      { id: "tr-certificates", label: "Teacher certificates printed", owner: "Ops" },
+      { id: "tr-filming", label: "Filming permission from the school; teachers told", detail: "Any teacher can ask to be left out of the film.", owner: "Media" },
+      { id: "tr-travel", label: "Travel planned; stay booked if outstation", owner: "Ops" },
+      { id: "tr-room", label: "Room, tables, power and projector confirmed", owner: "Ops" },
+    ],
+  },
+  {
+    id: "t1",
+    code: "T-1",
+    label: "Day before",
+    offset: -1,
+    items: [
+      { id: "tr-kits-arrived", label: "The school confirms the kits have arrived", owner: "Sales" },
+      { id: "tr-reconfirm", label: "Start time reconfirmed with the coordinator", owner: "Sales" },
+      { id: "tr-packed", label: "Training kit, tools, spares and the bench laptop packed", detail: "The 3D practice bench works offline on the laptop.", owner: "Trainer" },
+      { id: "tr-media-gear", label: "Media gear packed and charged", owner: "Media" },
+    ],
+  },
+  {
+    id: "day",
+    code: "Day",
+    label: "Training day",
+    offset: 0,
+    items: [
+      { id: "tr-arrive", label: "Reported to the coordinator on time; room set up", owner: "Team" },
+      { id: "tr-attendance", label: "Teachers' attendance taken", owner: "Trainer" },
+      { id: "tr-builds", label: "Every teacher built every project in the plan", owner: "Trainer" },
+      { id: "tr-teachback", label: "Each teacher taught one lesson back to the group", owner: "Trainer" },
+      { id: "tr-filmed", label: "Training filmed; footage backed up (two copies)", owner: "Media" },
+      { id: "tr-certs-given", label: "Certificates given to the teachers who completed", owner: "Team" },
+      { id: "tr-feedback", label: "Teachers' feedback forms collected", owner: "Trainer" },
+    ],
+  },
+  {
+    id: "post",
+    code: "Post",
+    label: "After the training",
+    offset: 10,
+    items: [
+      { id: "tr-film", label: "Training film and photos delivered to the school", owner: "Media" },
+      { id: "tr-invoice", label: "Final invoice sent", owner: "Finance" },
+      { id: "tr-balance", label: "Balance payment received", detail: `Due within ${joveDayRules.balanceDueDays} days of the training.`, owner: "Finance" },
+      { id: "tr-certs-registry", label: "Teacher certificates in the registry", owner: "Ops" },
+      { id: "tr-checkin", label: "Check-in with the teachers a few weeks later", detail: "How are the lessons going in class? More kits for other grades?", owner: "Sales" },
+      { id: "tr-expenses", label: "Trip expenses logged", owner: "Finance" },
+    ],
+  },
+];
+
+/** A teacher training (Kits + Teacher Training or training only), not a student JOVE Day from before Nov 2026. */
+export function isTraining(r: Record<string, unknown>) {
+  return ["kits-training", "training"].includes(str(r.package));
+}
+
+/** The checklist that applies to this record. */
+export function checklistFor(r: Record<string, unknown>): ChecklistPhase[] {
+  return isTraining(r) ? TRAINING_CHECKLIST : CHECKLIST;
+}
+
 export const PRE_EVENT: PhaseId[] = ["t14", "t7", "t3", "t1"];
 export const CHECKLIST_TOTAL = CHECKLIST.reduce((s, p) => s + p.items.length, 0);
 
@@ -349,12 +445,12 @@ function progressOf(checks: Record<string, boolean>, phases: ChecklistPhase[]) {
 export function readiness(r: Record<string, unknown>) {
   return progressOf(
     checklistOf(r),
-    CHECKLIST.filter((p) => PRE_EVENT.includes(p.id)),
+    checklistFor(r).filter((p) => PRE_EVENT.includes(p.id)),
   );
 }
 
 export function overallProgress(r: Record<string, unknown>) {
-  return progressOf(checklistOf(r), CHECKLIST);
+  return progressOf(checklistOf(r), checklistFor(r));
 }
 
 export function phaseDue(r: Record<string, unknown>, phase: ChecklistPhase) {
@@ -364,7 +460,7 @@ export function phaseDue(r: Record<string, unknown>, phase: ChecklistPhase) {
 /** First unchecked item, in SOP order. */
 export function nextPending(r: Record<string, unknown>) {
   const checks = checklistOf(r);
-  for (const phase of CHECKLIST) for (const item of phase.items) if (!checks[item.id]) return { phase, item };
+  for (const phase of checklistFor(r)) for (const item of phase.items) if (!checks[item.id]) return { phase, item };
   return null;
 }
 
@@ -372,7 +468,7 @@ export function nextPending(r: Record<string, unknown>) {
 export function overduePhases(r: Record<string, unknown>, today: string) {
   if (isCancelled(r)) return [];
   const checks = checklistOf(r);
-  return CHECKLIST.filter((p) => {
+  return checklistFor(r).filter((p) => {
     const due = phaseDue(r, p);
     return due && due < today && phaseProgress(checks, p).pct < 1;
   });
@@ -684,8 +780,10 @@ export function workshopDefaults(): Record<string, unknown> {
 }
 
 export function titleFor(pkg: string, schoolName: string) {
-  const name = PACKAGE_OPTIONS.find((o) => o.value === pkg)?.label ?? "JOVE Day";
-  return schoolName ? `${pkg === "custom" ? "JOVE Workshop" : name} — ${schoolName}` : "";
+  const name = PACKAGE_OPTIONS.find((o) => o.value === pkg)?.label.replace(/\s*\(old\)$/, "") ?? "JOVE Day";
+  if (!schoolName) return "";
+  if (pkg === "kits-training" || pkg === "training") return `Teacher training — ${schoolName}`;
+  return `${pkg === "custom" ? "JOVE Workshop" : name} — ${schoolName}`;
 }
 
 /**
@@ -695,13 +793,14 @@ export function titleFor(pkg: string, schoolName: string) {
 export function fillFromSchool(draft: Record<string, unknown>, school: Rec | undefined, previous?: Rec) {
   if (!school) return draft;
   const next: Record<string, unknown> = { ...draft, schoolId: school.id };
-  const pkg = str(next.package) || "jove-day";
+  const pkg = str(next.package) || "kits-training";
   const prevAuto = previous ? titleFor(pkg, str(previous.name)) : "";
   if (!str(next.title) || (prevAuto && next.title === prevAuto)) next.title = titleFor(pkg, str(school.name));
-  for (const id of Object.keys(BAND_FIELD) as GradeBandId[]) {
-    const k = BAND_FIELD[id];
-    if (!num(next[k]) && num(school[k])) next[k] = num(school[k]);
-  }
+  if (!isTraining(next))
+    for (const id of Object.keys(BAND_FIELD) as GradeBandId[]) {
+      const k = BAND_FIELD[id];
+      if (!num(next[k]) && num(school[k])) next[k] = num(school[k]);
+    }
   if (!num(next.distanceKm) && num(school.distanceKm)) next.distanceKm = num(school.distanceKm);
   if (!str(next.schoolContact)) {
     const name = str(school.contactName) || str(school.principalName);

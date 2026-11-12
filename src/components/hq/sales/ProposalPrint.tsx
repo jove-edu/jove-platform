@@ -9,11 +9,11 @@ import { A4Page, Letterhead, PrintFooter, PrintShell } from "@/components/print/
 import { useCollection, useHq, useSettings } from "@/components/hq/data";
 import type { BaseRecord } from "@/lib/hq/collections";
 import type { CompanySettings } from "@/lib/hq/settings";
-import { gradeBands, joveDayRules, joveDaySchedule, kits, mediaPack, packages, type GradeBand } from "@/lib/content/business";
+import { gradeBands, joveDayRules, joveDaySchedule, kits, mediaPack, offers, packages, teacherTraining, trainingFilm, trainingRules, type GradeBand } from "@/lib/content/business";
 import { site } from "@/lib/site";
 import { amountInWords, cn, formatDate, formatINR, formatNumber, pad2 } from "@/lib/utils";
 import { BAND_FIELDS, str } from "./crm";
-import { gradeSpan, priceProposal, selectedBands, type PriceLine, type ProposalPricing } from "./pricing";
+import { gradeSpan, kitQtyOf, priceProposal, selectedBands, type PriceLine, type ProposalPricing } from "./pricing";
 
 /* ─────────────────────────── small helpers ─────────────────────────── */
 
@@ -115,12 +115,20 @@ function Cover({ c }: { c: Ctx }) {
     ["Valid until", formatDate(str(proposal.validUntil))],
     ["Prepared by", signatory.name],
   ];
-  const meta2: [string, string][] = [
-    ["Package", pricing.pkg.name],
-    ["Grades", span || "As scoped"],
-    ["Students", pricing.students ? formatNumber(pricing.students) : "—"],
-    ["Media Pack", pricing.mediaPacks > 0 ? `${pricing.mediaPacks} × included` : pricing.packageId === "custom" ? "As scoped" : "Per package"],
-  ];
+  const kt = pricing.packageId === "kits-training";
+  const meta2: [string, string][] = kt
+    ? [
+        ["Package", pricing.pkg.name],
+        ["Grades", kitGrades(proposal) || "As scoped"],
+        ["Kits", pricing.kitCount ? formatNumber(pricing.kitCount) : "—"],
+        ["Teachers trained", pricing.teachers ? formatNumber(pricing.teachers) : "—"],
+      ]
+    : [
+        ["Package", pricing.pkg.name],
+        ["Grades", span || "As scoped"],
+        ["Students", pricing.students ? formatNumber(pricing.students) : "—"],
+        ["Media Pack", pricing.mediaPacks > 0 ? `${pricing.mediaPacks} × included` : pricing.packageId === "custom" ? "As scoped" : "Per package"],
+      ];
 
   return (
     <A4Page padded={false}>
@@ -155,7 +163,7 @@ function Cover({ c }: { c: Ctx }) {
             <div className="hatch-light mt-8 max-w-[128mm] border-l-[3px] border-graphite bg-paper/70 py-3 pl-4 pr-3">
               <p className={LABEL}>{pricing.pkg.cadence}</p>
               <p className="mt-1 text-[19pt] font-bold leading-none tracking-[-0.02em] text-graphite">{pricing.pkg.name}</p>
-              <p className="mt-2 text-[9.5pt] leading-snug text-charcoal">{packages.find((p) => p.id === pricing.packageId)?.headline ?? "A programme designed around your school."}</p>
+              <p className="mt-2 text-[9.5pt] leading-snug text-charcoal">{(kt ? offers.find((o) => o.id === "kits-training")?.headline : packages.find((p) => p.id === pricing.packageId)?.headline) ?? "A programme designed around your school."}</p>
             </div>
           </div>
 
@@ -178,7 +186,15 @@ function Cover({ c }: { c: Ctx }) {
             ))}
             <div className="flex items-center justify-between gap-6 border-t border-graphite/60 bg-graphite px-3.5 py-2 text-paper">
               <p className="text-[7.5pt] leading-snug">
-                The first school Robotics &amp; AI workshop with its own in-house cinematic film studio — <span className="font-semibold">{site.studio.name}</span>.
+                {kt ? (
+                  <>
+                    Robotics &amp; AI kits for Grades 1–10, and teachers trained to teach them — filmed by <span className="font-semibold">{site.studio.name}</span>.
+                  </>
+                ) : (
+                  <>
+                    The first school Robotics &amp; AI workshop with its own in-house cinematic film studio — <span className="font-semibold">{site.studio.name}</span>.
+                  </>
+                )}
               </p>
               {contact && <p className="shrink-0 text-right text-[7pt] text-paper/75">{contact}</p>}
             </div>
@@ -199,6 +215,147 @@ const WHY_JOVE = [
   { t: "Certificates and a report", d: "Every participating student receives a certificate, and management gets a post-workshop report." },
   { t: "Learning that continues online", d: "The free JOVE Virtual Lab, a 3D bench with the same parts as our kits, lets students build again from home." },
 ];
+
+const WHY_KITS = [
+  { t: "A kit for every team", d: "Four grade-wise kits, from light-up robot buddies in Grade 1 to AI that sees in Grade 10, in class sets at the school price." },
+  { t: "Your teachers, trained", d: `${teacherTraining.hours} hours of hands-on training on your campus: every teacher builds each project and learns to run it in class.` },
+  { t: "Lesson plans for every project", d: "Step-by-step lesson plans and teacher guides, with the questions to ask and the usual faults to fix." },
+  { t: "Certified", d: "Every teacher who completes the training receives a JOVE certificate, verifiable online." },
+  { t: "A practice bench", d: "The free JOVE 3D bench has the same parts as our kits: teachers rehearse before class, students build again at home." },
+  { t: "Filmed for your school", d: `${site.studio.name} films the training day: a short film and photos the school can use.` },
+];
+
+function AboutKits({ c, page }: { c: Ctx; page: string }) {
+  return (
+    <A4Page>
+      <section aria-label="About JOVE">
+        <Letterhead settings={c.settings} docTitle="About JOVE" docMeta={<span className="font-mono">{c.number}</span>} />
+        <p className="text-[10.5pt] font-semibold leading-snug tracking-[-0.01em] text-graphite">
+          {site.name} — {site.expansion} — supplies Robotics, AI &amp; ML kits to schools for Grades 1–10, and trains their teachers to teach with them.
+        </p>
+        <p className={cn(BODY, "mt-2")}>
+          Robotics stays in your school all year: kits in class sets, lesson plans for every project, and your own teachers trained and certified to run them. Learning by doing, in the spirit of NEP 2020.
+        </p>
+
+        <div className="relative mt-4 overflow-hidden rounded-[var(--radius-md)] bg-ink text-paper">
+          <div className="bp-grid-dark pointer-events-none absolute inset-0 opacity-60" aria-hidden />
+          <div className="relative grid grid-cols-[1fr_56mm]">
+            <div className="p-5">
+              <p className="text-[6.5pt] font-semibold uppercase tracking-[0.2em] text-paper/60">Included with Kits + Teacher Training</p>
+              <h3 className="mt-1 text-[14pt] font-bold leading-[1.1] tracking-[-0.02em]">Your training day, on film.</h3>
+              <p className="mt-2 text-[8.5pt] leading-[1.5] text-paper/80">{trainingFilm.name}.</p>
+            </div>
+            <div className="relative min-h-[34mm] border-l border-paper/20">
+              <Image src="/images/studio/trainer-class.webp" alt="" fill sizes="320px" className="object-cover grayscale" />
+              <span className="absolute bottom-1 right-1.5 text-[5.5pt] uppercase tracking-[0.15em] text-paper/70">Illustration</span>
+            </div>
+          </div>
+          <ul className="relative grid grid-cols-2 gap-x-6 gap-y-2.5 border-t border-paper/20 px-5 py-3">
+            {trainingFilm.items.map((m, i) => (
+              <li key={m.title} className="break-inside-avoid">
+                <p className="flex items-baseline gap-2 text-[8.5pt] font-bold">
+                  <Mono className="text-[7pt] font-normal text-paper/50">{pad2(i + 1)}</Mono>
+                  {m.title}
+                </p>
+                <p className="mt-0.5 text-[7.5pt] leading-[1.45] text-paper/70">{m.detail}</p>
+              </li>
+            ))}
+          </ul>
+          <p className="relative border-t border-paper/20 bg-paper/10 px-5 py-2 text-[7.5pt] leading-snug text-paper/80">{trainingFilm.rights}</p>
+        </div>
+
+        <SubHeading className="mt-5">Why schools choose JOVE</SubHeading>
+        <ul className="grid grid-cols-2 gap-x-6 gap-y-3">
+          {WHY_KITS.map((w, i) => (
+            <li key={w.t} className="break-inside-avoid border-t border-graphite/25 pt-2">
+              <p className="flex items-baseline gap-2 text-[8.5pt] font-bold text-graphite">
+                <Mono className="text-[7pt] font-normal text-blueprint">{pad2(i + 1)}</Mono>
+                {w.t}
+              </p>
+              <p className="mt-0.5 text-[8pt] leading-[1.45] text-charcoal">{w.d}</p>
+            </li>
+          ))}
+        </ul>
+
+        <SubHeading className="mt-5">Who you will work with</SubHeading>
+        <ul className="grid grid-cols-2 gap-4">
+          {site.founders.map((f) => (
+            <li key={f.id} className="flex items-start gap-3 break-inside-avoid rounded-[var(--radius-sm)] border border-graphite/20 p-2.5">
+              <span className="grid size-[11mm] shrink-0 place-items-center rounded-full border border-graphite font-mono text-[9pt] font-semibold text-graphite" aria-hidden>
+                {f.initials}
+              </span>
+              <div className="min-w-0">
+                <p className="text-[9pt] font-bold leading-tight text-graphite">{f.name}</p>
+                <p className="text-[7.5pt] font-medium text-charcoal">{f.role}</p>
+                <p className="mt-1 text-[7pt] leading-snug text-blueprint">{f.focus}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <PrintFooter note={page} />
+      </section>
+    </A4Page>
+  );
+}
+
+/** The grades the kits on a proposal cover, e.g. "Grades 3–8". */
+function kitGrades(proposal: Record<string, unknown>) {
+  const q = kitQtyOf(proposal);
+  const nums = kits.filter((k) => q[k.id] > 0).flatMap((k) => (k.grades.split("·")[0].match(/\d+/g) ?? []).map(Number));
+  return nums.length ? `Grades ${Math.min(...nums)}–${Math.max(...nums)}` : "";
+}
+
+/** Page 3 of a kits-and-training proposal: the kits ordered and what the training covers. */
+function KitsAndTraining({ c, page, index }: { c: Ctx; page: string; index: string }) {
+  const q = kitQtyOf(c.proposal);
+  const chosen = kits.filter((k) => q[k.id] > 0);
+  const p = c.pricing;
+  return (
+    <A4Page>
+      <section aria-label="Kits and training">
+        <RunningHead number={c.number} school={c.schoolName} section="Kits & training" />
+        <PageTitle index={index} eyebrow="What you receive" title="Kits and teacher training" lead={`School prices apply from ${trainingRules.minimumKits} kits in one order. Every kit comes with a printed build guide and lesson plans for teachers.`} />
+        {chosen.length > 0 && (
+          <ul className="space-y-3">
+            {chosen.map((k) => (
+              <li key={k.id} className="grid break-inside-avoid grid-cols-[30mm_1fr_auto] items-start gap-4 border-t border-graphite/25 pt-3">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-sm)] border border-graphite/15 bg-paper-50">
+                  <Image src={k.image} alt="" fill sizes="200px" className="object-cover" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[10pt] font-bold leading-tight text-graphite">{k.name}</p>
+                  <p className="text-[7.5pt] text-blueprint">{k.grades} · {k.project}</p>
+                  <p className="mt-1 text-[8pt] leading-[1.45] text-charcoal">{k.description}</p>
+                  <p className="mt-1 text-[7.5pt] text-charcoal">{k.highlights.join(" · ")}</p>
+                </div>
+                <p className="text-right">
+                  <Mono className="text-[14pt] font-bold text-graphite">{formatNumber(q[k.id])}</Mono>
+                  <span className="block text-[7pt] uppercase tracking-[0.15em] text-blueprint">kits</span>
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+        {p.teachers > 0 && (
+          <div className="mt-5 break-inside-avoid rounded-[var(--radius-md)] border border-graphite/30 p-4">
+            <div className="flex items-baseline justify-between gap-4">
+              <p className="text-[11pt] font-bold text-graphite">{teacherTraining.name}</p>
+              <p className="text-[8pt] text-blueprint">
+                <Mono className="font-semibold text-graphite">{formatNumber(p.teachers)}</Mono> teachers · {teacherTraining.hours} hours · on your campus
+              </p>
+            </div>
+            <ul className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1.5 text-[8pt] leading-[1.45] text-charcoal">
+              {teacherTraining.includes.map((x) => (
+                <Check key={x}>{x}</Check>
+              ))}
+            </ul>
+          </div>
+        )}
+        <PrintFooter note={page} />
+      </section>
+    </A4Page>
+  );
+}
 
 function About({ c, page }: { c: Ctx; page: string }) {
   return (
@@ -572,8 +729,19 @@ function Investment({ c, page }: { c: Ctx; page: string }) {
           <dl className="grid grid-cols-[auto_auto] items-baseline gap-x-4 gap-y-0.5 text-right text-[8pt]">
             <dt className="text-blueprint">Package</dt>
             <dd className="font-semibold text-graphite">{p.pkg.name}</dd>
-            <dt className="text-blueprint">Students</dt>
-            <dd className="font-semibold tabular-nums text-graphite">{p.students ? formatNumber(p.students) : "—"}</dd>
+            {p.packageId === "kits-training" ? (
+              <>
+                <dt className="text-blueprint">Kits · teachers</dt>
+                <dd className="font-semibold tabular-nums text-graphite">
+                  {formatNumber(p.kitCount)} · {formatNumber(p.teachers)}
+                </dd>
+              </>
+            ) : (
+              <>
+                <dt className="text-blueprint">Students</dt>
+                <dd className="font-semibold tabular-nums text-graphite">{p.students ? formatNumber(p.students) : "—"}</dd>
+              </>
+            )}
             <dt className="text-blueprint">Valid until</dt>
             <dd className="font-semibold text-graphite">{formatDate(str(c.proposal.validUntil))}</dd>
           </dl>
@@ -765,10 +933,37 @@ const NEXT_STEPS = [
   { t: "Experience JOVE", d: `Your JOVE Day runs; media is delivered; balance due within ${joveDayRules.balanceDueDays} days.` },
 ];
 
+const SCHOOL_PROVIDES_KT = [
+  "A coordinator, and a training date agreed in advance",
+  "Someone to receive the kits and check the count against the delivery note",
+  "A room with tables, power points and a projector or screen for the training",
+  "The teachers to be trained, free for the training hours, and their names for the certificates",
+  "Permission to film the training; any teacher can ask to be left out",
+];
+
+const NEXT_STEPS_KT = [
+  { t: "Accept & sign", d: "Sign this proposal below and share a copy with us." },
+  { t: "Confirm the order", d: `Pay the ${joveDayRules.advancePercent}% advance; we dispatch the kits and fix the training date.` },
+  { t: "Kits arrive", d: "Every box is counted against its parts list on delivery." },
+  { t: "Teachers trained", d: `We train and certify your teachers on campus and film the day; the balance is due within ${joveDayRules.balanceDueDays} days.` },
+];
+
 function Terms({ c, page, index }: { c: Ctx; page: string; index: string }) {
   const { pricing: p, proposal, settings, signatory } = c;
   const notes = str(proposal.notes).trim();
-  const terms = [
+  const kt = p.packageId === "kits-training";
+  const provides = kt ? SCHOOL_PROVIDES_KT : SCHOOL_PROVIDES;
+  const steps = kt ? NEXT_STEPS_KT : NEXT_STEPS;
+  const terms = kt
+    ? [
+        `This proposal is valid until ${formatDate(str(proposal.validUntil))}. Prices are in Indian rupees. Kit prices include GST and are shown here before GST so that GST (${p.gstPercent}%) is added once on the total.`,
+        `${joveDayRules.advancePercent}% advance confirms the order; the balance is due within ${joveDayRules.balanceDueDays} days of the training (or of delivery, for kits only).`,
+        `School prices apply from ${trainingRules.minimumKits} kits in one order. A training is for ${teacherTraining.minimumTeachers} teachers or more; when fewer attend, ${teacherTraining.minimumTeachers} are billed.`,
+        "Kits are checked against the delivery note on arrival. Damaged, defective or missing parts reported within 7 days are replaced free of charge.",
+        "The training date can be rescheduled free of charge up to 7 days before. Cancellation terms are set out in our Refund & Cancellation Policy.",
+        "Tax treatment of this order should be confirmed by the school's accountant.",
+      ]
+    : [
     `This proposal is valid until ${formatDate(str(proposal.validUntil))}. Prices are in Indian rupees and exclude GST, which is charged at ${p.gstPercent}%.`,
     `${joveDayRules.advancePercent}% advance confirms the date; the balance is due within ${joveDayRules.balanceDueDays} days of the workshop.`,
     p.packageId === "jove-day"
@@ -777,7 +972,7 @@ function Terms({ c, page, index }: { c: Ctx; page: string; index: string }) {
     "Drone filming is subject to local drone rules and the school's permission. Student photographs and film are used only with parental consent, and faces are blurred on request.",
     "Dates can be rescheduled by mutual agreement. Cancellation and rescheduling terms are confirmed in writing along with the advance.",
     "Tax treatment of this engagement should be confirmed by the school's accountant.",
-  ];
+      ];
   return (
     <A4Page>
       <section aria-label="Terms and acceptance">
@@ -788,7 +983,7 @@ function Terms({ c, page, index }: { c: Ctx; page: string; index: string }) {
           <div>
             <SubHeading>What the school provides</SubHeading>
             <ul className="space-y-1.5 text-[8pt] leading-[1.45] text-charcoal">
-              {SCHOOL_PROVIDES.map((x) => (
+              {provides.map((x) => (
                 <Check key={x}>{x}</Check>
               ))}
             </ul>
@@ -796,7 +991,7 @@ function Terms({ c, page, index }: { c: Ctx; page: string; index: string }) {
           <div>
             <SubHeading>Next steps</SubHeading>
             <ol className="space-y-2">
-              {NEXT_STEPS.map((s, i) => (
+              {steps.map((s, i) => (
                 <li key={s.t} className="flex gap-2.5">
                   <span className="grid size-[6mm] shrink-0 place-items-center rounded-full border border-graphite font-mono text-[7.5pt] font-semibold text-graphite" aria-hidden>
                     {i + 1}
@@ -910,6 +1105,33 @@ export function ProposalPrint({ id }: { id: string }) {
   const founder = site.founders[0];
   const signatory = { name: settings.signatoryName || founder.name, title: settings.signatoryTitle || founder.role };
   const c: Ctx = { proposal, school, schoolName, pricing, settings, number, signatory, bands };
+
+  /* a kits-and-training proposal: cover, about, kits & training, investment, terms */
+  if (pricing.packageId === "kits-training") {
+    const mkK = (n: number) => ({ page: `${number} · Page ${n} of 5`, index: pad2(n - 1) });
+    return (
+      <PrintShell
+        title={`${number} · ${schoolName}`}
+        back={`/hq/proposals/${proposal.id}`}
+        toolbar={
+          <>
+            <Badge tone={statusTone(str(proposal.status))} dot>
+              {str(proposal.status) || "draft"}
+            </Badge>
+            <Button size="sm" variant="secondary" href={`/hq/proposals/${proposal.id}`}>
+              {store.writable ? "Edit proposal" : "Open proposal"}
+            </Button>
+          </>
+        }
+      >
+        <Cover c={c} />
+        <AboutKits c={c} page={mkK(2).page} />
+        <KitsAndTraining c={c} page={mkK(3).page} index={mkK(3).index} />
+        <Investment c={c} page={mkK(4).page} />
+        <Terms c={c} page={mkK(5).page} index={mkK(5).index} />
+      </PrintShell>
+    );
+  }
 
   /* page numbering — the cover is page 1 */
   const hasProg = bands.length > 0;

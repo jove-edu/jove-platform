@@ -104,13 +104,13 @@ export function WorkshopsHome({ initialNew, initialSchool }: { initialNew?: bool
     <div>
       <PageHeader
         eyebrow="Operations"
-        title="Workshops"
+        title="Trainings"
         icon="CalendarRange"
-        description="Every JOVE Day on one calendar — with run sheets, readiness checklists, kits, travel and media for each school."
+        description="Every teacher training on one calendar, with readiness checklists, kits, travel and the training film for each school. JOVE Days from before Nov 2026 stay here too."
         actions={
           canWrite ? (
             <Button size="sm" className="h-10" onClick={() => openNew()}>
-              <Plus className="size-4" aria-hidden /> New workshop
+              <Plus className="size-4" aria-hidden /> New training
             </Button>
           ) : undefined
         }
@@ -123,7 +123,7 @@ export function WorkshopsHome({ initialNew, initialSchool }: { initialNew?: bool
       )}
 
       {!today || loading ? (
-        <Loading label="Loading workshops…" />
+        <Loading label="Loading trainings…" />
       ) : (
         <>
           {workshops
@@ -132,7 +132,7 @@ export function WorkshopsHome({ initialNew, initialSchool }: { initialNew?: bool
               <div key={w.id} className="mb-6 flex flex-wrap items-center gap-4 rounded-[var(--radius-md)] bg-graphite px-5 py-4 text-paper" data-today-workshop>
                 <div className="min-w-0 flex-1">
                   <p className="annot text-paper/60">Today</p>
-                  <p className="mt-0.5 text-lg font-bold leading-snug">{str(w.title) || "Workshop"}</p>
+                  <p className="mt-0.5 text-lg font-bold leading-snug">{str(w.title) || "Training"}</p>
                   {str(w.startTime) && <p className="text-sm text-paper/70">Team reports at {str(w.startTime)}</p>}
                 </div>
                 <Button href={`/hq/workshops/${w.id}/day`} variant="light" size="lg">
@@ -161,7 +161,7 @@ export function WorkshopsHome({ initialNew, initialSchool }: { initialNew?: bool
             tabs={[
               { value: "calendar", label: "Calendar" },
               { value: "upcoming", label: "Upcoming" },
-              { value: "all", label: "All workshops", count: workshops.length },
+              { value: "all", label: "All", count: workshops.length },
             ]}
           />
 
@@ -175,7 +175,7 @@ export function WorkshopsHome({ initialNew, initialSchool }: { initialNew?: bool
                 extraColumns={can(user, OPS) ? EXTRA_COLUMNS : EXTRA_COLUMNS.filter((c) => c.key !== "value")}
                 hideNew
                 onOpen={(r) => router.push(`/hq/workshops/${r.id}`)}
-                emptyText="Add a workshop to start planning — pick the school and the counts and amount fill in for you."
+                emptyText="Add a training to start planning — pick the school and the contacts and amount fill in for you."
               />
             )}
           </div>

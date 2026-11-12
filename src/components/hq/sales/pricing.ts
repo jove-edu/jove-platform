@@ -2,6 +2,10 @@
  * Proposal pricing engine — every number comes from src/lib/content/business.ts.
  * Pure functions only: used live in the proposal builder, in the list, and on the printable proposal.
  *
+ *  Kits + Teacher Training (since Nov 2026)
+ *                Σ kits × school price (MRP below the smallest school order), shown ex-GST so GST is added once,
+ *                + teachers × training price (the smallest group is billed when fewer)
+ *  — the student packages below stay for proposals made before Nov 2026 —
  *  JOVE Day      Σ students × band pricePerStudent  (minimum billing applies)
  *  JOVE Quarter  Σ students × band quarterPricePerStudent
  *  JOVE Year     Σ students × band yearPricePerStudent
@@ -11,13 +15,14 @@
  *  Discount % applies to the programme fee. Add-ons and extra items are added at their own rates.
  *  GST is added on the ex-GST subtotal.
  */
-import { addOns, gradeBands, joveDayRules, kits, mediaPack, packages, type AddOn, type GradeBand, type GradeBandId, type PackageId } from "@/lib/content/business";
+import { addOns, gradeBands, joveDayRules, kits, mediaPack, packages, teacherTraining, trainingFilm, trainingRules, type AddOn, type GradeBand, type GradeBandId, type KitId, type PackageId } from "@/lib/content/business";
 import type { LineItem } from "@/lib/hq/collections";
 import type { LeadEstimate } from "@/lib/estimate";
+import type { LeadKitQuote } from "@/lib/kit-quote";
 import { formatINR, formatNumber } from "@/lib/utils";
 import { BAND_FIELDS } from "./crm";
 
-export type ProposalPackageId = PackageId | "custom";
+export type ProposalPackageId = "kits-training" | PackageId | "custom";
 
 /* ─────────────────────────── constants derived from business.ts ─────────────────────────── */
 
@@ -35,10 +40,10 @@ export const CLUB_PRICE_PER_STUDENT_MONTH = Number.isFinite(firstRupees(clubPack
 export const CLUB_MIN_STUDENTS = Number(/min\.\s*(\d+)/i.exec(clubPackage?.priceNote ?? "")?.[1]) || 25;
 /** JOVE Year includes a discount on Social Media Management add-ons (from the package inclusions). */
 export const YEAR_SMM_DISCOUNT_PERCENT = Number(/(\d+)%\s*off\s+social media/i.exec(yearPackage?.includes.join(" ") ?? "")?.[1]) || 0;
-/** Minimum teachers per training batch (from the add-on detail). */
-export const TEACHER_TRAINING_MIN = Number(/min\.\s*(\d+)\s*teachers/i.exec(addOns.find((a) => a.id === "teacher-training")?.detail ?? "")?.[1]) || 10;
-/** Minimum kits for the bulk school price (from the add-on detail). */
-export const TAKE_HOME_KITS_MIN = Number(/min\.\s*(\d+)\s*kits/i.exec(addOns.find((a) => a.id === "take-home-kits")?.detail ?? "")?.[1]) || 30;
+/** Minimum teachers per training (HQ → Prices & Costs → Training). */
+export const TEACHER_TRAINING_MIN = teacherTraining.minimumTeachers;
+/** Minimum kits for the school price (HQ → Prices & Costs → Training). */
+export const TAKE_HOME_KITS_MIN = trainingRules.minimumKits;
 
 export const GST_PERCENT = joveDayRules.gstPercent;
 
@@ -53,19 +58,24 @@ export interface PackageChoice {
   mediaPacks: number;
   /** media included, described honestly per package */
   mediaNote: string;
+  /** a student package from before Nov 2026: shown only on proposals that already use it */
+  legacy?: boolean;
 }
 
+const KITS_TRAINING_NOTE = `Kits ${formatINR(Math.min(...kits.map((k) => k.schoolPrice)))}–${formatINR(Math.max(...kits.map((k) => k.schoolPrice)))} each incl. GST (from ${trainingRules.minimumKits}) · training ${teacherTraining.price} + GST (from ${teacherTraining.minimumTeachers})`;
+
 export const PACKAGE_CHOICES: PackageChoice[] = [
+  { id: "kits-training", name: "Kits + Teacher Training", cadence: "Kits and/or training", priceNote: KITS_TRAINING_NOTE, unit: "per kit", mediaPacks: 0, mediaNote: `${trainingFilm.name} (with training)` },
   ...packages.map((p): PackageChoice => {
     switch (p.id) {
       case "jove-day":
-        return { id: p.id, name: p.name, cadence: p.cadence, priceNote: p.priceNote, unit: "per student", mediaPacks: 1, mediaNote: "1 × JOVE Media Pack (reels, full-day film, drone shots, photos)" };
+        return { id: p.id, name: p.name, cadence: p.cadence, priceNote: p.priceNote, unit: "per student", mediaPacks: 1, mediaNote: "1 × JOVE Media Pack (reels, full-day film, drone shots, photos)", legacy: true };
       case "jove-quarter":
-        return { id: p.id, name: p.name, cadence: p.cadence, priceNote: p.priceNote, unit: "per student / quarter", mediaPacks: 3, mediaNote: "3 × JOVE Media Pack — one with every JOVE Day" };
+        return { id: p.id, name: p.name, cadence: p.cadence, priceNote: p.priceNote, unit: "per student / quarter", mediaPacks: 3, mediaNote: "3 × JOVE Media Pack — one with every JOVE Day", legacy: true };
       case "jove-year":
-        return { id: p.id, name: p.name, cadence: p.cadence, priceNote: p.priceNote, unit: "per student / year", mediaPacks: 0, mediaNote: "Annual showcase film + monthly reels" };
+        return { id: p.id, name: p.name, cadence: p.cadence, priceNote: p.priceNote, unit: "per student / year", mediaPacks: 0, mediaNote: "Annual showcase film + monthly reels", legacy: true };
       default:
-        return { id: p.id, name: p.name, cadence: p.cadence, priceNote: p.priceNote, unit: "per student / month", mediaPacks: 0, mediaNote: "Monthly project video for parents" };
+        return { id: p.id, name: p.name, cadence: p.cadence, priceNote: p.priceNote, unit: "per student / month", mediaPacks: 0, mediaNote: "Monthly project video for parents", legacy: true };
     }
   }),
   { id: "custom", name: "Custom", cadence: "Tailored scope", priceNote: "Add-ons and custom line items only", unit: "", mediaPacks: 0, mediaNote: "" },
@@ -75,13 +85,29 @@ export function packageChoice(id: unknown): PackageChoice {
   return PACKAGE_CHOICES.find((p) => p.id === id) ?? PACKAGE_CHOICES[0];
 }
 
+/** what a school can ask for on the website (leads), beyond the proposal packages */
+const INTEREST_NAMES: Record<string, string> = { kits: "Kits for schools", training: "Teacher training", "lab-setup": "Lab setup" };
+
 export function packageName(id: unknown) {
-  return PACKAGE_CHOICES.find((p) => p.id === id)?.name ?? (id ? String(id) : "—");
+  return PACKAGE_CHOICES.find((p) => p.id === id)?.name ?? INTEREST_NAMES[String(id)] ?? (id ? String(id) : "—");
+}
+
+/** Kits of each kind on a kits-and-training proposal. */
+export function kitQtyOf(p: Record<string, unknown>): Record<KitId, number> {
+  const raw = p.kitQty && typeof p.kitQty === "object" && !Array.isArray(p.kitQty) ? (p.kitQty as Record<string, unknown>) : {};
+  return Object.fromEntries(kits.map((k) => [k.id, Math.max(0, Math.round(Number(raw[k.id]) || 0))])) as Record<KitId, number>;
+}
+
+/** The proposal fields for a website quote (src/lib/kit-quote.ts): kits by kind and teachers. Priced again here. */
+export function proposalFromKitQuote(q: LeadKitQuote): Record<string, unknown> {
+  return { packageId: "kits-training", kitQty: { ...q.kits }, teachers: q.teachers };
 }
 
 /** Per-student band rate for a package (club = per month). */
 export function bandRate(band: GradeBand, pkg: ProposalPackageId) {
   switch (pkg) {
+    case "kits-training":
+      return 0;
     case "jove-day":
       return band.pricePerStudent;
     case "jove-quarter":
@@ -146,6 +172,10 @@ export interface ProposalPricing {
   packageId: ProposalPackageId;
   pkg: PackageChoice;
   months: number;
+  /** kits on a kits-and-training proposal */
+  kitCount: number;
+  /** teachers to train on a kits-and-training proposal (as asked, before the smallest group applies) */
+  teachers: number;
   students: number;
   bands: { band: GradeBand; students: number }[];
   bandLines: PriceLine[];
@@ -215,7 +245,7 @@ export function clubMonths(p: Record<string, unknown>) {
 }
 
 export function priceProposal(p: Record<string, unknown>): ProposalPricing {
-  const packageId = (PACKAGE_CHOICES.some((c) => c.id === p.packageId) ? p.packageId : "jove-day") as ProposalPackageId;
+  const packageId = (PACKAGE_CHOICES.some((c) => c.id === p.packageId) ? p.packageId : "kits-training") as ProposalPackageId;
   const pkg = packageChoice(packageId);
   const months = packageId === "jove-club" ? clubMonths(p) : 1;
   const warnings: string[] = [];
@@ -224,8 +254,49 @@ export function priceProposal(p: Record<string, unknown>): ProposalPricing {
   const students = bands.reduce((s, b) => s + b.students, 0);
 
   /* programme */
+  const kitLines: PriceLine[] = [];
+  let kitCount = 0;
+  let teachers = 0;
+  if (packageId === "kits-training") {
+    const q = kitQtyOf(p);
+    kitCount = kits.reduce((s, k) => s + q[k.id], 0);
+    const school = kitCount >= trainingRules.minimumKits;
+    for (const k of kits) {
+      const n = q[k.id];
+      if (!n) continue;
+      const incl = school ? k.schoolPrice : k.mrp;
+      kitLines.push({
+        key: `kit-${k.id}`,
+        kind: "kit",
+        label: k.name,
+        detail: `${k.grades.split("·")[0].trim()} · ${school ? "school price" : "MRP"} ${formatINR(incl)} incl. GST`,
+        qty: n,
+        unit: "kits",
+        rate: round2(incl / (1 + GST_PERCENT / 100)),
+        amount: round2((n * incl) / (1 + GST_PERCENT / 100)),
+      });
+    }
+    teachers = Math.max(0, Math.round(num(p.teachers)));
+    if (teachers > 0) {
+      const billed = Math.max(teachers, teacherTraining.minimumTeachers);
+      kitLines.push({
+        key: "training",
+        kind: "band",
+        label: teacherTraining.name,
+        detail: `${teacherTraining.hours} hours on campus · lesson plans, certificates${kitCount ? " and the training film" : ""}${billed > teachers ? ` · ${teachers} teachers, the smallest group of ${billed} billed` : ""}`,
+        qty: billed,
+        unit: billed === 1 ? "teacher" : "teachers",
+        rate: teacherTraining.pricePerTeacher,
+        amount: billed * teacherTraining.pricePerTeacher,
+      });
+    }
+    if (kitCount > 0 && kitCount < trainingRules.minimumKits) warnings.push(`${kitCount} kits is below the smallest school order (${trainingRules.minimumKits}), so the kits are at MRP.`);
+    if (!kitCount && !teachers) warnings.push("Add kits, teachers to train, or both.");
+  }
   const bandLines: PriceLine[] =
-    packageId === "custom"
+    packageId === "kits-training"
+      ? kitLines
+      : packageId === "custom"
       ? []
       : bands
           .filter((b) => b.students > 0)
@@ -343,12 +414,12 @@ export function priceProposal(p: Record<string, unknown>): ProposalPricing {
   const mediaPacks = pkg.mediaPacks;
 
   /* sanity checks */
-  if (packageId !== "custom" && !students) warnings.push("Add student numbers for at least one grade band.");
+  if (packageId !== "custom" && packageId !== "kits-training" && !students) warnings.push("Add student numbers for at least one grade band.");
   if (packageId === "jove-day" && students > 0 && students < joveDayRules.minimumStudents)
     warnings.push(`${formatNumber(students)} students is below the ${joveDayRules.minimumStudents}-student minimum — the ${formatINR(joveDayRules.minimumBilling)} minimum billing applies.`);
   if (packageId === "jove-day" && students > joveDayRules.maxStudentsPerDay)
     warnings.push(`${formatNumber(students)} students is more than one JOVE Day can host (${joveDayRules.maxStudentsPerDay}). Plan a second day.`);
-  if (packageId !== "custom" && packageId !== "jove-club")
+  if (packageId !== "custom" && packageId !== "jove-club" && packageId !== "kits-training")
     for (const { band, students: n } of bands)
       if (n > band.maxPerSession) warnings.push(`${band.grades}: ${formatNumber(n)} students is more than one session (${band.maxPerSession}) — an overflow batch is needed.`);
   if (packageId === "jove-club" && students > 0 && students < CLUB_MIN_STUDENTS) warnings.push(`JOVE Club runs with a minimum of ${CLUB_MIN_STUDENTS} students.`);
@@ -358,6 +429,8 @@ export function priceProposal(p: Record<string, unknown>): ProposalPricing {
     packageId,
     pkg,
     months,
+    kitCount,
+    teachers,
     students,
     bands,
     bandLines,

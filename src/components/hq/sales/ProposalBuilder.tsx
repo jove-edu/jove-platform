@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle, CalendarCheck, Copy, ExternalLink, Loader2, Printer, Save, Send, Sparkles, Trash2 } from "lucide-react";
 import { getCollection, type BaseRecord } from "@/lib/hq/collections";
 import { cleanEstimate } from "@/lib/estimate";
+import { cleanKitQuote } from "@/lib/kit-quote";
 import { can } from "@/lib/hq/roles";
-import { addOns, gradeBands, joveDayRules, mediaPack } from "@/lib/content/business";
+import { addOns, gradeBands, joveDayRules, kits, mediaPack, teacherTraining, trainingRules } from "@/lib/content/business";
 import { Badge, statusTone } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { ConfirmButton } from "@/components/ui/Overlay";
@@ -28,7 +29,9 @@ import {
   defaultAddOnQty,
   PACKAGE_CHOICES,
   priceProposal,
+  kitQtyOf,
   proposalFromEstimate,
+  proposalFromKitQuote,
   TAKE_HOME_KITS_MIN,
   unitLabel,
   YEAR_SMM_DISCOUNT_PERCENT,
@@ -60,6 +63,7 @@ function spreadTotal(total: number): Record<string, number> {
 function blankProposal(school?: BaseRecord, lead?: BaseRecord): Record<string, unknown> {
   const today = todayIso();
   const estimate = cleanEstimate(lead?.estimate);
+  const quote = cleanKitQuote(lead?.quote);
   const counts = school ? Object.fromEntries(BAND_KEYS.map((k) => [k, num(school[k])])) : Object.fromEntries(BAND_KEYS.map((k) => [k, 0]));
   const hasSplit = BAND_KEYS.some((k) => num(counts[k]) > 0);
   const total = school ? num(school.studentsTotal) : 0;
@@ -68,8 +72,9 @@ function blankProposal(school?: BaseRecord, lead?: BaseRecord): Record<string, u
     date: today,
     validUntil: addDays(today, 30),
     schoolId: school?.id ?? "",
-    packageId: "jove-day",
-    ...(hasSplit || !total ? counts : spreadTotal(total)),
+    packageId: "kits-training",
+    kitQty: {},
+    teachers: 0,
     discountPercent: 0,
     months: 1,
     addOns: [],
@@ -77,8 +82,16 @@ function blankProposal(school?: BaseRecord, lead?: BaseRecord): Record<string, u
     addOnRate: {},
     extraItems: [],
     notes: "",
-    ...(estimate
+    ...(quote
       ? {
+          ...proposalFromKitQuote(quote),
+          leadId: lead?.id,
+          preferredDate: str(lead?.preferredDate),
+          notes: lead?.preferredDate ? `Preferred training date from the website request: ${formatDate(str(lead.preferredDate))}.` : "",
+        }
+      : estimate
+      ? {
+          ...(hasSplit || !total ? counts : spreadTotal(total)),
           ...proposalFromEstimate(estimate),
           leadId: lead?.id,
           preferredDate: str(lead?.preferredDate),
@@ -133,7 +146,7 @@ function BuilderForm({ initial, presetSchool, presetLead, created }: { initial: 
   const [saving, setSaving] = useState<"save" | "pdf" | "send" | null>(null);
   const [error, setError] = useState("");
   const [booking, setBooking] = useState(false);
-  const [notice, setNotice] = useState(created ? "Proposal created." : !initial && cleanEstimate(presetLead?.estimate) ? "Filled in from the school's website estimate. Check the numbers, then save." : "");
+  const [notice, setNotice] = useState(created ? "Proposal created." : !initial && (cleanKitQuote(presetLead?.quote) || cleanEstimate(presetLead?.estimate)) ? "Filled in from the school's website estimate. Check the numbers, then save." : "");
 
   const set = (patch: Record<string, unknown>) => {
     setForm((f) => ({ ...f, ...patch }));
@@ -410,7 +423,7 @@ function BuilderForm({ initial, presetSchool, presetLead, created }: { initial: 
           {/* 02 package */}
           <Panel title={<StepTitle n="02">Package</StepTitle>}>
             <div role="radiogroup" aria-label="Package" className="grid gap-3 sm:grid-cols-2">
-              {PACKAGE_CHOICES.map((c) => (
+              {PACKAGE_CHOICES.filter((c) => !c.legacy || c.id === packageId).map((c) => (
                 <label
                   key={c.id}
                   className={cn(
@@ -438,8 +451,79 @@ function BuilderForm({ initial, presetSchool, presetLead, created }: { initial: 
             )}
           </Panel>
 
-          {/* 03 students */}
-          {packageId !== "custom" && (
+          {/* 03 kits and teachers */}
+          {packageId === "kits-training" && (
+            <Panel title={<StepTitle n="03">Kits and teachers</StepTitle>} subtitle={`${formatNumber(pricing.kitCount)} kits · ${formatNumber(pricing.teachers)} teachers to train`}>
+              <div className="overflow-hidden rounded-[var(--radius-sm)] border border-graphite/15">
+                <table className="w-full text-sm">
+                  <thead className="bg-graphite/[0.04] text-left">
+                    <tr className="annot text-[10px] text-blueprint">
+                      <th scope="col" className="px-3 py-2 font-medium">Kit</th>
+                      <th scope="col" className="hidden px-3 py-2 text-right font-medium sm:table-cell">School price · MRP</th>
+                      <th scope="col" className="w-28 px-3 py-2 font-medium">Kits</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {kits.map((k) => {
+                      const q = kitQtyOf(form);
+                      return (
+                        <tr key={k.id} className="border-t border-graphite/10">
+                          <th scope="row" className="px-3 py-2.5 text-left font-medium">
+                            <span className="block">{k.name}</span>
+                            <span className="block text-xs font-normal text-blueprint">{k.grades.split("·")[0].trim()}</span>
+                          </th>
+                          <td className="tabular hidden px-3 py-2.5 text-right text-charcoal sm:table-cell">
+                            {formatINR(k.schoolPrice)} · {formatINR(k.mrp)}
+                          </td>
+                          <td className="px-3 py-1.5">
+                            <Input
+                              type="number"
+                              min={0}
+                              inputMode="numeric"
+                              aria-label={`${k.name} kits`}
+                              value={q[k.id] || ""}
+                              placeholder="0"
+                              disabled={!canWrite}
+                              onChange={(e) => set({ kitQty: { ...q, [k.id]: Math.max(0, Math.round(num(e.target.value))) } })}
+                              className="tabular h-9"
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    <tr className="border-t border-graphite/10 bg-graphite/[0.02]">
+                      <th scope="row" className="px-3 py-2.5 text-left font-medium">
+                        <span className="block">{teacherTraining.name}</span>
+                        <span className="block text-xs font-normal text-blueprint">
+                          {teacherTraining.hours} hours · from {teacherTraining.minimumTeachers} teachers
+                        </span>
+                      </th>
+                      <td className="tabular hidden px-3 py-2.5 text-right text-charcoal sm:table-cell">{formatINR(teacherTraining.pricePerTeacher)} / teacher</td>
+                      <td className="px-3 py-1.5">
+                        <Input
+                          type="number"
+                          min={0}
+                          inputMode="numeric"
+                          aria-label="Teachers to train"
+                          value={num(form.teachers) || ""}
+                          placeholder="0"
+                          disabled={!canWrite}
+                          onChange={(e) => set({ teachers: Math.max(0, Math.round(num(e.target.value))) })}
+                          className="tabular h-9"
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p className="mt-3 text-xs text-blueprint">
+                Kit prices include GST; the proposal shows them before GST so GST is added once. School prices from {trainingRules.minimumKits} kits; MRP below that. Prices come from HQ → Prices &amp; Costs.
+              </p>
+            </Panel>
+          )}
+
+          {/* 03 students (JOVE Days before Nov 2026) */}
+          {packageId !== "custom" && packageId !== "kits-training" && (
             <Panel
               title={<StepTitle n="03">Students by grade group</StepTitle>}
               subtitle={`${formatNumber(splitCount)} students in total`}
@@ -501,7 +585,7 @@ function BuilderForm({ initial, presetSchool, presetLead, created }: { initial: 
           )}
 
           {/* 04 add-ons */}
-          <Panel title={<StepTitle n={packageId === "custom" ? "03" : "04"}>Add-ons</StepTitle>} subtitle="Optional extras from JOVE and FrameMind AI Studio">
+          <Panel title={<StepTitle n={packageId === "custom" ? "03" : "04"}>Add-ons</StepTitle>} subtitle={packageId === "kits-training" ? "Optional extras, such as a lab setup" : "Optional extras from JOVE and FrameMind AI Studio"}>
             <ul className="space-y-2.5">
               {addOns.map((a) => {
                 const on = listOf(form.addOns).includes(a.id);
@@ -635,7 +719,7 @@ function BuilderForm({ initial, presetSchool, presetLead, created }: { initial: 
                     <Button className="h-11 w-full" onClick={() => setBooking(true)} disabled={busy || dirty} title={dirty ? "Save the changes first" : undefined}>
                       <CalendarCheck className="size-4" aria-hidden /> Book it
                     </Button>
-                    <p className="mt-2 text-[11px] leading-snug text-blueprint">{dirty ? "Save the changes first. " : ""}Makes the workshop date{SESSIONS[packageId] > 1 ? "s" : ""}, the draft invoice with the advance, and the school&apos;s papers to sign, in one go.</p>
+                    <p className="mt-2 text-[11px] leading-snug text-blueprint">{dirty ? "Save the changes first. " : ""}Makes the {packageId === "kits-training" ? "training date" : `workshop date${SESSIONS[packageId] > 1 ? "s" : ""}`}, the draft invoice with the advance, and the school&apos;s papers to sign, in one go.</p>
                   </div>
                 )}
                 {!isNew && (
@@ -694,18 +778,20 @@ export function PriceSummary({ pricing: p }: { pricing: ProposalPricing }) {
         <p className="mt-1.5 text-xs text-paper/65">
           {p.pkg.name}
           {p.students ? ` · ${formatNumber(p.students)} students` : ""}
+          {p.kitCount ? ` · ${formatNumber(p.kitCount)} kits` : ""}
+          {p.teachers ? ` · ${formatNumber(p.teachers)} teachers` : ""}
           {p.perStudent ? ` · ${formatINR(p.perStudent)} ${p.packageId === "jove-club" ? "per student / month" : "per student"} avg.` : ""}
         </p>
       </div>
 
       <div className="px-5 py-4">
         {none ? (
-          <p className="py-3 text-sm text-charcoal">Enter student numbers or add items to see the breakdown.</p>
+          <p className="py-3 text-sm text-charcoal">Enter kits and teachers, or add items, to see the breakdown.</p>
         ) : (
           <div className="divide-y divide-dashed divide-graphite/15">
             {lines.length > 0 && (
               <div className="pb-2">
-                <p className="annot mb-1 text-[10px] text-blueprint">Programme</p>
+                <p className="annot mb-1 text-[10px] text-blueprint">{p.packageId === "kits-training" ? "Kits and training" : "Programme"}</p>
                 {lines.map((l) => (
                   <Row key={l.key} label={l.label} detail={l.kind === "minimum" ? l.detail : `${formatNumber(l.qty)} ${l.unit} × ${formatINR(l.rate)}`} amount={formatINR(l.amount)} />
                 ))}

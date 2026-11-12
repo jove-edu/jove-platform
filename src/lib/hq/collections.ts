@@ -136,7 +136,8 @@ export const EXPENSE_CATEGORIES = opts(
 const GRADE_BAND_OPTS = opts(["g1-2", "Grades 1–2"], ["g3-5", "Grades 3–5"], ["g6-8", "Grades 6–8"], ["g9-10", "Grades 9–10"]);
 /** what a school asks about since Nov 2026 (the old student packages stay readable on old leads) */
 const INTEREST_OPTS = opts(["kits-training", "Kits + Teacher Training"], ["kits", "Kits for schools"], ["training", "Teacher training"], ["lab-setup", "Lab setup"], ["custom", "Not sure yet"], ["jove-day", "JOVE Day (old)"], ["jove-quarter", "JOVE Quarter (old)"], ["jove-year", "JOVE Year (old)"], ["jove-club", "JOVE Club (old)"]);
-const PACKAGE_OPTS = opts(["jove-day", "JOVE Day"], ["jove-quarter", "JOVE Quarter"], ["jove-year", "JOVE Year"], ["jove-club", "JOVE Club"], ["custom", "Custom"]);
+/** what a proposal or a training is for; the student packages stay for records made before Nov 2026 */
+const PACKAGE_OPTS = opts(["kits-training", "Kits + Teacher Training"], ["custom", "Custom"], ["jove-day", "JOVE Day (old)"], ["jove-quarter", "JOVE Quarter (old)"], ["jove-year", "JOVE Year (old)"], ["jove-club", "JOVE Club (old)"]);
 const KIT_OPTS = opts(["spark", "Spark Kit"], ["explorer", "Explorer Kit"], ["builder", "Builder Kit"], ["innovator", "Innovator AI Kit"]);
 const PAY_MODES = opts(["upi", "UPI"], ["bank", "Bank transfer"], ["cheque", "Cheque"], ["card", "Card"], ["cash", "Cash"], ["gateway", "Payment gateway"]);
 
@@ -262,11 +263,12 @@ export const collections: CollectionDef[] = [
       { key: "date", label: "Date", type: "date", table: true, width: "third" },
       { key: "validUntil", label: "Valid until", type: "date", width: "third" },
       { key: "schoolId", label: "School", type: "ref", ref: "schools", required: true, table: true, width: "half" },
-      { key: "packageId", label: "Package", type: "select", options: PACKAGE_OPTS, table: true, width: "half" },
-      { key: "studentsG12", label: "Students Gr 1–2", type: "number", width: "third" },
-      { key: "studentsG35", label: "Students Gr 3–5", type: "number", width: "third" },
-      { key: "studentsG68", label: "Students Gr 6–8", type: "number", width: "third" },
-      { key: "studentsG910", label: "Students Gr 9–10", type: "number", width: "third" },
+      { key: "packageId", label: "Package", type: "select", options: PACKAGE_OPTS, default: "kits-training", table: true, width: "half" },
+      { key: "teachers", label: "Teachers to train", type: "number", width: "third", help: "Kits by kind are set in the proposal builder" },
+      { key: "studentsG12", label: "Students Gr 1–2 (old)", type: "number", width: "third" },
+      { key: "studentsG35", label: "Students Gr 3–5 (old)", type: "number", width: "third" },
+      { key: "studentsG68", label: "Students Gr 6–8 (old)", type: "number", width: "third" },
+      { key: "studentsG910", label: "Students Gr 9–10 (old)", type: "number", width: "third" },
       { key: "discountPercent", label: "Discount %", type: "percent", width: "third" },
       { key: "addOns", label: "Add-ons", type: "multiselect", options: opts(["smm-starter", "SMM Starter"], ["smm-growth", "SMM Growth"], ["smm-premium", "SMM Premium"], ["film-admissions", "Admissions film"], ["film-premium", "Premium brand film"], ["teacher-training", "Teacher training"], ["take-home-kits", "Take-home kits"], ["lab-setup", "Lab setup"]), width: "full" },
       { key: "extraItems", label: "Extra line items", type: "lineItems", width: "full" },
@@ -279,9 +281,9 @@ export const collections: CollectionDef[] = [
   /* ── Delivery ────────────────────────────────────────────────────────── */
   {
     name: "workshops",
-    label: "Workshops",
-    singular: "Workshop",
-    description: "Every JOVE Day, Quarter and Club session — planning, run sheet and wrap-up.",
+    label: "Trainings",
+    singular: "Training",
+    description: "Every teacher training (and the JOVE Days before Nov 2026): planning, kits, travel and wrap-up.",
     icon: "CalendarRange",
     titleField: "title",
     subtitleField: "schoolId",
@@ -291,16 +293,19 @@ export const collections: CollectionDef[] = [
     read: ALL,
     write: OPS,
     fields: [
-      { key: "title", label: "Title", type: "text", required: true, placeholder: "e.g. JOVE Day — Sri Vidya School", table: true, width: "full" },
+      { key: "title", label: "Title", type: "text", required: true, placeholder: "e.g. Teacher training — Sri Vidya School", table: true, width: "full" },
       { key: "schoolId", label: "School", type: "ref", ref: "schools", table: true, width: "half" },
-      { key: "package", label: "Package", type: "select", options: PACKAGE_OPTS, default: "jove-day", width: "half" },
+      { key: "package", label: "Package", type: "select", options: PACKAGE_OPTS, default: "kits-training", width: "half" },
       { key: "date", label: "Date", type: "date", required: true, table: true, width: "third" },
-      { key: "startTime", label: "Report time", type: "time", default: "07:30", width: "third" },
+      { key: "startTime", label: "Start time", type: "time", default: "09:00", width: "third" },
       { key: "status", label: "Status", type: "select", options: opts("tentative", "confirmed", "completed", "postponed", "cancelled"), default: "tentative", table: true, width: "third" },
-      { key: "studentsG12", label: "Students Gr 1–2", type: "number", width: "third" },
-      { key: "studentsG35", label: "Students Gr 3–5", type: "number", width: "third" },
-      { key: "studentsG68", label: "Students Gr 6–8", type: "number", width: "third" },
-      { key: "studentsG910", label: "Students Gr 9–10", type: "number", width: "third" },
+      { key: "teachers", label: "Teachers to train", type: "number", width: "third" },
+      { key: "kitsOrdered", label: "Kits ordered", type: "number", width: "third" },
+      { key: "kitsDelivered", label: "Kits delivered on", type: "date", width: "third" },
+      { key: "studentsG12", label: "Students Gr 1–2 (old)", type: "number", width: "third" },
+      { key: "studentsG35", label: "Students Gr 3–5 (old)", type: "number", width: "third" },
+      { key: "studentsG68", label: "Students Gr 6–8 (old)", type: "number", width: "third" },
+      { key: "studentsG910", label: "Students Gr 9–10 (old)", type: "number", width: "third" },
       { key: "agreedAmount", label: "Agreed amount (ex-GST)", type: "currency", opsOnly: true, table: true, width: "third" },
       { key: "advanceReceived", label: "Advance received", type: "currency", opsOnly: true, width: "third" },
       { key: "leadTrainer", label: "Lead", type: "text", width: "third" },
@@ -311,11 +316,11 @@ export const collections: CollectionDef[] = [
       { key: "departTime", label: "Depart base at", type: "time", width: "third" },
       { key: "schoolContact", label: "On-day school contact", type: "text", width: "half" },
       { key: "schoolContactPhone", label: "Contact phone", type: "phone", staffOnly: true, width: "half" },
-      { key: "mediaPack", label: "Media Pack included", type: "boolean", default: true, width: "third" },
-      { key: "droneAllowed", label: "Drone permission", type: "select", options: opts("Pending", "Granted", "Not allowed"), default: "Pending", width: "third" },
-      { key: "consentCollected", label: "Photo consent collected", type: "boolean", width: "third" },
+      { key: "mediaPack", label: "Training film included", type: "boolean", default: true, width: "third" },
+      { key: "droneAllowed", label: "Drone permission (old)", type: "select", options: opts("Pending", "Granted", "Not allowed"), default: "Pending", width: "third" },
+      { key: "consentCollected", label: "Filming consent collected", type: "boolean", width: "third" },
       { key: "feedbackScore", label: "Avg feedback (1–5)", type: "number", width: "third" },
-      { key: "report", label: "Post-workshop report", type: "textarea", width: "full" },
+      { key: "report", label: "Training report", type: "textarea", width: "full" },
       { key: "notes", label: "Internal notes", type: "textarea", staffOnly: true, width: "full" },
     ],
   },
@@ -333,8 +338,8 @@ export const collections: CollectionDef[] = [
     read: ALL,
     write: OPS_MEDIA,
     fields: [
-      { key: "workshopId", label: "Workshop", type: "ref", ref: "workshops", table: true, width: "half" },
-      { key: "deliverable", label: "Deliverable", type: "select", options: opts("Reel", "Full-day film", "Drone shots", "Photos", "Testimonial clip", "Posting kit", "Admissions film", "Other"), table: true, width: "half" },
+      { key: "workshopId", label: "Training", type: "ref", ref: "workshops", table: true, width: "half" },
+      { key: "deliverable", label: "Deliverable", type: "select", options: opts("Training film", "Photos", "Reel", "Full-day film", "Drone shots", "Testimonial clip", "Posting kit", "Admissions film", "Other"), table: true, width: "half" },
       { key: "title", label: "Title", type: "text", required: true, table: true, width: "full" },
       { key: "status", label: "Status", type: "select", options: opts("planned", "shot", "editing", "review", "delivered", "posted"), default: "planned", table: true, width: "third" },
       { key: "dueDate", label: "Due", type: "date", table: true, width: "third" },

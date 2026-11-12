@@ -11,7 +11,7 @@ import { Tabs } from "@/components/ui/Tabs";
 import { formatNumber } from "@/lib/utils";
 import { useCollection, useHq } from "@/components/hq/data";
 import { EmptyState, Loading } from "@/components/hq/ui";
-import { bookedBands, longDate, readiness, str, studentsOf, WORKSHOP_STATUS, type Rec } from "./logic";
+import { bookedBands, isTraining, longDate, num, readiness, str, studentsOf, WORKSHOP_STATUS, type Rec } from "./logic";
 import { useToday } from "./time";
 import { Countdown, DateBlock, Notice, ReadinessRing } from "./bits";
 import { useWorkshopDoc } from "./useWorkshopDoc";
@@ -28,12 +28,14 @@ import { StudentsTab } from "./StudentsTab";
 const TAB_IDS = ["overview", "runsheet", "checklist", "kits", "students", "travel", "media", "wrapup"] as const;
 /** The student list holds children's names: founders, admins and operations only (the API checks it too). */
 const NAMES_TABS: readonly string[] = ["students"];
+/** A teacher training has no student run sheet or student list (those stay on the JOVE Days before Nov 2026). */
+const JOVE_DAY_TABS: readonly string[] = ["runsheet", "students"];
 type TabId = (typeof TAB_IDS)[number];
 const TAB_LABELS: Record<TabId, string> = {
   overview: "Overview",
   runsheet: "Run sheet",
   checklist: "Checklist",
-  kits: "Kits & materials",
+  kits: "Kits",
   students: "Students",
   travel: "Travel",
   media: "Media",
@@ -58,17 +60,17 @@ export function WorkshopDetail({ id, initialTab }: { id: string; initialTab?: st
     window.history.replaceState(null, "", next === "overview" ? window.location.pathname : `?tab=${next}`);
   }
 
-  if (loading || !today) return <Loading label="Loading workshop…" />;
+  if (loading || !today) return <Loading label="Loading…" />;
   if (!w) {
     return (
       <div className="py-6">
         <EmptyState
           icon="CalendarRange"
-          title="Workshop not found"
+          title="Training not found"
           description={error || "It may have been deleted, or the link is wrong."}
           action={
             <Button href="/hq/workshops" size="sm" variant="secondary">
-              <ArrowLeft className="size-4" aria-hidden /> All workshops
+              <ArrowLeft className="size-4" aria-hidden /> All trainings
             </Button>
           }
         />
@@ -77,13 +79,14 @@ export function WorkshopDetail({ id, initialTab }: { id: string; initialTab?: st
   }
 
   const ready = readiness(w);
+  const training = isTraining(w);
   const schoolName = str(school?.name);
   const bands = bookedBands(w);
 
   return (
     <div>
       <Link href="/hq/workshops" className="no-print mb-4 inline-flex items-center gap-1.5 rounded px-1 py-1 text-sm font-medium text-charcoal hover:text-graphite">
-        <ArrowLeft className="size-4" aria-hidden /> Workshops
+        <ArrowLeft className="size-4" aria-hidden /> Trainings
       </Link>
 
       <header className="relative mb-6 overflow-hidden rounded-[var(--radius-lg)] border border-graphite bg-graphite p-5 text-paper sm:p-7">
@@ -95,7 +98,7 @@ export function WorkshopDetail({ id, initialTab }: { id: string; initialTab?: st
               <Countdown date={w.date} today={today} className="bg-paper/15! text-paper!" />
               <span className="annot text-paper/55">{longDate(str(w.date))}</span>
             </div>
-            <h1 className="mt-2 text-2xl font-bold leading-tight tracking-[-0.02em] sm:text-3xl">{str(w.title) || "Untitled workshop"}</h1>
+            <h1 className="mt-2 text-2xl font-bold leading-tight tracking-[-0.02em] sm:text-3xl">{str(w.title) || (training ? "Untitled training" : "Untitled workshop")}</h1>
             <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-paper/70">
               {schoolName &&
                 (canSchools ? (
@@ -105,11 +108,18 @@ export function WorkshopDetail({ id, initialTab }: { id: string; initialTab?: st
                 ) : (
                   <span>{schoolName}</span>
                 ))}
-              <span className="inline-flex items-center gap-1.5">
-                <Users className="size-3.5" aria-hidden /> <span className="tabular font-mono">{formatNumber(studentsOf(w))}</span> students
-                {bands.length > 0 && <span className="text-paper/50">· {bands.map((b) => b.grades.replace("Grades ", "Gr ")).join(", ")}</span>}
-              </span>
-              {str(w.startTime) && <span className="tabular font-mono">Report {str(w.startTime)}</span>}
+              {training ? (
+                <span className="inline-flex items-center gap-1.5">
+                  <Users className="size-3.5" aria-hidden /> <span className="tabular font-mono">{formatNumber(num(w.teachers))}</span> teachers
+                  {num(w.kitsOrdered) > 0 && <span className="text-paper/50">· {formatNumber(num(w.kitsOrdered))} kits</span>}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5">
+                  <Users className="size-3.5" aria-hidden /> <span className="tabular font-mono">{formatNumber(studentsOf(w))}</span> students
+                  {bands.length > 0 && <span className="text-paper/50">· {bands.map((b) => b.grades.replace("Grades ", "Gr ")).join(", ")}</span>}
+                </span>
+              )}
+              {str(w.startTime) && <span className="tabular font-mono">{training ? "Starts" : "Report"} {str(w.startTime)}</span>}
             </p>
           </div>
 
@@ -137,20 +147,26 @@ export function WorkshopDetail({ id, initialTab }: { id: string; initialTab?: st
         </div>
 
         <div className="relative mt-6 flex flex-wrap items-center gap-2 border-t border-paper/15 pt-4">
-          <Button size="sm" variant={str(w.date) === today ? "light" : "outline-light"} href={`/hq/workshops/${w.id}/day`}>
-            <Smartphone className="size-4" aria-hidden /> Day mode
-          </Button>
+          {!training && (
+            <Button size="sm" variant={str(w.date) === today ? "light" : "outline-light"} href={`/hq/workshops/${w.id}/day`}>
+              <Smartphone className="size-4" aria-hidden /> Day mode
+            </Button>
+          )}
           {canWrite && (
             <Button size="sm" variant="light" onClick={() => setDraft({ ...w })}>
               <Pencil className="size-4" aria-hidden /> Edit
             </Button>
           )}
-          <Button size="sm" variant="outline-light" href={`/hq/print/runsheet/${w.id}`} external>
-            <Printer className="size-4" aria-hidden /> Run sheet
-          </Button>
-          <Button size="sm" variant="outline-light" href={`/hq/print/attendance/${w.id}`} external>
-            <ClipboardList className="size-4" aria-hidden /> Attendance sheets
-          </Button>
+          {!training && (
+            <>
+              <Button size="sm" variant="outline-light" href={`/hq/print/runsheet/${w.id}`} external>
+                <Printer className="size-4" aria-hidden /> Run sheet
+              </Button>
+              <Button size="sm" variant="outline-light" href={`/hq/print/attendance/${w.id}`} external>
+                <ClipboardList className="size-4" aria-hidden /> Attendance sheets
+              </Button>
+            </>
+          )}
           <Button size="sm" variant="outline-light" onClick={() => changeTab("checklist")}>
             <ClipboardCheck className="size-4" aria-hidden /> Checklist
           </Button>
@@ -168,10 +184,10 @@ export function WorkshopDetail({ id, initialTab }: { id: string; initialTab?: st
         </Notice>
       )}
       {!canWrite && (
-        <Notice className="mb-4">{store.writable || store.viewOnly ? "You have view-only access to workshops." : "HQ is in read-only mode — changes cannot be saved."}</Notice>
+        <Notice className="mb-4">{store.writable || store.viewOnly ? "You have view-only access to trainings." : "HQ is in read-only mode — changes cannot be saved."}</Notice>
       )}
 
-      <Tabs className="mb-6" value={tab} onChange={changeTab} tabs={TAB_IDS.filter((t) => can(user, OPS) || !NAMES_TABS.includes(t)).map((t) => ({ value: t, label: TAB_LABELS[t] }))} />
+      <Tabs className="mb-6" value={tab} onChange={changeTab} tabs={TAB_IDS.filter((t) => (can(user, OPS) || !NAMES_TABS.includes(t)) && !(training && JOVE_DAY_TABS.includes(t))).map((t) => ({ value: t, label: TAB_LABELS[t] }))} />
 
       <div role="tabpanel" aria-label={TAB_LABELS[tab]}>
         {tab === "overview" && <OverviewTab w={w} patch={patch} canWrite={canWrite} school={school} canSchools={canSchools} showMoney={can(user, OPS)} />}

@@ -10,7 +10,7 @@ import { Drawer } from "@/components/ui/Overlay";
 import { formatDateTime, formatINR, formatNumber } from "@/lib/utils";
 import { api, invalidate, useCollection, useHq, useLookup } from "@/components/hq/data";
 import { RecordForm } from "@/components/hq/fields";
-import { fillFromSchool, num, optionLabel, PACKAGE_OPTIONS, str, workshopValue, type Rec } from "./logic";
+import { fillFromSchool, num, optionLabel, PACKAGE_OPTIONS, str, workshopValue, type Rec, isTraining } from "./logic";
 import { Notice } from "./bits";
 
 const def = getCollection("workshops")!;
@@ -111,8 +111,8 @@ export function WorkshopFormDrawer({
     <Drawer
       open={!!value}
       onClose={close}
-      title={isNew ? "New workshop" : `Edit: ${str(value?.title)}`}
-      subtitle={!isNew && value?.updatedAt ? `Last updated ${formatDateTime(String(value.updatedAt))} by ${str(value.updatedBy) || "—"}` : "Pick the school first — counts, contacts and the amount fill in automatically."}
+      title={isNew ? (isTraining(value ?? {}) ? "New training" : "New workshop") : `Edit: ${str(value?.title)}`}
+      subtitle={!isNew && value?.updatedAt ? `Last updated ${formatDateTime(String(value.updatedAt))} by ${str(value.updatedBy) || "—"}` : "Pick the school first — contacts, distance and the amount fill in automatically."}
       footer={
         <div className="flex flex-wrap items-center gap-2">
           {canWrite && !isNew && (
@@ -126,7 +126,7 @@ export function WorkshopFormDrawer({
             </Button>
             {canWrite && (
               <Button size="sm" onClick={submit} disabled={busy}>
-                {busy && <Loader2 className="size-4 animate-spin" aria-hidden />} {isNew ? "Create workshop" : "Save"}
+                {busy && <Loader2 className="size-4 animate-spin" aria-hidden />} {isNew ? "Create" : "Save"}
               </Button>
             )}
           </div>
@@ -135,7 +135,7 @@ export function WorkshopFormDrawer({
     >
       {value && (
         <>
-          {!canWrite && <Notice className="mb-4">{store.writable || store.viewOnly ? "You have view-only access to workshops." : "HQ is in read-only mode."}</Notice>}
+          {!canWrite && <Notice className="mb-4">{store.writable || store.viewOnly ? "You have view-only access to trainings." : "HQ is in read-only mode."}</Notice>}
 
           {school && isNew && (
             <div className="mb-5 flex items-start gap-3 rounded-[var(--radius-sm)] border border-graphite/12 bg-paper-50 px-4 py-3">
@@ -163,7 +163,13 @@ export function WorkshopFormDrawer({
             </div>
           )}
 
-          <RecordForm def={def} value={value} onChange={change} disabled={!canWrite} exclude={["report", "feedbackScore"]} />
+          <RecordForm
+            def={def}
+            value={value}
+            onChange={change}
+            disabled={!canWrite}
+            exclude={isTraining(value) ? ["report", "feedbackScore", "studentsG12", "studentsG35", "studentsG68", "studentsG910", "droneAllowed"] : ["report", "feedbackScore", "teachers", "kitsOrdered", "kitsDelivered"]}
+          />
 
           {calc && (
             <section className="relative mt-6 overflow-hidden rounded-[var(--radius-md)] border border-graphite/15 bg-paper-50" aria-labelledby="pricing-helper">

@@ -7,7 +7,7 @@ import { cn, formatINR, formatNumber } from "@/lib/utils";
 import { useShowMoney } from "@/components/hq/data";
 import { Countdown, ProgressBar, ReadinessRing } from "./bits";
 import {
-  CHECKLIST,
+  checklistFor,
   checklistOf,
   daysBetween,
   dayMonth,
@@ -104,7 +104,7 @@ export function ChecklistTab({ w, patch, canWrite, today }: { w: Rec; patch: Pat
       </section>
 
       <nav aria-label="Checklist phases" className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
-        {CHECKLIST.map((p) => {
+        {checklistFor(w).map((p) => {
           const pr = phaseProgress(checks, p);
           return (
             <a key={p.id} href={`#phase-${p.id}`} className={cn("shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors", pr.pct === 1 ? "border-ok/40 bg-ok/10 text-ok" : "border-graphite/20 hover:border-graphite/50")}>
@@ -115,7 +115,7 @@ export function ChecklistTab({ w, patch, canWrite, today }: { w: Rec; patch: Pat
       </nav>
 
       <div className="space-y-5">
-        {CHECKLIST.map((phase) => (
+        {checklistFor(w).map((phase) => (
           <PhaseCard key={phase.id} phase={phase} w={w} checks={checks} today={today} canWrite={canWrite} onToggle={(id, on) => setMany([id], on)} onAll={(on) => setMany(phase.items.map((i) => i.id), on)} />
         ))}
       </div>

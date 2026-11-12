@@ -11,7 +11,7 @@ import { EmptyState } from "@/components/hq/ui";
 import {
   addDays,
   bookedBands,
-  CHECKLIST,
+  checklistFor,
   checklistOf,
   daysBetween,
   isCancelled,
@@ -72,12 +72,12 @@ export function UpcomingList({ workshops, today, canWrite, onNew, schoolLabel }:
           <div className="mb-3 flex items-center gap-3">
             <span className="h-px w-8 bg-graphite/40" aria-hidden />
             <h2 id="wrapup-h" className="annot text-blueprint">
-              Wrap-up pending · past workshops not closed out
+              Wrap-up pending · past trainings not closed out
             </h2>
           </div>
           <ul className="divide-y divide-graphite/[0.08] overflow-hidden rounded-[var(--radius-md)] border border-graphite/12 bg-paper-50">
             {wrapUp.map((w) => {
-              const post = phaseProgress(checklistOf(w), CHECKLIST[CHECKLIST.length - 1]);
+              const post = phaseProgress(checklistOf(w), checklistFor(w)[checklistFor(w).length - 1]);
               return (
                 <li key={w.id}>
                   <Link href={`/hq/workshops/${w.id}?tab=wrapup`} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 transition-colors hover:bg-graphite/[0.035]">
@@ -85,7 +85,7 @@ export function UpcomingList({ workshops, today, canWrite, onNew, schoolLabel }:
                     <span className="min-w-0 flex-1 truncate text-sm font-medium">{str(w.title)}</span>
                     <StatusBadge status={w.status} />
                     <span className="flex w-40 items-center gap-2">
-                      <ProgressBar value={post.pct} className="flex-1" label="Post-workshop checklist" />
+                      <ProgressBar value={post.pct} className="flex-1" label="After-the-training checklist" />
                       <span className="tabular font-mono text-[11px] text-charcoal">
                         {post.done}/{post.total}
                       </span>
@@ -125,7 +125,7 @@ function UpcomingCard({ w, today, schoolLabel }: { w: Rec; today: string; school
           </div>
           <h3 className="mt-2 text-base font-bold leading-snug tracking-tight">
             <Link href={`/hq/workshops/${w.id}`} className="after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-graphite">
-              {str(w.title) || "Untitled workshop"}
+              {str(w.title) || "Untitled training"}
             </Link>
           </h3>
           {school && school !== str(w.title) && <p className="truncate text-xs text-blueprint">{school}</p>}
@@ -154,8 +154,8 @@ function UpcomingCard({ w, today, schoolLabel }: { w: Rec; today: string; school
       </div>
 
       {/* phase strip */}
-      <div className="relative grid grid-cols-6 gap-1 border-t border-graphite/10 px-5 pb-1 pt-3">
-        {CHECKLIST.map((p) => {
+      <div className={cn("relative grid gap-1 border-t border-graphite/10 px-5 pb-1 pt-3", checklistFor(w).length === 6 ? "grid-cols-6" : "grid-cols-5")}>
+        {checklistFor(w).map((p) => {
           const pr = phaseProgress(checks, p);
           const late = overdue.some((o) => o.id === p.id);
           return (

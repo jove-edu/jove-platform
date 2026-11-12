@@ -34,7 +34,7 @@ export const hqNav: HqNavGroup[] = [
   {
     title: "Delivery",
     items: [
-      { label: "Workshops", href: "/hq/workshops", icon: "CalendarRange", roles: ALL, description: "Calendar, run sheets, checklists" },
+      { label: "Trainings", href: "/hq/workshops", icon: "CalendarRange", roles: ALL, description: "Teacher trainings: calendar, kits, travel" },
       { label: "Travel & Transport", href: "/hq/travel", icon: "Truck", roles: OPS_TRAINER, description: "Trips, vehicles, travel costs" },
       { label: "Media Studio", href: "/hq/media", icon: "Clapperboard", roles: MEDIA_SIDE, description: "Reels, films, drone shots promised to schools" },
       { label: "Certificates", href: "/hq/certificates", icon: "Award", roles: DELIVERY_SIDE, description: "Bulk-issue & verify certificates" },
