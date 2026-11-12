@@ -10,7 +10,7 @@ import { formatINR, formatINRCompact, formatNumber } from "@/lib/utils";
 import { CollectionManager, type ExtraColumn } from "@/components/hq/CollectionManager";
 import { useCollection, useHq } from "@/components/hq/data";
 import { Loading, PageHeader, StatCard } from "@/components/hq/ui";
-import { addDays, fillFromSchool, isCancelled, money, str, studentsOf, workshopDefaults, type Rec, readiness } from "./logic";
+import { addDays, fillFromSchool, isCancelled, isTraining, money, num, peopleLabel, peopleOf, str, studentsOf, workshopDefaults, type Rec, readiness } from "./logic";
 import { useToday } from "./time";
 import { ProgressBar } from "./bits";
 import { WorkshopCalendar } from "./WorkshopCalendar";
@@ -22,9 +22,9 @@ type View = "calendar" | "upcoming" | "all";
 const EXTRA_COLUMNS: ExtraColumn<Rec>[] = [
   {
     key: "students",
-    label: "Students",
-    sortValue: (r) => studentsOf(r),
-    render: (r) => <span className="tabular font-mono text-xs">{formatNumber(studentsOf(r))}</span>,
+    label: "Teachers / students",
+    sortValue: (r) => peopleOf(r),
+    render: (r) => <span className="tabular font-mono text-xs">{formatNumber(peopleOf(r))} {peopleLabel(r, peopleOf(r))}</span>,
   },
   {
     key: "value",
@@ -88,9 +88,10 @@ export function WorkshopsHome({ initialNew, initialSchool }: { initialNew?: bool
     const ahead = live.filter((w) => str(w.date) >= today && str(w.date) <= until && str(w.status) !== "completed");
     return {
       monthCount: month.length,
-      monthStudents: month.reduce((s, w) => s + studentsOf(w), 0),
+      monthStudents: month.reduce((s, w) => s + (isTraining(w) ? num(w.teachers) : 0), 0),
+      monthOld: month.reduce((s, w) => s + (isTraining(w) ? 0 : studentsOf(w)), 0),
       aheadCount: ahead.length,
-      aheadStudents: ahead.reduce((s, w) => s + studentsOf(w), 0),
+      aheadStudents: ahead.reduce((s, w) => s + (isTraining(w) ? num(w.teachers) : 0), 0),
       aheadValue: ahead.reduce((s, w) => s + money(w).basis, 0),
       nextReady: ahead.filter((w) => str(w.date) <= addDays(today, 14)),
     };
@@ -142,8 +143,8 @@ export function WorkshopsHome({ initialNew, initialSchool }: { initialNew?: bool
             ))}
           {stats && (
             <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-              <StatCard label="This month" value={stats.monthCount} sub={`${formatNumber(stats.monthStudents)} students`} />
-              <StatCard label="Next 60 days" value={stats.aheadCount} sub={`${formatNumber(stats.aheadStudents)} students booked`} />
+              <StatCard label="This month" value={stats.monthCount} sub={`${formatNumber(stats.monthStudents)} teachers${stats.monthOld ? ` · ${formatNumber(stats.monthOld)} students` : ""}`} />
+              <StatCard label="Next 60 days" value={stats.aheadCount} sub={`${formatNumber(stats.aheadStudents)} teachers to train`} />
               {can(user, OPS) && <StatCard label="Value ahead" value={formatINRCompact(stats.aheadValue)} sub="Agreed or computed, ex-GST" tone="dark" />}
               <StatCard
                 label="Readiness · next 14 days"

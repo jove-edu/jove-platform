@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, Clapperboard, Plus, Truck } from "lucide-rea
 import { statusTone, type Tone } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { cn, formatINRCompact, formatNumber } from "@/lib/utils";
-import { addDays, isCancelled, longDate, money, num, parseIso, str, studentsOf, WORKSHOP_STATUS, type Rec } from "./logic";
+import { addDays, isCancelled, longDate, money, num, parseIso, peopleLabel, peopleOf, str, WORKSHOP_STATUS, type Rec } from "./logic";
 import { useShowMoney } from "@/components/hq/data";
 import { StatusBadge } from "./bits";
 
@@ -92,7 +92,7 @@ export function WorkshopCalendar({
     const list = workshops.filter((w) => str(w.date).startsWith(month) && !isCancelled(w));
     return {
       count: list.length,
-      students: list.reduce((s, w) => s + studentsOf(w), 0),
+      students: list.reduce((s, w) => s + peopleOf(w), 0),
       value: list.reduce((s, w) => s + money(w).basis, 0),
     };
   }, [workshops, month]);
@@ -133,7 +133,7 @@ export function WorkshopCalendar({
           </h2>
         </div>
         <p className="annot text-[10px] text-blueprint">
-          <span className="tabular font-mono text-graphite">{monthStats.count}</span> workshops · <span className="tabular font-mono text-graphite">{formatNumber(monthStats.students)}</span> students ·{" "}
+          <span className="tabular font-mono text-graphite">{monthStats.count}</span> trainings · <span className="tabular font-mono text-graphite">{formatNumber(monthStats.students)}</span> people ·{" "}
           {showMoney && (
             <>
               <span className="tabular font-mono text-graphite">{formatINRCompact(monthStats.value)}</span> value
@@ -223,7 +223,7 @@ export function WorkshopCalendar({
                         title={`${str(x.title)} · ${WORKSHOP_STATUS.find((o) => o.value === x.status)?.label ?? ""}`}
                       >
                         {schoolLabel(x) || str(x.title)}
-                        <span className="tabular block font-mono text-[9px] font-normal text-blueprint">{formatNumber(studentsOf(x))} students</span>
+                        <span className="tabular block font-mono text-[9px] font-normal text-blueprint">{formatNumber(peopleOf(x))} {peopleLabel(x, peopleOf(x))}</span>
                       </Link>
                     </li>
                   ))}
@@ -271,7 +271,7 @@ export function WorkshopCalendar({
           </h3>
           {canWrite && (
             <Button size="sm" variant="secondary" onClick={() => onNew(selected)}>
-              <Plus className="size-4" aria-hidden /> Workshop on this day
+              <Plus className="size-4" aria-hidden /> Training on this day
             </Button>
           )}
         </div>
@@ -288,7 +288,7 @@ export function WorkshopCalendar({
                   >
                     <span className="tabular font-mono text-xs text-blueprint">{str(x.startTime) || "—"}</span>
                     <span className="min-w-0 flex-1 truncate text-sm font-semibold">{str(x.title)}</span>
-                    <span className="tabular font-mono text-xs text-charcoal">{formatNumber(studentsOf(x))} students</span>
+                    <span className="tabular font-mono text-xs text-charcoal">{formatNumber(peopleOf(x))} {peopleLabel(x, peopleOf(x))}</span>
                     <StatusBadge status={x.status} />
                   </Link>
                 </li>

@@ -417,6 +417,12 @@ export function isTraining(r: Record<string, unknown>) {
   return ["kits-training", "training"].includes(str(r.package));
 }
 
+/** Who is counted on a record: the teachers of a training, the students of a JOVE Day. */
+export function peopleOf(r: Record<string, unknown>) {
+  return isTraining(r) ? num(r.teachers) : studentsOf(r);
+}
+export const peopleLabel = (r: Record<string, unknown>, n: number) => (isTraining(r) ? (n === 1 ? "teacher" : "teachers") : n === 1 ? "student" : "students");
+
 /** The checklist that applies to this record. */
 export function checklistFor(r: Record<string, unknown>): ChecklistPhase[] {
   return isTraining(r) ? TRAINING_CHECKLIST : CHECKLIST;

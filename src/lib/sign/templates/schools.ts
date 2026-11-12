@@ -239,13 +239,13 @@ export const kitsTrainingOrder: SignTemplate = {
     const someKits = qty.some((n) => n !== null && n > 0);
     const rows: string[][] = [];
     let kitsTotal: number | null = 0;
-    let kitCount = 0;
+
     kits.forEach((k, i) => {
       const n = qty[i] ?? (someKits && !ctx.blank ? 0 : null);
       if (n === 0) return;
       const price = num(ctx, `kitp_${k.id}`);
       const amount = n !== null && price !== null ? n * price : null;
-      if (n !== null) kitCount += n;
+
       kitsTotal = kitsTotal === null || amount === null ? null : kitsTotal + amount;
       rows.push([paper(`${k.name} (${k.grades.split("·")[0].trim()})`, J), n === null ? line(14) : count(n), price === null ? `₹ ${line(14)}` : `${inr(price)} incl. GST`, amount === null ? `₹ ${line(20)}` : inr(amount)]);
     });

@@ -361,7 +361,7 @@ function BuilderForm({ initial, presetSchool, presetLead, created }: { initial: 
         eyebrow="Sales · 03"
         title={isNew ? "New proposal" : `Proposal ${str(form.number) || "(draft)"}`}
         icon="FileSignature"
-        description={school ? `For ${str(school.name)}${school.city ? `, ${str(school.city)}` : ""} — pricing updates live from the JOVE price book.` : "Choose a school, a package and the student numbers — pricing updates live from the JOVE price book."}
+        description={school ? `For ${str(school.name)}${school.city ? `, ${str(school.city)}` : ""} — pricing updates live from the JOVE price book.` : "Choose a school, then the kits and teachers — pricing updates live from the JOVE price book."}
         actions={
           <>
             <Badge tone={statusTone(status)} dot>
@@ -414,7 +414,7 @@ function BuilderForm({ initial, presetSchool, presetLead, created }: { initial: 
                 </div>
               ) : (
                 <p className="text-xs text-blueprint sm:col-span-6">
-                  Not in the CRM yet? <Link href="/hq/crm" className="font-semibold text-graphite underline-offset-4 hover:underline">Add the school first</Link> — the proposal pre-fills its student numbers.
+                  Not in the CRM yet? <Link href="/hq/crm" className="font-semibold text-graphite underline-offset-4 hover:underline">Add the school first</Link> — the proposal then picks up its details.
                 </p>
               )}
             </div>
@@ -587,7 +587,7 @@ function BuilderForm({ initial, presetSchool, presetLead, created }: { initial: 
           {/* 04 add-ons */}
           <Panel title={<StepTitle n={packageId === "custom" ? "03" : "04"}>Add-ons</StepTitle>} subtitle={packageId === "kits-training" ? "Optional extras, such as a lab setup" : "Optional extras from JOVE and FrameMind AI Studio"}>
             <ul className="space-y-2.5">
-              {addOns.map((a) => {
+              {addOns.filter((a) => packageId !== "kits-training" || a.id === "lab-setup" || (form.addOns as string[] | undefined)?.includes(a.id)).map((a) => {
                 const on = listOf(form.addOns).includes(a.id);
                 const qty = mapOf(form.addOnQty)[a.id] || defaultAddOnQty(a);
                 const listRate = addOnListRate(a, packageId);
@@ -645,7 +645,7 @@ function BuilderForm({ initial, presetSchool, presetLead, created }: { initial: 
               <div className="sm:col-span-2">
                 <Label htmlFor="pr-discount">Discount %</Label>
                 <Input id="pr-discount" type="number" min={0} max={100} step={0.5} inputMode="decimal" value={num(form.discountPercent) || ""} placeholder="0" onChange={(e) => set({ discountPercent: Math.min(100, Math.max(0, num(e.target.value))) })} className="tabular" />
-                <p className="mt-1 text-xs text-blueprint">Applies to the programme fee only.</p>
+                <p className="mt-1 text-xs text-blueprint">{packageId === "kits-training" ? "Applies to the kits and the training." : "Applies to the programme fee only."}</p>
               </div>
               <div className="sm:col-span-6">
                 <Label>Extra line items (ex-GST)</Label>
