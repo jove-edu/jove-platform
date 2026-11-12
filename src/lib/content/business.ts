@@ -2,8 +2,11 @@
  * ─────────────────────────────────────────────────────────────────────────────
  *  JOVE CATALOGUE — WHAT JOVE OFFERS AND WHAT CUSTOMERS PAY
  * ─────────────────────────────────────────────────────────────────────────────
- *  Programmes, grade bands, the JOVE Day timetable, packages, add-ons and kits,
- *  with their PUBLIC prices. The public website, the HQ portal (proposals,
+ *  Since Nov 2026 JOVE supplies kits to schools and trains their teachers
+ *  (`offers`, `teacherTraining`, `trainingFilm`, `kits`). The grade bands say
+ *  what each kit teaches. The JOVE Day, Quarter, Year and Club values below are
+ *  kept only for old HQ records; the public site no longer offers them.
+ *  Everything here is a PUBLIC price. The public website, the HQ portal (proposals,
  *  invoices, calculators) and the brochures all read from here.
  *
  *  The prices are set in HQ → Money → Prices & Costs. The build reads them from
@@ -354,7 +357,7 @@ const ADD_ONS: (Omit<AddOn, "price"> & { priceKind?: "from" | "discount" })[] = 
   { id: "film-admissions", name: "Admissions / Commercial Film", priceValue: 45000, unit: "project", detail: "1-day shoot, 2-minute school film + 3 reels, drone shots, colour grade.", owner: "FrameMind AI Studio" },
   { id: "film-premium", name: "Premium Brand Film", priceValue: 95000, unit: "project", detail: "2-day shoot, 5-minute documentary-style film, interviews, 6 reels, drone, licensed music.", owner: "FrameMind AI Studio" },
   { id: "teacher-training", name: "Teacher Training & Certification", priceValue: 1499, unit: "teacher", detail: "4-hour hands-on robotics & AI training with JOVE certificate (min. 10 teachers).", owner: "JOVE" },
-  { id: "take-home-kits", name: "Take-home Kits for Students", priceValue: 0, unit: "kit", detail: "Each student takes their own kit home — bulk school price on any JOVE kit (min. 30 kits).", owner: "JOVE", priceKind: "discount" },
+  { id: "take-home-kits", name: "Take-home Kits for Students", priceValue: 0, unit: "kit", detail: "Each student takes their own kit home — bulk school price on any JOVE kit.", owner: "JOVE", priceKind: "discount" },
   { id: "lab-setup", name: "Robotics & AI Lab Setup (turnkey)", priceValue: 350000, unit: "project", detail: "Design, furniture layout, kits, tools, curriculum and teacher training for a permanent campus lab (ATL-style).", owner: "JOVE", priceKind: "from" },
 ];
 
@@ -366,6 +369,60 @@ export const addOns: AddOn[] = ADD_ONS.map(({ priceKind, ...a }) => {
   const price = priceKind === "discount" ? `${schoolDiscountPercent}% off MRP` : priceKind === "from" ? `from ${inr(priceValue)}` : a.unit === "project" ? inr(priceValue) : `${inr(priceValue)} / ${a.unit}`;
   return { ...a, priceValue, price };
 });
+
+/* ───────────────────────────── the offer since Nov 2026: kits + teacher training ───────────────────────────── */
+
+const TRAINING = { hours: 4, minimumTeachers: 10, minimumKits: 30 };
+
+/** How long a teacher training is, the smallest group, and the smallest school kit order (set in HQ → Prices & Costs). */
+export const trainingRules = {
+  hours: pick(live.training?.hours, TRAINING.hours),
+  minimumTeachers: pick(live.training?.minimumTeachers, TRAINING.minimumTeachers),
+  minimumKits: pick(live.training?.minimumKits, TRAINING.minimumKits),
+};
+
+const trainingPrice = addOns.find((a) => a.id === "teacher-training")?.priceValue ?? 0;
+
+/** Teacher Training & Certification: JOVE trains a school's teachers to teach with the kits. Ex-GST, per teacher. */
+export const teacherTraining = {
+  name: "Teacher Training & Certification",
+  pricePerTeacher: trainingPrice,
+  price: `${inr(trainingPrice)} per teacher`,
+  hours: trainingRules.hours,
+  minimumTeachers: trainingRules.minimumTeachers,
+  includes: [
+    `${trainingRules.hours} hours, hands-on, on your campus: every teacher builds the projects themselves`,
+    "How to run each project in class: setting up, the build, the questions to ask, fixing faults",
+    "Lesson plans and teacher guides for every project in the kits you choose",
+    "The JOVE 3D practice bench, to rehearse a build before the class and to project it",
+    "Safety and classroom management for hands-on sessions",
+    "A JOVE certificate for every teacher who completes the training",
+  ],
+};
+
+/** FrameMind AI Studio films the teacher training day for the school. */
+export const trainingFilm = {
+  name: "Film of your teacher training by FrameMind AI Studio",
+  items: [
+    { title: "A short film of the training day", detail: "Your teachers building and testing the projects, ready for the school's website and social media." },
+    { title: "Edited photos", detail: "Colour-graded stills of the training, for newsletters and admissions material." },
+  ],
+  rights: "The school may use the film and photos for its own communication. JOVE may use them for its portfolio, with the consent of the teachers shown.",
+};
+
+export type OfferId = "kits-training" | "kits" | "training" | "lab-setup";
+
+export interface Offer {
+  id: OfferId;
+  /** a short tag above the name */
+  tag: string;
+  name: string;
+  headline: string;
+  priceNote: string;
+  highlight?: boolean;
+  includes: string[];
+  idealFor: string;
+}
 
 export type KitId = "spark" | "explorer" | "builder" | "innovator";
 
@@ -464,6 +521,56 @@ export const kits: Kit[] = KITS.map((k) => {
   return { ...k, mrp: pick(saved?.mrp, k.mrp), schoolPrice: pick(saved?.schoolPrice, k.schoolPrice) };
 });
 
+const schoolPrices = () => range(kits.map((k) => k.schoolPrice));
+const labSetup = addOns.find((a) => a.id === "lab-setup");
+
+/** What a school can buy from JOVE (public site, proposals and brochures). */
+export const offers: Offer[] = [
+  {
+    id: "kits-training",
+    tag: "Most schools",
+    name: "Kits + Teacher Training",
+    headline: "Class sets of kits, and your own teachers trained to teach with them.",
+    priceNote: `Kits ${schoolPrices()} each (incl. GST) + training ${teacherTraining.price} (ex-GST)`,
+    highlight: true,
+    includes: [
+      `Class sets of JOVE kits for the grades you choose, at the school price (from ${trainingRules.minimumKits} kits)`,
+      `${teacherTraining.hours}-hour hands-on teacher training and certification on your campus`,
+      "Lesson plans and teacher guides for every project",
+      "The free 3D practice bench for teachers and students",
+      "A short film and photos of the training day by FrameMind AI Studio",
+    ],
+    idealFor: "Schools starting robotics and AI in class with their own teachers.",
+  },
+  {
+    id: "kits",
+    tag: "Kits only",
+    name: "Kits for schools",
+    headline: "JOVE kits in class sets, at the school price.",
+    priceNote: `${schoolPrices()} per kit (incl. GST) · from ${trainingRules.minimumKits} kits · ${schoolDiscountPercent}% off MRP`,
+    includes: ["Spark, Explorer, Builder and Innovator kits for Grades 1–10", "A printed build guide in every kit", "Lesson plans for teachers", "The free 3D practice bench"],
+    idealFor: "Schools whose teachers already run hands-on science or ATL sessions.",
+  },
+  {
+    id: "training",
+    tag: "Training only",
+    name: "Teacher Training & Certification",
+    headline: "Your teachers, confident with robotics and AI in one session.",
+    priceNote: `${teacherTraining.price} (ex-GST) · ${teacherTraining.hours} hours · from ${teacherTraining.minimumTeachers} teachers`,
+    includes: teacherTraining.includes,
+    idealFor: "Schools that have kits or an Atal Tinkering Lab and want their teachers to use it fully.",
+  },
+  {
+    id: "lab-setup",
+    tag: "Turnkey",
+    name: "Robotics & AI Lab Setup",
+    headline: "A permanent robotics and AI lab on your campus.",
+    priceNote: labSetup ? `${labSetup.price} (ex-GST)` : "On quote",
+    includes: ["Lab layout and furniture plan", "Kits, tools and storage", "Teacher training and certification", "Lesson plans for the year"],
+    idealFor: "Schools building an ATL-style lab.",
+  },
+];
+
 /** What the founders say in public about the first year. Everything else they plan with stays in HQ. */
 export const targets = {
   workshopsPerMonth: pick(live.targets?.workshopsPerMonth, 4),
@@ -474,12 +581,12 @@ export const targets = {
 export const showpieces = "6-axis arm, robot dog, AI camera, arena mats";
 
 export const faqs = [
-  { q: "What exactly happens on a JOVE Day?", a: "Our team arrives at 7:30 am, opens with a live robot and drone show for the whole school, then runs age-specific hands-on sessions for each grade group through the day, and closes with a showcase and certificate ceremony. Every student builds and tests something real." },
-  { q: "How is pricing calculated?", a: `Per student, by grade group: ${listAnd(gradeBands.map((b) => `${inr(b.pricePerStudent)} (${b.grades})`))}, plus GST. The minimum for a JOVE Day is ${joveDayRules.minimumStudents} students. Kits, certificates and the Media Pack are included.` },
-  { q: "Do students take the kits home?", a: "Workshop kits are reused by JOVE (so the price stays low). Schools can add take-home kits for every student at a bulk price — or parents can order them from our online store." },
-  { q: "What is the free Media Pack?", a: "Our in-house film studio, FrameMind AI Studio, shoots your JOVE Day and delivers 3–4 cinematic reels, a full-day highlight film, drone aerial shots, 30+ edited photos and a principal testimonial clip — ready for your school's social media and admissions campaigns." },
-  { q: "What do you need from the school?", a: "A hall or classrooms for each session, a projector or screen, power points, tables for team stations, and permission for photography and drone shots. We bring everything else." },
-  { q: "Are your trainers safe and verified?", a: "Every JOVE trainer is background-verified, trained on our safety SOP and child-protection policy, and works under a founder's supervision. All kits are low-voltage and child-safe." },
-  { q: "Can we try it before booking?", a: "Yes — explore our free Virtual Labs online with your students. It is a 3D bench with the same parts as our kits: students wire a circuit, switch on and see it work." },
-  { q: "Which boards and syllabi do you align to?", a: "JOVE sessions support CBSE, ICSE and State Board science and computer-science outcomes, NEP 2020's emphasis on experiential learning and coding, and the Atal Tinkering Lab framework." },
+  { q: "What does JOVE do for a school?", a: `We supply Robotics & AI kits in class sets and train your teachers to teach with them. Teachers get ${teacherTraining.hours} hours of hands-on training on your campus, lesson plans for every project and a JOVE certificate, so robotics runs in your classes all year.` },
+  { q: "How is pricing calculated?", a: `Kits are priced per kit at the school price (${schoolPrices()} by kit, GST included, from ${trainingRules.minimumKits} kits). Teacher training is ${teacherTraining.price} plus GST, from ${teacherTraining.minimumTeachers} teachers. Ask us for a quote for the grades you want.` },
+  { q: "Which kit is right for which grade?", a: listAnd(kits.map((k) => `${k.name.replace(/^JOVE\s+/, "")} for ${k.grades.split("·")[0].trim()}`)) + "." },
+  { q: "What do teachers get from the training?", a: "They build every project themselves, learn how to run it in class and how to fix the usual faults, and receive lesson plans, teacher guides and a certificate. They can rehearse each build on the free 3D practice bench before the class." },
+  { q: "Is the training filmed?", a: "Yes. Our in-house studio, FrameMind AI Studio, films the training day and gives the school a short film and edited photos for its website and social media." },
+  { q: "What do you need from the school?", a: "A room with tables and power points, a projector or screen, and the teachers for the session. We bring the kits, tools and everything for the training." },
+  { q: "Can we try it first?", a: "Yes. The free Virtual Lab is a 3D bench with the same parts as our kits: anyone can wire a circuit, switch on and see it work. We can also show a kit at your school." },
+  { q: "Which boards and syllabi do you align to?", a: "The kits and lesson plans support CBSE, ICSE and State Board science and computer-science outcomes, NEP 2020's emphasis on experiential learning and coding, and the Atal Tinkering Lab framework." },
 ];

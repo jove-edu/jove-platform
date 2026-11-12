@@ -1,6 +1,6 @@
 "use client";
 
-import { clubRules, gradeBands, joveDayRules, mediaPack } from "@/lib/content/business";
+import { addOns, clubRules, gradeBands, joveDayRules, mediaPack, trainingRules } from "@/lib/content/business";
 import type { BandPrices } from "@/lib/pricebook/types";
 import { Panel } from "@/components/hq/ui";
 import { cn, formatINR } from "@/lib/utils";
@@ -16,10 +16,34 @@ const PLANS: { key: keyof BandPrices; name: string; what: string }[] = [
 export function WorkshopsTab({ draft, book, update }: TabProps) {
   const setRule = (key: keyof Draft["rules"], v: string) => update((d) => ({ ...d, rules: { ...d.rules, [key]: v } }));
   const setClub = (key: keyof Draft["club"], v: string) => update((d) => ({ ...d, club: { ...d.club, [key]: v } }));
+  const setTraining = (key: keyof Draft["training"], v: string) => update((d) => ({ ...d, training: { ...d.training, [key]: v } }));
   const gst = book.rules.gstPercent;
+  const trainingPrice = book.addOns["teacher-training"] ?? 0;
+  const trainingToday = addOns.find((a) => a.id === "teacher-training")?.priceValue ?? 0;
 
   return (
     <div className="space-y-6">
+      <Panel title="Teacher training and school kit orders" subtitle="What JOVE sells to schools: kits in class sets and training for their teachers. These show on the website, in proposals and in brochures.">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Labeled label="Training price per teacher" {...todayNote(trainingPrice !== trainingToday, formatINR(trainingToday), "Before GST. Change it in Add-ons → Teacher Training & Certification.")}>
+            <p className="flex h-10 items-center font-mono text-sm text-graphite">{formatINR(trainingPrice)}</p>
+          </Labeled>
+          <Labeled label="Length of one training, hours" {...todayNote(book.training.hours !== trainingRules.hours, String(trainingRules.hours), "Said on the website and in proposals.")}>
+            <NumBox value={draft.training.hours} onChange={(v) => setTraining("hours", v)} invalid={toNumber(draft.training.hours) <= 0} />
+          </Labeled>
+          <Labeled label="Smallest group, teachers" {...todayNote(book.training.minimumTeachers !== trainingRules.minimumTeachers, String(trainingRules.minimumTeachers), "The fewest teachers for one training.")}>
+            <NumBox value={draft.training.minimumTeachers} onChange={(v) => setTraining("minimumTeachers", v)} invalid={toNumber(draft.training.minimumTeachers) < 1} />
+          </Labeled>
+          <Labeled label="Smallest school kit order" {...todayNote(book.training.minimumKits !== trainingRules.minimumKits, String(trainingRules.minimumKits), "Kits at the school price start from this many.")}>
+            <NumBox value={draft.training.minimumKits} onChange={(v) => setTraining("minimumKits", v)} invalid={toNumber(draft.training.minimumKits) < 1} />
+          </Labeled>
+        </div>
+      </Panel>
+
+      <div className="border-t border-dashed border-graphite/20 pt-5">
+        <p className="annot text-[10px] text-blueprint">No longer sold</p>
+        <p className="mt-1 max-w-2xl text-sm text-charcoal">Student workshops (JOVE Day, Quarter, Year and Club) are no longer offered and do not appear on the website. Their prices stay here only for old proposals and invoices.</p>
+      </div>
       <Panel title="Price per student" subtitle={`What a school pays for each student, before GST. ${gst}% GST is added on the invoice.`} bodyClassName="p-0">
         <div className={TABLE_WRAP}>
           <table className="w-full min-w-[640px] table-fixed text-sm">

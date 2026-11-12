@@ -134,6 +134,8 @@ export const EXPENSE_CATEGORIES = opts(
 );
 
 const GRADE_BAND_OPTS = opts(["g1-2", "Grades 1–2"], ["g3-5", "Grades 3–5"], ["g6-8", "Grades 6–8"], ["g9-10", "Grades 9–10"]);
+/** what a school asks about since Nov 2026 (the old student packages stay readable on old leads) */
+const INTEREST_OPTS = opts(["kits-training", "Kits + Teacher Training"], ["kits", "Kits for schools"], ["training", "Teacher training"], ["lab-setup", "Lab setup"], ["custom", "Not sure yet"], ["jove-day", "JOVE Day (old)"], ["jove-quarter", "JOVE Quarter (old)"], ["jove-year", "JOVE Year (old)"], ["jove-club", "JOVE Club (old)"]);
 const PACKAGE_OPTS = opts(["jove-day", "JOVE Day"], ["jove-quarter", "JOVE Quarter"], ["jove-year", "JOVE Year"], ["jove-club", "JOVE Club"], ["custom", "Custom"]);
 const KIT_OPTS = opts(["spark", "Spark Kit"], ["explorer", "Explorer Kit"], ["builder", "Builder Kit"], ["innovator", "Innovator AI Kit"]);
 const PAY_MODES = opts(["upi", "UPI"], ["bank", "Bank transfer"], ["cheque", "Cheque"], ["card", "Card"], ["cash", "Cash"], ["gateway", "Payment gateway"]);
@@ -223,7 +225,7 @@ export const collections: CollectionDef[] = [
     read: OPS_MEDIA,
     write: OPS,
     fields: [
-      { key: "kind", label: "Type", type: "select", options: opts(["workshop", "Workshop enquiry"], ["trainer", "Trainer application"], ["contact", "General contact"], ["kits", "Bulk kit enquiry"], ["studio", "Studio / media enquiry"], ["partner", "Partnership"]), table: true, width: "third" },
+      { key: "kind", label: "Type", type: "select", options: opts(["workshop", "School enquiry"], ["trainer", "Trainer application"], ["contact", "General contact"], ["kits", "Bulk kit enquiry"], ["studio", "Studio / media enquiry"], ["partner", "Partnership"]), table: true, width: "third" },
       { key: "status", label: "Status", type: "select", options: opts(["new", "New"], ["in-progress", "In progress"], ["converted", "Converted"], ["closed", "Closed"], ["spam", "Spam"]), default: "new", table: true, width: "third" },
       { key: "name", label: "Name", type: "text", required: true, table: true, width: "third" },
       { key: "organisation", label: "School / organisation", type: "text", table: true, width: "half" },
@@ -231,9 +233,11 @@ export const collections: CollectionDef[] = [
       { key: "phone", label: "Phone", type: "phone", table: true, width: "third" },
       { key: "email", label: "Email", type: "email", width: "third" },
       { key: "city", label: "City", type: "text", table: true, width: "third" },
-      { key: "students", label: "Approx. students", type: "number", width: "third" },
+      { key: "teachers", label: "Teachers to train", type: "number", width: "third" },
+      { key: "kits", label: "Kits needed", type: "number", width: "third" },
+      { key: "students", label: "Approx. students (old enquiries)", type: "number", width: "third" },
       { key: "gradeBands", label: "Grade groups", type: "multiselect", options: GRADE_BAND_OPTS, width: "third" },
-      { key: "package", label: "Interested in", type: "select", options: PACKAGE_OPTS, width: "third" },
+      { key: "package", label: "Interested in", type: "select", options: INTEREST_OPTS, width: "third" },
       { key: "preferredDate", label: "Preferred date", type: "date", width: "third" },
       { key: "message", label: "Message", type: "textarea", width: "full" },
       { key: "page", label: "Submitted from", type: "text", width: "half" },

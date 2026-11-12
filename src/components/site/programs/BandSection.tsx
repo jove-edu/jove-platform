@@ -1,17 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Clock, Laptop, Package, Users } from "lucide-react";
-import type { GradeBand } from "@/lib/content/business";
+import { trainingRules, type GradeBand } from "@/lib/content/business";
 import { CornerMarks, GridBackdrop } from "@/components/brand/Blueprint";
 import { Reveal } from "@/components/site/Reveal";
 import { cn, formatINR, pad2 } from "@/lib/utils";
-import { SESSIONS, fmtDuration, kitFor, kitSlug, labsFor, runSheet } from "./data";
+import { fmtDuration, kitFor, kitSlug, labsFor, runSheet } from "./data";
 import { ParallaxPlate } from "./ParallaxPlate";
-import { KITS_MIN } from "./quote";
 import { SessionTimeline } from "./SessionTimeline";
 import { LabArt } from "@/components/site/LabArt";
 
-/** One grade group, drawn as a full spec sheet: plate, prices, outcomes, run sheet, skills, kit and labs. */
+/** One grade group, drawn as a full spec sheet: plate, kit and price, outcomes, a sample lesson, skills and the 3D bench. */
 export function BandSection({ band, n, total }: { band: GradeBand; n: number; total: number }) {
   const mirrored = n % 2 === 1;
   const kit = kitFor(band);
@@ -20,11 +19,13 @@ export function BandSection({ band, n, total }: { band: GradeBand; n: number; to
   const idx = pad2(n + 1);
   const titleId = `${band.id}-title`;
 
-  const prices = [
-    { k: "JOVE Day", v: band.pricePerStudent, sub: "1 full day" },
-    { k: "JOVE Quarter", v: band.quarterPricePerStudent, sub: `${SESSIONS["jove-quarter"]} JOVE Days · ≈ ${formatINR(band.quarterPricePerStudent / SESSIONS["jove-quarter"])} each` },
-    { k: "JOVE Year", v: band.yearPricePerStudent, sub: `${SESSIONS["jove-year"]} sessions · ≈ ${formatINR(band.yearPricePerStudent / SESSIONS["jove-year"])} each` },
-  ];
+  const prices = kit
+    ? [
+        { k: "School price", v: kit.schoolPrice, sub: `per kit · from ${trainingRules.minimumKits} kits` },
+        { k: "MRP", v: kit.mrp, sub: "per kit, single orders" },
+        { k: "One kit for", v: band.studentsPerStation, sub: "students working as a team", plain: true },
+      ]
+    : [];
 
   return (
     <section
@@ -67,13 +68,13 @@ export function BandSection({ band, n, total }: { band: GradeBand; n: number; to
           <Reveal delay={0.15}>
             <ul className="mt-6 flex flex-wrap gap-2" aria-label="Session format">
               <li className="inline-flex items-center gap-1.5 rounded-full bg-graphite px-3 py-1 text-xs font-semibold text-paper">
-                <Clock className="size-3.5" aria-hidden /> {fmtDuration(band.durationMin)} session
+                <Clock className="size-3.5" aria-hidden /> {fmtDuration(band.durationMin)} lesson
               </li>
               <li className="inline-flex items-center gap-1.5 rounded-full border border-graphite/25 px-3 py-1 text-xs font-semibold text-charcoal">
-                <Users className="size-3.5" aria-hidden /> {band.studentsPerStation} students per build station
+                <Users className="size-3.5" aria-hidden /> Teams of {band.studentsPerStation} per kit
               </li>
               <li className="inline-flex items-center gap-1.5 rounded-full border border-graphite/25 px-3 py-1 text-xs font-semibold text-charcoal">
-                Up to {band.maxPerSession} per batch
+                Taught by your trained teachers
               </li>
             </ul>
           </Reveal>
@@ -100,14 +101,14 @@ export function BandSection({ band, n, total }: { band: GradeBand; n: number; to
                   {prices.map((p, i) => (
                     <div key={p.k} className={cn("px-3 py-4 sm:px-4", i === 0 && "bg-graphite text-paper")}>
                       <dt className={cn("annot text-[10px]", i === 0 ? "text-paper/60" : "text-blueprint")}>{p.k}</dt>
-                      <dd className="mt-1.5 font-mono text-xl font-medium tracking-tight tabular sm:text-2xl">{formatINR(p.v)}</dd>
+                      <dd className="mt-1.5 font-mono text-xl font-medium tracking-tight tabular sm:text-2xl">{"plain" in p ? p.v : formatINR(p.v)}</dd>
                       <dd className={cn("mt-1 text-[11px] leading-snug", i === 0 ? "text-paper/60" : "text-blueprint")}>{p.sub}</dd>
                     </div>
                   ))}
                 </dl>
                 <div className="flex flex-wrap items-center justify-between gap-2 border-t border-graphite/10 px-4 py-3">
-                  <p className="text-[11px] text-blueprint">Per student · ex-GST · kits &amp; certificates included</p>
-                  <Link href="/packages#estimate" className="group inline-flex items-center gap-1 text-xs font-semibold text-graphite underline-offset-4 hover:underline">
+                  <p className="text-[11px] text-blueprint">GST included · lesson plans with every kit</p>
+                  <Link href="/packages#quote" className="group inline-flex items-center gap-1 text-xs font-semibold text-graphite underline-offset-4 hover:underline">
                     Estimate for your school
                     <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
                   </Link>
@@ -134,7 +135,7 @@ export function BandSection({ band, n, total }: { band: GradeBand; n: number; to
 
           {/* Run sheet */}
           <div className="mt-14">
-            <SessionTimeline steps={steps} total={band.durationMin} label={`Session run sheet — ${fmtDuration(band.durationMin)}`} />
+            <SessionTimeline steps={steps} total={band.durationMin} label={`Sample lesson flow — ${fmtDuration(band.durationMin)}`} />
           </div>
 
           {/* Skills */}
@@ -162,12 +163,12 @@ export function BandSection({ band, n, total }: { band: GradeBand; n: number; to
                 </div>
                 <div className="flex flex-1 flex-col p-4">
                   <p className="annot flex items-center gap-1.5 text-blueprint">
-                    <Package className="size-3.5" aria-hidden /> Kit used in this session
+                    <Package className="size-3.5" aria-hidden /> The kit for these grades
                   </p>
                   <p className="mt-2 text-base font-semibold text-graphite">{kit.name}</p>
                   <p className="mt-1 text-sm leading-snug text-charcoal">{kit.project}</p>
                   <p className="mt-3 text-xs leading-relaxed text-blueprint">
-                    Students build on JOVE&apos;s reusable station kits. Take one home: {formatINR(kit.mrp)} MRP online, {formatINR(kit.schoolPrice)} for school orders of {KITS_MIN}+.
+                    Reusable in class year after year, with a printed guide. Parents can buy it for home at {formatINR(kit.mrp)} online.
                   </p>
                   <span className="mt-auto inline-flex items-center gap-1 pt-4 text-xs font-semibold text-graphite">
                     View in the shop <ArrowUpRight className="size-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
@@ -177,9 +178,9 @@ export function BandSection({ band, n, total }: { band: GradeBand; n: number; to
             )}
             <div className="relative flex flex-col rounded-[var(--radius-md)] border border-dashed border-graphite/25 p-4">
               <p className="annot flex items-center gap-1.5 text-blueprint">
-                <Laptop className="size-3.5" aria-hidden /> Free Virtual Lab{bandLabs.length > 1 ? "s" : ""} to try first
+                <Laptop className="size-3.5" aria-hidden /> Free on the 3D bench
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-charcoal">The same parts on our 3D bench: wire it, switch on, see it work. Free, right in the browser.</p>
+              <p className="mt-2 text-sm leading-relaxed text-charcoal">The same parts on our 3D bench: teachers rehearse the build before class, and students try it at home. Free, in the browser.</p>
               <ul className="mt-4 space-y-2.5">
                 {bandLabs.map((lab) => (
                   <li key={lab.slug}>

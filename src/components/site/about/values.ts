@@ -31,7 +31,7 @@ export const brandValues: BrandValue[] = [
     spec: "Hands first. Then the theory clicks.",
     body: "We teach by building. Every idea becomes something a child can hold, wire, run, break — and fix.",
     classroom: "Each grade band is a level: Grades 1–2 meet their first robots; Grades 9–10 build an AI that sees.",
-    atWork: "Every JOVE Day ends with feedback, and every next session is a little better because of it.",
+    atWork: "Every training ends with feedback from the teachers, and every next one is a little better because of it.",
   },
   {
     key: "innovation",

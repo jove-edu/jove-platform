@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "JOVE — Journey of Visionation & Excellence",
     short_name: "JOVE",
-    description: "Robotics & AI workshops for schools · JOVE HQ",
+    description: "Robotics & AI kits and teacher training for schools · JOVE HQ",
     start_url: "/",
     display: "standalone",
     background_color: "#F5F1E8",

@@ -13,7 +13,7 @@ const LINES = ["Building", "real-world", "skills through", "Robotics & AI."];
 const PILLARS = [
   { icon: Bot, label: "Robotics Kits & Modules" },
   { icon: GraduationCap, label: "STEM Education" },
-  { icon: Clapperboard, label: "Workshops & Media" },
+  { icon: Clapperboard, label: "Teacher Training" },
   { icon: Wrench, label: "Real-World Skills" },
 ];
 
@@ -82,17 +82,17 @@ export function Hero() {
           </h1>
 
           <motion.p {...show(0.45)} className="mt-6 max-w-xl text-base leading-relaxed text-charcoal sm:text-lg lg:[@media(max-height:700px)]:mt-4 lg:[@media(max-height:700px)]:text-base">
-            Full-day, hands-on Robotics, AI &amp; ML workshops on your campus — every student builds, codes and tests something real. And as the
-            first school workshop company with its own film studio, we hand your school reels, a full-day film and drone shots —{" "}
-            <strong className="font-semibold text-graphite">free</strong>.
+            Robotics &amp; AI kits in class sets, and your own teachers trained to teach with them: lesson plans for every project, a free 3D
+            practice bench, and a film of the training by our in-house studio. <strong className="font-semibold text-graphite">Robotics in your classes all year</strong>, not
+            for one day.
           </motion.p>
 
           <motion.div {...show(0.55)} className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center lg:[@media(max-height:700px)]:mt-6">
             <Button href="/contact" size="lg" arrow>
-              Book a JOVE Day
+              Get a quote
             </Button>
             <Button href="/labs" size="lg" variant="secondary">
-              Try a free Virtual Lab
+              Try the 3D bench
             </Button>
           </motion.div>
 
@@ -103,7 +103,7 @@ export function Hero() {
               <br />
               NEP 2020 aligned · ATL-ready
               <br />
-              Offline-first, Grades 1–10
+              Kits + teacher training, Grades 1–10
             </p>
           </motion.div>
         </div>

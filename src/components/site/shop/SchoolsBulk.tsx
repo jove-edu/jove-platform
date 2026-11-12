@@ -32,7 +32,7 @@ export function SchoolsBulk({ index = "03" }: { index?: string }) {
                   <strong className="font-semibold text-graphite">
                     {BULK_DISCOUNT_PCT}% off MRP when your school orders {BULK_MIN_KITS} or more kits
                   </strong>{" "}
-                  — take-home kits after a JOVE Day, a robotics club, or stock for your Atal Tinkering Lab. Every kit pairs with a free Virtual Lab your teachers can project in class.
+                  for your classes, a robotics club or your Atal Tinkering Lab, with teacher training if you want it. Every kit pairs with the free 3D bench your teachers can project in class.
                 </p>
               </Reveal>
               <Reveal delay={0.25}>
@@ -41,7 +41,7 @@ export function SchoolsBulk({ index = "03" }: { index?: string }) {
                     <School className="size-4" aria-hidden /> Request a school quote
                   </Button>
                   <Button href="/packages" variant="secondary">
-                    Workshop packages
+                    Kits + teacher training
                   </Button>
                 </div>
               </Reveal>

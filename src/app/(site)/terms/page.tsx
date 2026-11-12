@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { joveDayRules, mediaPack } from "@/lib/content/business";
+import { joveDayRules, teacherTraining, trainingFilm, trainingRules } from "@/lib/content/business";
 import { FREE_SHIPPING_ABOVE, SHIPPING_FLAT } from "@/lib/shop";
 import { site } from "@/lib/site";
 import { formatINR } from "@/lib/utils";
@@ -9,11 +9,12 @@ import { A, DataTable, H3, Note, OL, P, ReachUs, UL } from "@/components/site/le
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
-    "The terms that apply to using the JOVE website, booking a JOVE Day workshop, buying robotics kits and using our free Virtual Labs: bookings, payments, media rights, liability and governing law (India).",
+    "The terms that apply to using the JOVE website, ordering kits and teacher training for a school, buying robotics kits and using our free Virtual Labs: orders, payments, media rights, liability and governing law (India).",
   alternates: { canonical: "/terms" },
 };
 
-const advance = (joveDayRules.minimumBilling * joveDayRules.advancePercent) / 100;
+const smallestTraining = teacherTraining.pricePerTeacher * teacherTraining.minimumTeachers;
+const advance = (smallestTraining * joveDayRules.advancePercent) / 100;
 
 const sections: LegalSection[] = [
   {
@@ -22,7 +23,7 @@ const sections: LegalSection[] = [
     body: (
       <>
         <P>
-          These terms are between you and <strong>{site.legalName}</strong> (“JOVE”, “we”, “us”), based in {site.location}. They apply when you use this website, book or attend a JOVE workshop, order from our online
+          These terms are between you and <strong>{site.legalName}</strong> (“JOVE”, “we”, “us”), based in {site.location}. They apply when you use this website, order kits or teacher training for a school, attend a JOVE training, order from our online
           store or use our Virtual Labs.
         </P>
         <P>
@@ -30,8 +31,8 @@ const sections: LegalSection[] = [
           <A href="/shipping-policy">Shipping Policy</A>, which form part of them. If you do not agree, please do not use our services.
         </P>
         <P>
-          If you sign a proposal or booking for a school, you confirm that you are authorised to do so on the school’s behalf. If a proposal or written agreement with a school says something different from these
-          terms, the proposal or agreement applies for that booking.
+          If you accept a quote or place an order for a school, you confirm that you are authorised to do so on the school’s behalf. If a quote, proposal or written agreement with a school says something different from
+          these terms, that document applies for that order.
         </P>
       </>
     ),
@@ -44,11 +45,12 @@ const sections: LegalSection[] = [
         <UL
           items={[
             <span key="1">
-              <strong>JOVE Day and programmes:</strong> full-day Robotics, AI &amp; Machine Learning workshops delivered in schools for Grades 1 to 10, plus the Quarter, Year and Club programmes described on our{" "}
-              <A href="/packages">Packages</A> page.
+              <strong>Kits for schools:</strong> Robotics, AI &amp; Machine Learning kits for Grades 1 to 10 in class sets, with lesson plans, at the school price shown on our{" "}
+              <A href="/packages">pricing</A> page.
             </span>,
             <span key="2">
-              <strong>{mediaPack.name}:</strong> reels, a full-day film, drone shots and photographs produced by {site.studio.name} and included with every JOVE Day.
+              <strong>{teacherTraining.name}:</strong> hands-on training on the school’s campus that prepares its teachers to teach with our kits, with a certificate for every teacher who completes it. With Kits + Teacher
+              Training, {site.studio.name} films the training for the school.
             </span>,
             <span key="3">
               <strong>Virtual Labs:</strong> a free, browser-based 3D bench where learners wire and run builds made with the same parts as our kits.
@@ -59,37 +61,36 @@ const sections: LegalSection[] = [
           ]}
         />
         <P>
-          Descriptions on this website are summaries. For a workshop, the proposal and booking confirmation we send you set out the exact scope, date, schedule and price.
+          Descriptions on this website are summaries. For a school, the written quote and order confirmation we send you set out the exact kits, training date, scope and price.
         </P>
       </>
     ),
   },
   {
     id: "bookings",
-    title: "Workshop bookings",
+    title: "School orders and teacher training",
     body: (
       <>
-        <P>A JOVE Day is booked in four steps: enquiry, call and campus visit or online demo, written proposal, and a confirmed date once the advance is received. A date is not reserved until we confirm it in writing.</P>
+        <P>A school order goes in four steps: enquiry, call and campus visit or online demo, written quote, and a confirmed order once the advance is received. A training date is not reserved until we confirm it in writing.</P>
         <DataTable
-          caption="Standard JOVE Day booking terms"
+          caption="Standard terms for school orders"
           head={["Term", "Standard position"]}
           rows={[
-            ["Minimum size", `${joveDayRules.minimumStudents} students per JOVE Day`],
-            ["Minimum billing", `${formatINR(joveDayRules.minimumBilling)} per JOVE Day, before GST`],
-            ["Maximum per day", `${joveDayRules.maxStudentsPerDay} students, in sessions by grade group`],
-            ["Advance to lock the date", `${joveDayRules.advancePercent}% of the proposal value`],
-            ["Balance", `Within ${joveDayRules.balanceDueDays} days of the JOVE Day`],
+            ["School price", `From ${trainingRules.minimumKits} kits in one order`],
+            ["Teacher training", `${teacherTraining.hours} hours, from ${teacherTraining.minimumTeachers} teachers`],
+            ["Advance to confirm the order", `${joveDayRules.advancePercent}% of the quote value`],
+            ["Balance", `Within ${joveDayRules.balanceDueDays} days of the training (or of delivery, for kits only)`],
           ]}
         />
         <H3>What the school provides</H3>
         <P>
-          A hall or classrooms for each session, a projector or screen, power points, tables for team stations, and permission for photography and drone shots. We bring the kits, trainers, film crew and everything
-          else on the day.
+          For the training: a room with tables, power points, a projector or screen, the teachers free for the training hours, and permission to film. Someone at the school to receive the kits and check the count on
+          delivery.
         </P>
         <H3>What JOVE provides</H3>
         <P>
-          A trained team, the age-appropriate programme for each grade group, all workshop kits and consumables, certificates, and the {mediaPack.name}. We will make reasonable efforts to start and finish on the
-          schedule in your proposal, and will tell you promptly if anything changes.
+          The kits ordered, with a printed guide in each; lesson plans for every project; a JOVE trainer, tools and spares for the training; a certificate for every teacher who completes it; and, with Kits + Teacher
+          Training, the training film. We will make reasonable efforts to deliver and train on the dates in your quote, and will tell you promptly if anything changes.
         </P>
       </>
     ),
@@ -100,19 +101,19 @@ const sections: LegalSection[] = [
     body: (
       <>
         <P>
-          Workshop fees are quoted in Indian rupees (₹) per student by grade group, as shown in your proposal. GST is charged as applicable (currently {joveDayRules.gstPercent}% on our workshop services) and is shown
-          separately on every invoice. Please give us your school’s GSTIN, legal name and billing address before we issue an invoice.
+          Kits are quoted in Indian rupees (₹) per kit, GST included. Teacher training is quoted per teacher, before GST; GST is charged as applicable (currently {joveDayRules.gstPercent}% on our training services) and
+          is shown separately on every invoice. Please give us your school’s GSTIN, legal name and billing address before we issue an invoice.
         </P>
         <P>
-          To lock a date, we ask for an advance of {joveDayRules.advancePercent}% of the proposal value. For the smallest JOVE Day ({formatINR(joveDayRules.minimumBilling)} before GST) that is {formatINR(advance)} plus
-          GST. The balance is due within {joveDayRules.balanceDueDays} days of the JOVE Day. Payment details (bank transfer or UPI) are printed on the invoice.
+          To confirm an order, we ask for an advance of {joveDayRules.advancePercent}% of the quote value. For the smallest training ({teacherTraining.minimumTeachers} teachers, {formatINR(smallestTraining)} before GST)
+          that is {formatINR(advance)} plus GST. The balance is due within {joveDayRules.balanceDueDays} days of the training. Payment details (bank transfer or UPI) are printed on the invoice.
         </P>
         <P>
           Kit prices on the store are shown in rupees at checkout. Shipping is {formatINR(SHIPPING_FLAT)} on orders below {formatINR(FREE_SHIPPING_ABOVE)} and free on orders of {formatINR(FREE_SHIPPING_ABOVE)} or
           more (see our <A href="/shipping-policy">Shipping Policy</A>). Payment is taken through the payment provider we link to; we never see or store your card or UPI credentials.
         </P>
         <P>
-          Prices can change from time to time. A price you have accepted in a written proposal, or paid for at checkout, will not change for that booking or order.
+          Prices can change from time to time. A price you have accepted in a written quote, or paid for at checkout, will not change for that order.
         </P>
       </>
     ),
@@ -125,8 +126,9 @@ const sections: LegalSection[] = [
         <P>Our <A href="/refund-policy">Refund &amp; Cancellation Policy</A> sets out the rules in full. In short:</P>
         <UL
           items={[
-            "Workshop dates can be rescheduled free of charge up to 7 days before the date.",
-            "If you cancel within 7 days, 25% of the advance is retained. Within 48 hours, the advance is non-refundable, except in a force majeure event.",
+            "Training dates can be rescheduled free of charge up to 7 days before the date.",
+            "If you cancel a training within 7 days, 25% of its advance is retained. Within 48 hours, it is non-refundable, except in a force majeure event.",
+            "A school kit order cancelled before dispatch has its kit advance refunded in full.",
             "Kits: a 7-day replacement for items that are defective or damaged on arrival, and returns of unopened kits within 7 days (less shipping).",
           ]}
         />
@@ -135,17 +137,17 @@ const sections: LegalSection[] = [
   },
   {
     id: "safety",
-    title: "Student safety & school responsibilities",
+    title: "Safety & school responsibilities",
     body: (
       <>
-        <P>Student safety comes first on every JOVE Day. To keep it that way:</P>
+        <P>Safety comes first, in the training and in class. To keep it that way:</P>
         <UL
           items={[
-            "Our trainers are background-verified and trained on our safety SOP and child-protection policy, and work under a founder’s supervision. Workshop kits are low-voltage and child-safe.",
-            "School teachers or staff remain responsible for the general supervision, discipline and welfare of their students throughout the day, with our team leading the activities.",
-            "The school tells us in advance about any student with a medical condition, allergy or special need we should know about, and ensures the venue is safe and accessible.",
-            "The school collects parental consent for participation where its policy requires it, and for photography and video (see the Privacy Policy and the media section below), before the day.",
-            "Students follow the trainers’ safety instructions. We may pause an activity, or exclude a specific item or activity, if we believe it is unsafe.",
+            "Our trainers are background-verified and trained on our safety SOP and child-protection policy, and work under a founder’s supervision. Our kits are low-voltage and age-graded.",
+            "When the kits are used in class, the school and its teachers are responsible for supervising students, following the safety notes in the lesson plans and the kit guides.",
+            "The school ensures the training room is safe and accessible, and tells us in advance about anything we should know.",
+            "The school confirms that the teachers agree to being filmed (see the Privacy Policy and the media section below) before the training.",
+            "We may pause an activity, or leave out a specific item or activity, if we believe it is unsafe.",
           ]}
         />
       </>
@@ -157,20 +159,19 @@ const sections: LegalSection[] = [
     body: (
       <>
         <P>
-          {site.studio.name} films every JOVE Day. Media is produced and used on the following basis:
+          {site.studio.name} films the teacher training for Kits + Teacher Training orders. Media is produced and used on the following basis:
         </P>
         <UL
           items={[
-            "Delivered media (reels, film, photographs and so on) is licensed to the school for its own marketing and admissions use, at no extra charge.",
-            "JOVE may use the media in its portfolio. Students’ faces are blurred on request, and consent forms are collected through the school.",
-            "Students are filmed in an identifiable way only where a parent or guardian has consented. Students without consent are kept out of identifiable shots.",
-            "Drone shots are subject to local rules and the school’s permission. We will not fly where the school or the law does not allow it.",
+            "Delivered media (the film and photographs) is licensed to the school for its own marketing and admissions use, at no extra charge.",
+            "JOVE may use the media in its portfolio, with the consent of the teachers shown. Any teacher can ask to be left out of the film or blurred.",
+            "Students are not part of the training. If students appear in any footage, they are filmed in an identifiable way only where a parent or guardian has consented through the school.",
             "Neither the school nor JOVE may use the media in a way that is misleading, defamatory or unlawful, or that presents it as an endorsement by someone who has not given one.",
           ]}
         />
-        <Note title="In the proposal">
+        <Note title="In the quote">
           <p>
-            The exact deliverables and delivery windows of the {mediaPack.name} are listed in your proposal. The Media Pack is included free with the JOVE Day and has no separate cash value or refund.
+            The deliverables of the {trainingFilm.name.charAt(0).toLowerCase() + trainingFilm.name.slice(1)} are listed in your quote. The film is included with Kits + Teacher Training and has no separate cash value or refund.
           </p>
         </Note>
       </>
@@ -186,7 +187,7 @@ const sections: LegalSection[] = [
           educational and non-commercial purposes. You may not copy, scrape, resell, republish or build on them for commercial use, or use the JOVE name or logo, without our written permission.
         </P>
         <P>
-          A school may use the printed workbooks and materials we hand out during a workshop for that school’s own teaching. Projects and models built by students belong to the students. We may show them (without
+          A school may use the lesson plans, teacher guides and printed materials we provide for that school’s own teaching. Projects and models built by students belong to the students. We may show them (without
           identifying details unless consent is on record) to illustrate our work.
         </P>
       </>
@@ -202,7 +203,7 @@ const sections: LegalSection[] = [
         </P>
         <P>
           The certificate you can print at the end of a lab is a self-service record of completion. It is not a verified credential and is not recognised by any board or authority. Only certificates issued by JOVE
-          after a workshop can be verified on our <A href="/verify">certificate checker</A>.
+          after a training or workshop can be verified on our <A href="/verify">certificate checker</A>.
         </P>
       </>
     ),
@@ -251,12 +252,12 @@ const sections: LegalSection[] = [
     body: (
       <>
         <P>
-          We take care to run a safe, well-organised and educational workshop, but we cannot promise particular learning outcomes, exam results or admissions results. Information on this website is for general guidance
+          We take care to run a safe, well-organised and educational training, but we cannot promise particular learning outcomes, exam results or admissions results. Information on this website is for general guidance
           and is provided “as is”.
         </P>
         <P>
-          To the extent the law allows, JOVE is not liable for indirect or consequential loss, or for loss of profit, reputation or opportunity. Our total liability to you for any claim connected with a workshop or
-          order is limited to the amount you paid us for that workshop or order.
+          To the extent the law allows, JOVE is not liable for indirect or consequential loss, or for loss of profit, reputation or opportunity. Our total liability to you for any claim connected with a training or
+          order is limited to the amount you paid us for that training or order.
         </P>
         <P>
           Nothing in these terms limits liability that cannot be limited under applicable law, including liability for fraud, wilful misconduct or, where the law applies, death or personal injury caused by negligence,
@@ -271,7 +272,7 @@ const sections: LegalSection[] = [
     body: (
       <P>
         Neither party is responsible for delay or failure caused by events beyond its reasonable control, for example natural disasters, floods, extreme weather, epidemics, government or school-closure orders, strikes,
-        major transport or power disruption, or an emergency affecting the venue. If this stops a JOVE Day from going ahead, we will work with you in good faith to reschedule it or, if you prefer, refund the advance, as
+        major transport or power disruption, or an emergency affecting the venue. If this stops a training from going ahead, we will work with you in good faith to reschedule it or, if you prefer, refund the advance, as
         set out in our <A href="/refund-policy">Refund &amp; Cancellation Policy</A>.
       </P>
     ),
@@ -318,11 +319,11 @@ export default function TermsPage() {
       index="LEGAL 02"
       eyebrow="Terms of Service"
       title={["The ground rules,", "in plain English."]}
-      intro="These terms cover using our website, booking a JOVE Day, ordering a kit and learning with our Virtual Labs. We have kept them as short and clear as we can while still being precise."
+      intro="These terms cover using our website, ordering kits and teacher training for a school, buying a kit and learning with our Virtual Labs. We have kept them as short and clear as we can while still being precise."
       summary={[
-        `A JOVE Day needs ${joveDayRules.minimumStudents}+ students. You pay ${joveDayRules.advancePercent}% in advance to lock the date and the balance within ${joveDayRules.balanceDueDays} days of the day. GST is shown separately.`,
-        "Schools stay responsible for supervising students. Our verified trainers lead the activities.",
-        "You may use the delivered media for your school’s own marketing and admissions. We may show it in our portfolio, with faces blurred on request.",
+        `A school pays ${joveDayRules.advancePercent}% in advance to confirm an order and the balance within ${joveDayRules.balanceDueDays} days of the training. Kit prices include GST; training GST is shown separately.`,
+        "Our verified trainers lead the teacher training. In class, the school and its teachers supervise students.",
+        "You may use the training film and photos for your school’s own marketing and admissions. We may show them in our portfolio, with the teachers’ consent.",
         "These terms are governed by Indian law, and our refund and shipping policies are part of them.",
       ]}
       sections={sections}

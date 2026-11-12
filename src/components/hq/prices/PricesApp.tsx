@@ -17,7 +17,7 @@ import { KitsTab } from "./KitsTab";
 import { SaveReport, StatusLine, WhatChangesWhere, type Loaded, type SaveResult } from "./Status";
 import { WorkshopsTab } from "./WorkshopsTab";
 
-const TAB_NAMES: Record<TabId, string> = { kits: "Kits", workshops: "Workshops", addons: "Add-ons", costs: "Running costs" };
+const TAB_NAMES: Record<TabId, string> = { kits: "Kits", workshops: "Training", addons: "Add-ons", costs: "Running costs" };
 const LEAVE_QUESTION = "You have changes that are not saved. Leave this page without saving them?";
 
 /**

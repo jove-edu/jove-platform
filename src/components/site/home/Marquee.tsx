@@ -6,7 +6,6 @@ const TOPICS = [
   "Machine Learning",
   "Sensors",
   "Coding",
-  "Drones",
   "Computer Vision",
   "Electronics",
   "Automation",
@@ -15,7 +14,7 @@ const TOPICS = [
   "Responsible AI",
 ];
 
-const SUB = ["Sense", "Think", "Act", "Build", "Test", "Improve", "Film", "Share"];
+const SUB = ["Sense", "Think", "Act", "Build", "Test", "Improve", "Teach", "Share"];
 
 function Row({ items, big, reverse }: { items: string[]; big?: boolean; reverse?: boolean }) {
   const run = (hidden: boolean) => (

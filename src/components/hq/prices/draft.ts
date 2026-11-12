@@ -7,7 +7,7 @@
  */
 import { addOns, gradeBands, kits, type AddOn, type GradeBandId, type KitId } from "@/lib/content/business";
 import { bomCostExact, kitFigures } from "@/lib/pricebook/math";
-import type { BandPrices, ClubRules, CostLineType, PlanTargets, PriceBook, RevenueStream, Rounding, WorkshopRules } from "@/lib/pricebook/types";
+import type { BandPrices, ClubRules, CostLineType, PlanTargets, PriceBook, RevenueStream, Rounding, TrainingRules, WorkshopRules } from "@/lib/pricebook/types";
 import { formatINR, uid } from "@/lib/utils";
 
 export type TabId = "kits" | "workshops" | "addons" | "costs";
@@ -45,6 +45,7 @@ export interface Draft {
   kits: Record<KitId, DraftKit>;
   bands: Record<GradeBandId, Texts<BandPrices>>;
   rules: Texts<WorkshopRules>;
+  training: Texts<TrainingRules>;
   club: Texts<ClubRules>;
   mediaPackValue: string;
   addOns: Record<string, string>;
@@ -135,6 +136,7 @@ export function toDraft(book: PriceBook): Draft {
       balanceDueDays: show(book.rules.balanceDueDays),
       gstPercent: show(book.rules.gstPercent),
     },
+    training: { hours: show(book.training.hours), minimumTeachers: show(book.training.minimumTeachers), minimumKits: show(book.training.minimumKits) },
     club: { pricePerMonth: show(book.club.pricePerMonth), minimumStudents: show(book.club.minimumStudents) },
     mediaPackValue: show(book.mediaPackValue),
     addOns: Object.fromEntries(PRICED_ADD_ONS.map((a) => [a.id, show(book.addOns[a.id] ?? a.priceValue)])),
@@ -186,6 +188,7 @@ export function toBook(d: Draft): PriceBook {
       balanceDueDays: within(d.rules.balanceDueDays, 0, 365),
       gstPercent: within(d.rules.gstPercent, 0, 40, 1),
     },
+    training: { hours: within(d.training.hours, 1, 40, 1), minimumTeachers: within(d.training.minimumTeachers, 1, 500), minimumKits: within(d.training.minimumKits, 1, 5000) },
     club: { pricePerMonth: within(d.club.pricePerMonth, 0, 100_000), minimumStudents: within(d.club.minimumStudents, 1, 5000) },
     mediaPackValue: within(d.mediaPackValue, 0, 10_000_000),
     addOns: Object.fromEntries(PRICED_ADD_ONS.map((a) => [a.id, within(d.addOns[a.id] ?? "", 0, 100_000_000)])),
@@ -222,7 +225,7 @@ const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 export function changedTabs(book: PriceBook, saved: PriceBook): Record<TabId, boolean> {
   return {
     kits: !same([book.kits, book.kitGstPercent, book.schoolDiscountPercent], [saved.kits, saved.kitGstPercent, saved.schoolDiscountPercent]),
-    workshops: !same([book.bands, book.rules, book.club, book.mediaPackValue], [saved.bands, saved.rules, saved.club, saved.mediaPackValue]),
+    workshops: !same([book.bands, book.rules, book.training, book.club, book.mediaPackValue], [saved.bands, saved.rules, saved.training, saved.club, saved.mediaPackValue]),
     addons: !same(book.addOns, saved.addOns),
     costs: !same(book.planner, saved.planner),
   };
@@ -239,6 +242,7 @@ const customerSide = (b: PriceBook) => ({
   discount: b.schoolDiscountPercent,
   bands: b.bands,
   rules: b.rules,
+  training: b.training,
   club: b.club,
   mediaPack: b.mediaPackValue,
   addOns: b.addOns,
@@ -287,6 +291,9 @@ export function findIssues(d: Draft, book: PriceBook): Issue[] {
   else if (book.rules.maxStudentsPerDay < book.rules.minimumStudents) add("workshops", "The most students in one day cannot be lower than the minimum for a JOVE Day.");
   if (toNumber(d.rules.advancePercent) > 100) add("workshops", "The advance can be 100% at most.");
   if (toNumber(d.rules.gstPercent) > 40) add("workshops", "GST on workshops can be 40% at most.");
+  if (toNumber(d.training.hours) <= 0) add("workshops", "Teacher training: the length must be at least 1 hour.");
+  if (toNumber(d.training.minimumTeachers) < 1) add("workshops", "Teacher training: the smallest group must be 1 teacher or more.");
+  if (toNumber(d.training.minimumKits) < 1) add("workshops", "School kit orders: the smallest order must be 1 kit or more.");
   if (book.club.pricePerMonth <= 0) add("workshops", "JOVE Club: the monthly price must be above ₹0.");
   if (toNumber(d.club.minimumStudents) < 1) add("workshops", "JOVE Club: the minimum number of students must be 1 or more.");
 

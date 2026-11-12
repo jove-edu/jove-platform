@@ -9,28 +9,28 @@ const steps: { n: string; icon: LucideIcon; when: string; title: string; body: s
     icon: PhoneCall,
     when: "Within 1 working day",
     title: "A founder calls you",
-    body: "We listen first: your grades, your headcount, your hall, your calendar. No sales script, just a conversation about what would work for your school.",
+    body: "We listen first: your grades, your teachers, the kits you have, your calendar. No sales script, just a conversation about what would work for your school.",
   },
   {
     n: "02",
     icon: MapPinned,
     when: "At a time that suits you",
     title: "Campus visit or online demo",
-    body: "We visit your campus where it is practical, or walk you and your coordinators through a JOVE Day online, so you can see exactly what students will build.",
+    body: "We visit your campus with a kit where it is practical, or walk you through the kits and the 3D bench online, so you can see exactly what your classes will build.",
   },
   {
     n: "03",
     icon: FileText,
     when: "In writing, GST shown separately",
-    title: "You receive a proposal",
-    body: "A clear proposal with the schedule, grade-wise pricing, what the school provides and what we bring, including your free Media Pack.",
+    title: "You receive a quote",
+    body: "Kits by kind and number, teachers to train, the training date and what the school provides, with GST shown line by line.",
   },
   {
     n: "04",
     icon: CalendarCheck,
     when: `${joveDayRules.advancePercent}% advance`,
-    title: "Your date is locked",
-    body: `You pay a ${joveDayRules.advancePercent}% advance and the date is yours. The balance is due within ${joveDayRules.balanceDueDays} days of the JOVE Day. After that we handle the rest, from parent consent forms to the final film.`,
+    title: "Kits arrive, teachers trained",
+    body: `A ${joveDayRules.advancePercent}% advance confirms the order. We deliver the kits, train your teachers and film the day; the balance is due within ${joveDayRules.balanceDueDays} days of the training.`,
   },
 ];
 
@@ -46,7 +46,7 @@ export function NextSteps() {
           </SectionLabel>
         </Reveal>
         <h2 id="next-steps-heading" className="mt-6 max-w-3xl text-[clamp(2rem,4.6vw,3.8rem)] font-bold leading-[1] tracking-[-0.03em]">
-          <RevealLines lines={["From your first message", "to a date on the calendar."]} />
+          <RevealLines lines={["From your first message", "to robotics in your classes."]} />
         </h2>
 
         <ol className="relative mt-14 grid gap-10 lg:mt-20 lg:grid-cols-4 lg:gap-6">

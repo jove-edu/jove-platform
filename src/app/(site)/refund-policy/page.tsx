@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { joveDayRules } from "@/lib/content/business";
+import { joveDayRules, teacherTraining } from "@/lib/content/business";
 import { formatINR } from "@/lib/utils";
 import { LegalLayout, type LegalSection } from "@/components/site/legal/LegalLayout";
 import { RefundTimeline } from "@/components/site/legal/figures";
@@ -8,11 +8,12 @@ import { A, DataTable, H3, Note, OL, P, ReachUs, UL } from "@/components/site/le
 export const metadata: Metadata = {
   title: "Refund & Cancellation Policy",
   description:
-    "How rescheduling, cancellations and refunds work for JOVE workshops, and how kit returns and 7-day replacements work for online store orders.",
+    "How rescheduling, cancellations and refunds work for JOVE teacher training and school kit orders, and how kit returns and 7-day replacements work for online store orders.",
   alternates: { canonical: "/refund-policy" },
 };
 
-const advance = (joveDayRules.minimumBilling * joveDayRules.advancePercent) / 100;
+const smallestTraining = teacherTraining.pricePerTeacher * teacherTraining.minimumTeachers;
+const advance = (smallestTraining * joveDayRules.advancePercent) / 100;
 const kept = advance * 0.25;
 
 const sections: LegalSection[] = [
@@ -22,11 +23,11 @@ const sections: LegalSection[] = [
     body: (
       <>
         <P>
-          This policy covers two things: <strong>workshops</strong> (a JOVE Day and our other school programmes) and <strong>kits</strong> bought from our online store. Our Virtual Labs are free, so there is nothing to
+          This policy covers <strong>teacher training</strong> at your school, <strong>school kit orders</strong>, and <strong>kits</strong> bought from our online store. Our Virtual Labs are free, so there is nothing to
           refund. It sits alongside our <A href="/terms">Terms of Service</A> and <A href="/shipping-policy">Shipping Policy</A>.
         </P>
         <P>
-          All timings are counted in calendar days from the date and time of your written notice to us (the “notice date”), back to the first session of the JOVE Day. Notice means a message through our{" "}
+          All timings are counted in calendar days from the date and time of your written notice to us (the “notice date”), back to the start of the teacher training. Notice means a message through our{" "}
           <A href="/contact">contact page</A>, or an email or WhatsApp to a founder.
         </P>
       </>
@@ -34,64 +35,70 @@ const sections: LegalSection[] = [
   },
   {
     id: "rescheduling",
-    title: "Rescheduling a workshop",
+    title: "Rescheduling a teacher training",
     body: (
       <>
         <P>
-          Things change: exams get moved, holidays are declared, a hall is suddenly needed. You can <strong>reschedule a booked JOVE Day free of charge if you tell us at least 7 days before the date.</strong> Your
+          Things change: exams get moved, holidays are declared, teachers are suddenly needed elsewhere. You can <strong>reschedule a booked teacher training free of charge if you tell us at least 7 days before the date.</strong> Your
           advance simply carries over to the new date, and we will offer you the nearest dates our team is free.
         </P>
         <P>
-          If you ask to reschedule inside the 7-day window, we will try our best to find a new date, but we cannot promise it, because trainers, film crew and travel are already arranged. If we cannot re-allot the day,
+          If you ask to reschedule inside the 7-day window, we will try our best to find a new date, but we cannot promise it, because the trainer, film crew and travel are already arranged. If we cannot re-allot the date,
           the cancellation rules below apply.
         </P>
-        <P>If <em>we</em> have to move or cancel a JOVE Day for any reason on our side, we will offer a new date that suits you or, if you prefer, refund everything you have paid us for it in full.</P>
+        <P>If <em>we</em> have to move or cancel a training for any reason on our side, we will offer a new date that suits you or, if you prefer, refund everything you have paid us for it in full.</P>
       </>
     ),
   },
   {
     id: "cancellations",
-    title: "Cancelling a workshop",
+    title: "Cancelling a teacher training",
     body: (
       <>
         <P>If you decide to cancel rather than reschedule, this is how your advance is treated:</P>
         <DataTable
-          caption="Refund of the advance when a JOVE Day is cancelled"
+          caption="Refund of the training advance when a training is cancelled"
           head={["When you tell us", "What happens to the advance"]}
           rows={[
-            ["More than 7 days before the JOVE Day", "Refunded in full"],
+            ["More than 7 days before the training", "Refunded in full"],
             ["Between 7 days and 48 hours before", "Refunded minus 25% of the advance, which we retain for costs already committed"],
-            ["Within 48 hours of the JOVE Day", "Not refundable, except in a force majeure event (below)"],
+            ["Within 48 hours of the training", "Not refundable, except in a force majeure event (below)"],
           ]}
         />
         <Note title="Worked example">
           <p>
-            On the smallest JOVE Day ({formatINR(joveDayRules.minimumBilling)} before GST), the {joveDayRules.advancePercent}% advance is {formatINR(advance)}. If you cancel five days before the date, we retain 25% of the
+            On the smallest training ({teacherTraining.minimumTeachers} teachers, {formatINR(smallestTraining)} before GST), the {joveDayRules.advancePercent}% advance is {formatINR(advance)}. If you cancel five days before the date, we retain 25% of the
             advance ({formatINR(kept)}) and refund {formatINR(advance - kept)}. The same cancellation 10 days before refunds the full {formatINR(advance)}. Amounts are shown before GST. GST is adjusted as the applicable
             rules require.
           </p>
         </Note>
         <H3>Force majeure</H3>
         <P>
-          If a JOVE Day cannot go ahead because of an event beyond anyone’s reasonable control (for example floods, severe weather, an epidemic, a government or school-closure order, or an emergency at the venue), the
-          48-hour rule does not apply. We will either move the JOVE Day to a new date at no charge, or refund the advance in full, whichever you prefer.
+          If a training cannot go ahead because of an event beyond anyone’s reasonable control (for example floods, severe weather, an epidemic, a government or school-closure order, or an emergency at the venue), the
+          48-hour rule does not apply. We will either move the training to a new date at no charge, or refund the advance in full, whichever you prefer.
         </P>
-        <H3>Quarter, Year and Club programmes</H3>
+        <H3>Programmes booked before November 2026</H3>
         <P>
-          The windows above apply to each individual JOVE Day or session date. Payment schedules and any other terms for the multi-session programmes are set out in your signed proposal, which applies if it says
-          something different.
+          JOVE Days and the Quarter, Year and Club programmes booked before we moved to kits and teacher training keep the terms in their signed proposal, which applies if it says something different.
         </P>
       </>
     ),
   },
   {
-    id: "media-pack",
-    title: "The Media Pack",
+    id: "school-kits",
+    title: "School kit orders",
     body: (
-      <P>
-        The film, reels, drone shots and photographs are included free with a JOVE Day, so they have no separate price and are not refunded on their own. If any deliverable is late or falls short of what your proposal
-        promises, tell us and we will fix it. Delivery windows are listed in your proposal.
-      </P>
+      <>
+        <P>
+          A school order is confirmed by its advance. <strong>If you cancel before we dispatch the kits, the kit advance is refunded in full.</strong> Once the kits are dispatched, a school order follows the
+          terms in its written quote; damaged, defective or missing parts are always replaced, as for store orders below.
+        </P>
+        <H3>The training film</H3>
+        <P>
+          The film and photographs of the training are included with Kits + Teacher Training, so they have no separate price and are not refunded on their own. If anything is late or falls short of what your quote
+          promises, tell us and we will fix it.
+        </P>
+      </>
     ),
   },
   {
@@ -142,7 +149,7 @@ const sections: LegalSection[] = [
           Approved refunds go back to the original payment method (or, for a bank transfer, to the account it came from) within 10 working days of approval. Your bank or payment provider may take a few more days to
           show it.
         </P>
-        <P>For workshop refunds we issue a credit note against the invoice, with GST adjusted as the applicable rules require.</P>
+        <P>For training and school-order refunds we issue a credit note against the invoice, with GST adjusted as the applicable rules require.</P>
       </>
     ),
   },
@@ -151,7 +158,7 @@ const sections: LegalSection[] = [
     title: "How to ask for a change or refund",
     body: (
       <>
-        <P>Write to us and include your school name and the JOVE Day date, or your order number. A founder will reply within one working day.</P>
+        <P>Write to us and include your school name and the training date, or your order number. A founder will reply within one working day.</P>
         <ReachUs subject="Refund" />
       </>
     ),
@@ -164,10 +171,11 @@ export default function RefundPolicyPage() {
       index="LEGAL 03"
       eyebrow="Refund & Cancellation"
       title={["Plans change.", "Here is how we handle it."]}
-      intro="We would rather move a date than lose one. This policy explains rescheduling and cancelling a JOVE Day, and returns and replacements for kits from our store."
+      intro="We would rather move a date than lose one. This policy explains rescheduling and cancelling a teacher training, cancelling a school kit order, and returns and replacements for kits from our store."
       summary={[
-        "Reschedule a JOVE Day free of charge up to 7 days before the date.",
-        "Cancel within 7 days and we keep 25% of the advance. Within 48 hours the advance is not refundable, unless a force majeure event stops the day.",
+        "Reschedule a teacher training free of charge up to 7 days before the date.",
+        "Cancel a training within 7 days and we keep 25% of its advance. Within 48 hours it is not refundable, unless a force majeure event stops the training.",
+        "Cancel a school kit order before dispatch for a full refund of the kit advance.",
         "A damaged or defective kit is replaced if you tell us within 7 days of delivery.",
         "Unopened kits can be returned within 7 days, with shipping charges deducted from the refund.",
       ]}

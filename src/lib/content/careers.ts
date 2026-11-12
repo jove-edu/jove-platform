@@ -8,10 +8,10 @@ export type RoleId = "trainer" | "lead-trainer" | "media" | "partnerships" | "ot
 
 /** The roles an applicant can choose in the form (the long descriptions live on the careers page). */
 export const APPLY_ROLES: { id: RoleId; code: string; title: string; short: string; type: string }[] = [
-  { id: "trainer", code: "R-01", title: "Freelance Robotics & AI Trainer", short: "Teach hands-on sessions on JOVE Days", type: "Freelance · per workshop day" },
-  { id: "lead-trainer", code: "R-02", title: "Lead Trainer", short: "Run a hall and guide the trainers", type: "Senior freelance" },
-  { id: "media", code: "R-03", title: "Video Editor / Media Intern", short: "Edit the reels and films schools receive", type: "Internship or freelance" },
-  { id: "partnerships", code: "R-04", title: "School Partnerships Associate", short: "Meet principals and help schools book", type: "Part-time or full-time" },
+  { id: "trainer", code: "R-01", title: "Freelance Robotics & AI Teacher Trainer", short: "Train school teachers to teach the kits", type: "Freelance · per training day" },
+  { id: "lead-trainer", code: "R-02", title: "Lead Trainer", short: "Lead trainings and coach the trainers", type: "Senior freelance" },
+  { id: "media", code: "R-03", title: "Video Editor / Media Intern", short: "Edit the training films schools receive", type: "Internship or freelance" },
+  { id: "partnerships", code: "R-04", title: "School Partnerships Associate", short: "Meet principals and help schools order", type: "Part-time or full-time" },
   { id: "other", code: "R-00", title: "Something else", short: "Tell us the role you have in mind", type: "Open" },
 ];
 

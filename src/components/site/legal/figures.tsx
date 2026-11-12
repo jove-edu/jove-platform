@@ -3,7 +3,7 @@ import { CornerMarks } from "@/components/brand/Blueprint";
 import { FREE_SHIPPING_ABOVE, SHIPPING_FLAT } from "@/lib/shop";
 import { formatINR } from "@/lib/utils";
 
-/** Cancellation timeline for /refund-policy: three windows leading up to the workshop day. */
+/** Cancellation timeline for /refund-policy: three windows leading up to the teacher training. */
 export function RefundTimeline() {
   const windows = [
     {
@@ -27,10 +27,10 @@ export function RefundTimeline() {
   ];
 
   return (
-    <figure aria-label="Workshop cancellation timeline" className="relative rounded-[var(--radius-md)] border border-graphite/20 bg-paper-50 p-5 shadow-[var(--shadow-paper)] sm:p-7">
+    <figure aria-label="Training cancellation timeline" className="relative rounded-[var(--radius-md)] border border-graphite/20 bg-paper-50 p-5 shadow-[var(--shadow-paper)] sm:p-7">
       <CornerMarks />
       <figcaption className="annot flex items-center gap-2 text-blueprint">
-        <CalendarCheck className="size-4" aria-hidden /> Cancellation timeline — counted back from your JOVE Day
+        <CalendarCheck className="size-4" aria-hidden /> Cancellation timeline — counted back from your training
       </figcaption>
       <ol className="mt-6 grid gap-5 md:grid-cols-3 md:gap-0">
         {windows.map((w, i) => (
@@ -47,7 +47,7 @@ export function RefundTimeline() {
         <span>T − ∞</span>
         <span>T − 7 days</span>
         <span>T − 48 hrs</span>
-        <span className="font-semibold text-graphite">JOVE Day</span>
+        <span className="font-semibold text-graphite">Training</span>
       </div>
     </figure>
   );

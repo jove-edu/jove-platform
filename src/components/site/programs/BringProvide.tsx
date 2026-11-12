@@ -1,32 +1,24 @@
-import { Award, BatteryCharging, Building2, Camera, ClipboardList, Clapperboard, FileText, GraduationCap, Plug, Presentation, Projector, Table, UserCheck, Wrench } from "lucide-react";
-import { gradeBands, joveDayRules } from "@/lib/content/business";
+import { Award, Building2, Camera, ClipboardList, Clapperboard, FileText, GraduationCap, Package, Plug, Presentation, UserCheck, Wrench } from "lucide-react";
 import { CornerMarks } from "@/components/brand/Blueprint";
 import { Reveal } from "@/components/site/Reveal";
 import { cn } from "@/lib/utils";
 
-const stationsPerHall = gradeBands.map((b) => Math.ceil(b.maxPerSession / b.studentsPerStation));
-const tablesRange = `${Math.min(...stationsPerHall)}–${Math.max(...stationsPerHall)}`;
-const perStation = [...new Set(gradeBands.map((b) => b.studentsPerStation))].sort().join("–");
-const team = joveDayRules.teamSize;
-
 const weBring = [
-  { icon: UserCheck, title: "Trainers", detail: `${team.founders} founders and ${team.trainers} trained facilitators run the sessions; ${team.media} media lead runs the shoot.` },
-  { icon: Wrench, title: "All kits & tools", detail: `A build kit for every station of ${perStation} students, plus tools, multimeters and spares.` },
-  { icon: BatteryCharging, title: "Consumables", detail: "Cells, LEDs, cardboard, tape and wires — reset and refilled between batches." },
-  { icon: Award, title: "Certificates", detail: "A certificate for every participant, handed over at the closing ceremony." },
-  { icon: FileText, title: "Worksheets", detail: "Grade-specific worksheets so the learning carries on in class." },
-  { icon: Projector, title: "Projector backup", detail: "Our own portable projector, speaker and wireless mic — in case a hall has none." },
-  { icon: Clapperboard, title: "Film crew & drone", detail: "FrameMind AI Studio crew for your free Media Pack. Drone flights follow local rules and your permission." },
+  { icon: Package, title: "Your kits", detail: "The kits you ordered, checked and counted, a printed build guide in every box." },
+  { icon: UserCheck, title: "A JOVE trainer", detail: "A JOVE founder or certified trainer leads the training; the team is set out in your quote." },
+  { icon: Wrench, title: "Tools and spares", detail: "Multimeters, screwdrivers, cells and spare parts for the training session." },
+  { icon: FileText, title: "Lesson plans", detail: "A lesson plan and teacher guide for every project in the kits you chose." },
+  { icon: Award, title: "Certificates", detail: "A JOVE certificate for every teacher who completes the training." },
+  { icon: Clapperboard, title: "Film crew", detail: "FrameMind AI Studio films the training for your short film and photos." },
 ];
 
 const youProvide = [
-  { icon: Building2, title: "Halls or classrooms", detail: "Two rooms for the parallel sessions (Hall A & Hall B), plus an assembly space for the opening and closing." },
-  { icon: Table, title: "Tables", detail: `One table per build station — about ${tablesRange} per hall.` },
-  { icon: Plug, title: "Power points", detail: "A few working sockets in each hall for laptops, the projector and charging." },
-  { icon: Presentation, title: "Projector / screen", detail: "If you have one. If not, we bring ours." },
-  { icon: ClipboardList, title: "Student lists", detail: "Names by grade and section before the day — for batches and certificates." },
-  { icon: Camera, title: "Photo & drone permission", detail: "The school's go-ahead for photography and drone shots. We share consent forms; faces are blurred on request." },
-  { icon: GraduationCap, title: "A teacher in each session", detail: "One school teacher per batch, alongside our trainers, for class management." },
+  { icon: Building2, title: "A room", detail: "A classroom or lab for the training, with tables the teachers can build on." },
+  { icon: Plug, title: "Power points", detail: "A few working sockets for laptops, the projector and charging." },
+  { icon: Presentation, title: "Projector / screen", detail: "To show the 3D practice bench and the lesson plans." },
+  { icon: GraduationCap, title: "Your teachers", detail: "The teachers who will teach the kits, free for the training hours." },
+  { icon: ClipboardList, title: "A list of names", detail: "Teachers' names before the day, for the certificates." },
+  { icon: Camera, title: "Filming permission", detail: "The school's go-ahead to film the training. Any teacher can ask to be left out." },
 ];
 
 function Column({ title, kicker, items, dark }: { title: string; kicker: string; items: typeof weBring; dark?: boolean }) {
@@ -55,12 +47,12 @@ function Column({ title, kicker, items, dark }: { title: string; kicker: string;
   );
 }
 
-/** "What we bring vs what your school provides" — a two-column checklist for principals and coordinators. */
+/** "What we bring vs what your school provides" for the teacher training: a two-column checklist for coordinators. */
 export function BringProvide() {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <Reveal className="h-full">
-        <Column dark kicker="Packed in our van" title="JOVE brings" items={weBring} />
+        <Column dark kicker="On the training day" title="JOVE brings" items={weBring} />
       </Reveal>
       <Reveal delay={0.1} className="h-full">
         <Column kicker="Ready on campus" title="Your school provides" items={youProvide} />

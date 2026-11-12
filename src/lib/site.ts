@@ -11,7 +11,7 @@ export const site = {
   pillars: ["Robotics", "AI", "STEM Education", "Real-World Skills"],
   headline: "Building Real-World Skills Through Robotics & AI",
   description:
-    "JOVE brings full-day Robotics, AI & Machine Learning workshops to schools — Grades 1 to 10 — and is the first school workshop company with its own in-house cinematic film studio. Every workshop ships with reels, a full-day film and drone shots for your school.",
+    "JOVE supplies Robotics & AI kits to schools and trains their teachers to teach with them, Grades 1 to 10: class sets of kits, hands-on teacher training and certification, lesson plans for every project and a free 3D practice bench. Our in-house studio, FrameMind AI Studio, films your teachers' training day.",
   // the live domain is the default in production, so links, QR codes and share previews are right even if the env var is missing
   url: (process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV === "production" ? "https://www.jove.website" : "http://localhost:3000")).replace(/\/+$/, ""),
   location: process.env.NEXT_PUBLIC_LOCATION || "Bagalkot, Karnataka",
@@ -36,7 +36,7 @@ export const site = {
       name: "Shivaprasad Reddy S S",
       role: "Founder & CEO",
       focus: "Operations · School Partnerships · Sales · Marketing · Finance · Logistics",
-      bio: "Shivaprasad runs JOVE end-to-end — from the first call with a principal to the last kit packed into the van. He leads school partnerships, closes every deal personally, and owns operations, finance, transport and travel so that every JOVE Day runs like clockwork.",
+      bio: "Shivaprasad runs JOVE end-to-end — from the first call with a principal to the last kit packed into the van. He leads school partnerships, closes every deal personally, and owns operations, finance, kit supply and travel, so that every kit order arrives complete and every training day runs on time.",
       initials: "SR",
       photo: "/team/shivaprasad.jpg",
     },
@@ -45,7 +45,7 @@ export const site = {
       name: "Chinmay R M",
       role: "Co-Founder & Chief Creative Officer",
       focus: "Cinematic Studio · Brand · Curriculum Design · Technology",
-      bio: "Chinmay is the founder of FrameMind AI Studio, the in-house production studio behind every JOVE film, reel and drone shot. He leads brand, content and technology at JOVE — and makes sure every school walks away with world-class media of its students building the future.",
+      bio: "Chinmay is the founder of FrameMind AI Studio, the in-house production studio that films every JOVE teacher training. He leads brand, curriculum design and technology at JOVE, including the lesson plans and the 3D practice bench teachers use.",
       initials: "CR",
       photo: "/team/chinmay.jpg",
     },
@@ -57,10 +57,9 @@ export type NavItem = { label: string; href: string; description?: string };
 export const mainNav: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about", description: "Our story, mission and founders" },
-  { label: "Programs", href: "/programs", description: "Full-day workshops for Grades 1–10" },
-  { label: "Packages", href: "/packages", description: "JOVE Day, Quarter, Year & add-ons" },
-  { label: "Studio", href: "/studio", description: "Reels, films & drone shots for your school" },
-  { label: "Virtual Labs", href: "/labs", description: "Free online robotics & AI journeys" },
+  { label: "Programs", href: "/programs", description: "Kits and lessons for Grades 1–10" },
+  { label: "Packages", href: "/packages", description: "Kits + teacher training, and pricing" },
+  { label: "Virtual Labs", href: "/labs", description: "A free 3D bench with our kit parts" },
   { label: "Shop", href: "/shop", description: "Robotics & AI kits" },
 ];
 
@@ -70,8 +69,7 @@ export const footerNav: { title: string; items: NavItem[] }[] = [
     items: [
       { label: "Programs", href: "/programs" },
       { label: "Packages & Pricing", href: "/packages" },
-      { label: "Media Studio", href: "/studio" },
-      { label: "Book a Workshop", href: "/contact" },
+      { label: "Get a Quote", href: "/contact" },
       { label: "Where We Work", href: "/areas" },
       { label: "Testimonials", href: "/testimonials" },
     ],
@@ -82,7 +80,7 @@ export const footerNav: { title: string; items: NavItem[] }[] = [
       { label: "Virtual Labs", href: "/labs" },
       { label: "Robotics Kits", href: "/shop" },
       { label: "Verify a Certificate", href: "/verify" },
-      { label: "Careers — Join as Trainer", href: "/careers" },
+      { label: "Careers", href: "/careers" },
     ],
   },
   {

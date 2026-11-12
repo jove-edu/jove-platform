@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { site } from "@/lib/site";
-import { gradeBands, joveDaySchedule, mediaPack, targets } from "@/lib/content/business";
+import { gradeBands } from "@/lib/content/business";
 import { formatINR } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import type { RoleId } from "@/lib/content/careers";
@@ -10,27 +10,25 @@ import { CTASection } from "@/components/site/CTASection";
 import { ApplyForm, ApplyForRole } from "@/components/site/careers/ApplyForm";
 import { Reveal, RevealLines } from "@/components/site/Reveal";
 
-/** Day rate for freelance trainers (per workshop day). */
+/** Day rate for freelance trainers (per training day at a school). */
 const TRAINER_DAY_RATE = { min: 1500, max: 2500 };
 const dayRate = `${formatINR(TRAINER_DAY_RATE.min)}–${formatINR(TRAINER_DAY_RATE.max)}`;
 
 export const metadata: Metadata = {
   title: "Careers — Build the Future with JOVE",
-  description: `Join JOVE as a freelance Robotics & AI trainer (${dayRate} per workshop day), lead trainer, video editor / media intern or school partnerships associate. Choose your role and apply in a few minutes.`,
+  description: `Join JOVE as a freelance Robotics & AI teacher trainer (${dayRate} per training day), lead trainer, video editor / media intern or school partnerships associate. Choose your role and apply in a few minutes.`,
   alternates: { canonical: "/careers" },
   openGraph: {
     title: "Careers at JOVE — Build the future with us",
-    description: "Teach robotics and AI hands-on in schools, film it with our in-house studio, or bring new schools on board.",
+    description: "Train school teachers in hands-on robotics and AI, film it with our in-house studio, or bring new schools on board.",
     images: [{ url: "/images/studio/kids-build.webp", width: 2400, height: 1340, alt: "Illustration of students' hands building a small robot" }],
   },
 };
 
 const heading = "text-[clamp(2rem,4.6vw,3.8rem)] font-bold leading-[1.02] tracking-[-0.03em]";
 
-const arrival = joveDaySchedule[0].time;
 const gradeNums = gradeBands.flatMap((g) => g.grades.match(/\d+/g) ?? []).map(Number);
 const gradeSpan = `Grade ${Math.min(...gradeNums)} to Grade ${Math.max(...gradeNums)}`;
-const deliveryDays = (re: RegExp) => mediaPack.items.find((i) => re.test(i.title))?.delivery.toLowerCase() ?? "";
 
 interface Role {
   id: RoleId;
@@ -51,26 +49,26 @@ const roles: Role[] = [
   {
     id: "trainer",
     code: "R-01",
-    title: "Freelance Robotics & AI Trainer",
-    team: "Workshop delivery",
-    type: "Freelance · per workshop day",
+    title: "Freelance Robotics & AI Teacher Trainer",
+    team: "Teacher training",
+    type: "Freelance · per training day",
     where: "On site at partner schools",
-    pay: `${dayRate} per workshop day`,
+    pay: `${dayRate} per training day`,
     payNote: "Depends on experience and your role on the day.",
-    summary: `Run hands-on build sessions for students from ${gradeSpan}, working beside both founders on every JOVE Day.`,
+    summary: `Train school teachers to teach JOVE kits for ${gradeSpan}, working beside the founders at partner schools.`,
     responsibilities: [
-      "Deliver grade-wise sessions from the JOVE session plan — builds, demos and challenges",
-      `Be on campus by ${arrival} to set up team stations and kits, and reset them between sessions`,
-      "Keep every team building: troubleshoot wiring, sensors and code at the table",
+      "Run the JOVE teacher training from the training plan: every project built by hand, then taught back",
+      "Show teachers how to set up a class, run each lesson plan and fix the usual faults",
+      "Keep every teacher building: troubleshoot wiring, sensors and code at the table",
       "Follow the safety SOP and child-protection policy without exception",
-      "Check kits out and back in, and report missing or damaged parts after the day",
+      "Check the training kits and spares in and out, and report missing or damaged parts",
     ],
     requirements: [
       "An engineering or science student, graduate, or a maker with projects to show",
       "Comfortable with basic electronics and Arduino; block-based coding for younger grades",
-      "Clear, patient and warm with children — in English, and ideally a regional language too",
-      "Able to travel to schools and work a full day on your feet",
-      "Willing to complete background verification before your first workshop",
+      "Clear, patient and respectful with adult learners, in English and ideally a regional language too",
+      "Able to travel to schools, sometimes the evening before",
+      "Willing to complete background verification before your first training",
     ],
     plus: "Nice to have: Python, basic machine-learning concepts, or earlier teaching or volunteering experience.",
   },
@@ -78,24 +76,24 @@ const roles: Role[] = [
     id: "lead-trainer",
     code: "R-02",
     title: "Lead Trainer",
-    team: "Workshop delivery",
+    team: "Teacher training",
     type: "Senior freelance · scope to grow",
     where: "On site at partner schools",
     pay: "Discussed on the first call",
     payNote: "Based on experience and the scope you take on.",
-    summary: "Own a hall for the day: lead the senior sessions, guide the freelance trainers, and hold the bar on quality and safety.",
+    summary: "Lead teacher trainings on your own, coach the freelance trainers, and hold the bar on quality and safety.",
     responsibilities: [
-      "Lead full sessions independently, including the Grades 6–10 builds with Arduino, sensors and AI vision",
-      "Brief and coach freelance trainers before and during the day",
-      "Keep the hall running to the published schedule, minute by minute",
-      "Run the pre-session kit and safety checks, and sign off the kit count at pack-up",
-      "Feed what you learn in the classroom back into the curriculum and session plans",
+      "Lead full trainings independently, including the Grades 6–10 kits with Arduino, sensors and AI vision",
+      "Brief and coach freelance trainers before and during a training",
+      "Keep the training to its plan and make sure every teacher finishes every build",
+      "Run the kit and safety checks, and sign off the certificates for the teachers who completed",
+      "Feed what teachers tell you back into the lesson plans and teacher guides",
     ],
     requirements: [
       "Experience teaching robotics, electronics or coding to school students — workshops, clubs or classrooms",
       "Strong hands-on skills: Arduino, sensors, motor drivers; working Python and ML basics",
-      "Calm classroom management with large, excited groups",
-      "Reliable availability on workshop days, including travel",
+      "Confident teaching a room of teachers, and helping them teach large classes",
+      "Reliable availability on training days, including travel",
       "Background verification and our safety training before you lead",
     ],
     plus: "Nice to have: experience with Atal Tinkering Labs, robotics competitions or curriculum writing.",
@@ -108,12 +106,12 @@ const roles: Role[] = [
     type: "Internship or freelance",
     where: "Studio work, plus shoot days at schools",
     pay: "Stipend or project fee — discussed on the first call",
-    summary: `Turn a day of footage into the reels and films schools receive — and help ${site.studio.name} capture it on shoot days.`,
+    summary: `Turn a training day's footage into the short film and photos schools receive, and help ${site.studio.name} capture it on shoot days.`,
     responsibilities: [
-      `Edit vertical reels to deadline — ${deliveryDays(/reel/i) || "within 5 working days"} of the JOVE Day`,
-      `Assemble and grade the highlight film — ${deliveryDays(/film/i) || "within 10 working days"}`,
+      "Edit the short film of each teacher training to deadline",
+      "Grade and select the photos the school receives",
       "Assist the media lead on shoot days: second camera, audio, backups",
-      "Blur faces wherever requested and follow the consent list for every school",
+      "Leave out anyone who asks not to be filmed, and follow the consent list for every school",
       "Write captions, organise footage and keep the archive tidy",
     ],
     requirements: [
@@ -121,7 +119,7 @@ const roles: Role[] = [
       "Fluent in at least one editor: Premiere Pro, DaVinci Resolve or similar",
       "A feel for pacing, music sync and clean sound",
       "Dependable with deadlines and careful with other people's footage",
-      "Comfortable working around children under the school's and our supervision",
+      "Comfortable working on school campuses under the school's and our rules",
     ],
     plus: "Nice to have: camera or gimbal operation, colour grading, motion graphics.",
   },
@@ -133,19 +131,19 @@ const roles: Role[] = [
     type: "Part-time or full-time",
     where: "Calls, school visits and JOVE HQ",
     pay: "Discussed on the first call",
-    summary: "Open conversations with schools, book meetings with principals, and help turn a first JOVE Day into a long partnership.",
+    summary: "Open conversations with schools, book meetings with principals, and help turn a first kit order into a long partnership.",
     responsibilities: [
       "Research and reach out to CBSE, ICSE and State Board schools",
       "Book and prepare meetings and demos with principals and correspondents",
       "Keep every lead, call and follow-up up to date in the JOVE HQ CRM",
-      "Prepare proposals with the founder and follow through to a confirmed date",
-      "Stay in touch after the workshop — feedback, renewals and JOVE Quarter or Year conversations",
+      "Prepare quotes with the founder and follow through to a confirmed order",
+      "Stay in touch after the training: teachers' feedback, more kits and new grades",
     ],
     requirements: [
       "A confident, courteous speaker — English plus a regional language",
       "Comfortable with phone calls and in-person school visits",
       "Organised: you write things down and follow up when you said you would",
-      "Genuine interest in education and in what students get from the day",
+      "Genuine interest in education and in what students get from robotics in class",
       "Honest selling — you never promise what we cannot deliver",
     ],
     plus: "Nice to have: experience in school sales or ed-tech. Not required.",
@@ -155,9 +153,9 @@ const roles: Role[] = [
 const steps = [
   { title: "Apply", time: "About 5 minutes", body: "Fill in the form on this page. Tell us what you have built, taught or filmed, and add links if you have them." },
   { title: "Short call", time: "15 minutes", body: "A phone or video call with a founder — your background, your availability and your questions. If your profile fits, we call within a week." },
-  { title: "Demo class", time: "20 minutes", body: "Teach us one concept as if we were a Grade 6 class. We are looking for clarity and warmth, not polish." },
-  { title: "Paid shadow workshop", time: "One JOVE Day", body: "Join a real JOVE Day beside the founders. You assist at the stations, we pay you for the day, and both sides see if it fits." },
-  { title: "Onboarding & safety training", time: "Before you lead", body: "Session plans, kit handling, the safety SOP, our child-protection policy and background verification — all before you run a session." },
+  { title: "Demo session", time: "20 minutes", body: "Teach us one build as if we were a room of Grade 6 teachers. We are looking for clarity and warmth, not polish." },
+  { title: "Paid shadow training", time: "One training day", body: "Join a real teacher training beside the founders. You help at the tables, we pay you for the day, and both sides see if it fits." },
+  { title: "Onboarding & safety training", time: "Before you lead", body: "The training plan, kit handling, the safety SOP, our child-protection policy and background verification, all before you lead a training." },
 ];
 
 export default function CareersPage() {
@@ -171,7 +169,7 @@ export default function CareersPage() {
         intro={
           <>
             <p>
-              We take real robots and real AI into schools, put them in the hands of students from {gradeSpan}, and film the whole day. We are looking for the people
+              We put real robots and real AI into classrooms from {gradeSpan}, and train the teachers who teach them. We are looking for the people
               who will stand at those tables with us.
             </p>
             <p className="mt-4">JOVE launches in October 2026. Join early, and help shape how it is done.</p>
@@ -193,7 +191,7 @@ export default function CareersPage() {
                 <dt className="text-sm text-charcoal">Freelance trainer</dt>
                 <dd className="text-right">
                   <span className="font-mono text-xl font-medium tracking-tight text-graphite">{dayRate}</span>
-                  <span className="block text-xs text-blueprint">per workshop day</span>
+                  <span className="block text-xs text-blueprint">per training day</span>
                 </dd>
               </div>
               <div className="flex items-baseline justify-between gap-4 py-4">
@@ -264,8 +262,8 @@ export default function CareersPage() {
                   ))}
                 </ol>
                 <p className="mt-8 rounded-[var(--radius-sm)] border border-dashed border-graphite/30 bg-paper/70 px-4 py-3 text-[13px] leading-relaxed text-charcoal">
-                  <strong className="font-semibold text-graphite">An honest note:</strong> we are a new company. Our target is {targets.workshopsPerMonth} JOVE Days a month, so
-                  freelance work begins as a few days a month and grows as our calendar fills.
+                  <strong className="font-semibold text-graphite">An honest note:</strong> we are a new company. Freelance work begins as a few training days a month and grows
+                  as more schools order.
                 </p>
                 {site.contact.email && (
                   <p className="mt-6 text-[14px] text-charcoal">
@@ -299,7 +297,7 @@ export default function CareersPage() {
                 </h2>
                 <Reveal delay={0.2}>
                   <p className="mt-6 text-[15px] leading-relaxed text-charcoal">
-                    Every role touches a JOVE Day — at the stations, behind the camera or in the principal&apos;s office weeks before.
+                    Every role touches a school: at the training table, behind the camera or in the principal&apos;s office weeks before.
                   </p>
                   <nav aria-label="Open roles" className="mt-8">
                     <ul className="flex flex-wrap gap-2 lg:block lg:space-y-0 lg:border-b lg:border-graphite/15">
@@ -389,7 +387,7 @@ export default function CareersPage() {
         eyebrow="Know a school?"
         title={["Not job hunting?", "Bring JOVE to a school."]}
         body="If your school — or your child's — should have a full day of hands-on Robotics & AI, introduce us. We will take it from there."
-        primary={{ label: "Book a JOVE Day", href: "/contact" }}
+        primary={{ label: "Get a quote", href: "/contact" }}
         secondary={{ label: "About JOVE", href: "/about" }}
       />
     </>

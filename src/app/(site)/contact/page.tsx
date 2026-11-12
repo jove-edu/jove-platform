@@ -14,7 +14,7 @@ import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Book a JOVE Day for your school, order robotics kits in bulk, talk to our film studio or explore a partnership. A founder replies within one working day.",
+  description: "Get a quote for robotics kits and teacher training for your school, order kits in bulk or explore a partnership. A founder replies within one working day.",
   alternates: { canonical: "/contact" },
 };
 
@@ -73,13 +73,13 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
                       Based in {site.location}
                     </h2>
                     <p className="mt-2 text-sm leading-relaxed text-charcoal">
-                      Our team brings the whole JOVE Day to your campus. If your school is far from our base, we will cover travel and logistics in your proposal, so there are no surprises later. <Link href="/areas" className="font-semibold text-graphite underline underline-offset-4">See where we work</Link>.
+                      We deliver the kits and train your teachers on your campus. If your school is far from our base, travel is shown in your quote, so there are no surprises later. <Link href="/areas" className="font-semibold text-graphite underline underline-offset-4">See where we work</Link>.
                     </p>
                   </div>
                 </div>
                 <ul className="mt-5 space-y-2 border-t border-dashed border-graphite/25 pt-5 text-sm leading-relaxed text-charcoal">
                   <li>
-                    <strong className="font-semibold text-graphite">Workshops:</strong> offline, in your school, for Grades 1 to 10.
+                    <strong className="font-semibold text-graphite">Teacher training:</strong> offline, in your school, for teachers of Grades 1 to 10.
                   </li>
                   <li>
                     <strong className="font-semibold text-graphite">Virtual Labs:</strong> free and online, for any student anywhere.

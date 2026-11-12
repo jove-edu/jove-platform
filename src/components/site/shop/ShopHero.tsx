@@ -33,7 +33,7 @@ export function ShopHero({ kitCount, minPrice, maxPrice, labCount }: { kitCount:
             </h1>
             <Reveal delay={0.25}>
               <p className="mt-7 max-w-xl text-base leading-relaxed text-charcoal sm:text-lg">
-                The same builds our trainers teach in school workshops — boxed for home. Every kit pairs with a{" "}
+                The same kits schools use in class, boxed for home. Every kit pairs with a{" "}
                 <strong className="font-semibold text-graphite">free JOVE Virtual Lab</strong>, so your child learns the idea online first, then builds it for real on the kitchen table.
               </p>
             </Reveal>

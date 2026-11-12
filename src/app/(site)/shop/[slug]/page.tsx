@@ -327,7 +327,7 @@ export default async function ProductPage({ params }: Params) {
               </h2>
               <Reveal delay={0.12}>
                 <p className="mt-6 max-w-xl leading-relaxed text-paper/70">
-                  The same idea JOVE trainers teach in the <strong className="font-semibold text-paper">{band.name}</strong> workshop for {band.grades} — &ldquo;{band.theme}&rdquo; — boxed so it can be built, broken and rebuilt at home.
+                  The same kit schools use for the <strong className="font-semibold text-paper">{band.name}</strong> programme for {band.grades} — &ldquo;{band.theme}&rdquo; — boxed so it can be built, broken and rebuilt at home.
                 </p>
               </Reveal>
               {band.skills.length > 0 && (
@@ -449,7 +449,7 @@ export default async function ProductPage({ params }: Params) {
       <CTASection
         eyebrow="For schools"
         title={["Ordering for a class?", `${BULK_DISCOUNT_PCT}% off from ${BULK_MIN_KITS} kits.`]}
-        body={`Take-home kits after a JOVE Day, stock for a robotics club or your Atal Tinkering Lab — schools get ${BULK_DISCOUNT_PCT}% off MRP on ${BULK_MIN_KITS} or more kits, confirmed in a written quote.`}
+        body={`Class sets, stock for a robotics club or your Atal Tinkering Lab — schools get ${BULK_DISCOUNT_PCT}% off MRP on ${BULK_MIN_KITS} or more kits, confirmed in a written quote.`}
         primary={{ label: "Request a school quote", href: "/contact" }}
         secondary={{ label: "Browse all kits", href: "/shop" }}
       />

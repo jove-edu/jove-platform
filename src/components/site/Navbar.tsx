@@ -75,7 +75,7 @@ export function Navbar() {
               )}
             </Link>
             <Button href="/contact" size="sm" arrow className="hidden h-10 px-4 sm:inline-flex">
-              Book a Workshop
+              Get a Quote
             </Button>
             <button onClick={() => setOpen(true)} className="rounded-full p-2.5 text-graphite hover:bg-graphite/5 lg:hidden" aria-label="Open menu">
               <Menu className="size-5" />
@@ -115,7 +115,7 @@ export function Navbar() {
             </ul>
             <div className="container-bp relative space-y-3 pb-8 pt-4">
               <Button href="/contact" variant="light" size="lg" arrow className="w-full">
-                Book a Workshop
+                Get a Quote
               </Button>
               <div className="annot flex flex-wrap justify-between gap-2 text-paper/50">
                 <span>{site.tagline}</span>

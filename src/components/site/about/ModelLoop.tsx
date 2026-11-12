@@ -40,7 +40,7 @@ function arrowHead(d: number) {
 }
 
 /**
- * The JOVE model as a loop: JOVE Day (offline) → Media Pack (studio) → Virtual Labs (online) → Kit Store → next JOVE Day.
+ * The JOVE model as a loop: kits (in class) → teacher training (on campus) → 3D bench (online) → kit store → the next grade's kits.
  * md+: circular blueprint diagram. Mobile: an ordered vertical flow with the same content.
  */
 export function ModelLoop({ nodes, className }: { nodes: LoopNode[]; className?: string }) {
@@ -136,7 +136,7 @@ export function ModelLoop({ nodes, className }: { nodes: LoopNode[]; className?:
         ))}
         <li className="flex gap-4 pl-[3px]">
           <span aria-hidden className="relative z-10 grid size-[34px] shrink-0 place-items-center rounded-full bg-paper text-graphite">↻</span>
-          <p className="self-center text-sm text-paper/60">…and back to the next JOVE Day — one level up.</p>
+          <p className="self-center text-sm text-paper/60">…and on to the next grade&apos;s kit, one level up.</p>
         </li>
       </ol>
     </div>

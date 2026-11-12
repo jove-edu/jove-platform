@@ -1,4 +1,4 @@
-import { joveDayRules, mediaPack } from "@/lib/content/business";
+import { joveDayRules, teacherTraining, trainingRules } from "@/lib/content/business";
 import { FREE_SHIPPING_ABOVE } from "@/lib/shop";
 import { formatINR } from "@/lib/utils";
 
@@ -6,7 +6,8 @@ import { formatINR } from "@/lib/utils";
  * Enquiry types shown as tabs on /contact. Plain serializable data (no icons) so the server page can
  * build it from the single source of truth in business.ts and hand it to the client tab component.
  */
-export const contactTabIds = ["workshop", "kits", "studio", "partner", "general"] as const;
+/** "workshop" is the school enquiry (kits and teacher training since Nov 2026); the id stays so old links keep working. */
+export const contactTabIds = ["workshop", "kits", "partner", "general"] as const;
 export type ContactTabId = (typeof contactTabIds)[number];
 export type LeadKind = "workshop" | "kits" | "studio" | "partner" | "contact";
 
@@ -30,16 +31,16 @@ export function buildContactTabs(): ContactTabData[] {
   return [
     {
       id: "workshop",
-      label: "Book a JOVE Day",
+      label: "Kits + training",
       kind: "workshop",
-      title: "Book a JOVE Day for your school",
-      blurb: "Tell us a little about your school. A founder will call you, understand what you need and come back with a date and a clear proposal.",
+      title: "Kits and teacher training for your school",
+      blurb: "Tell us a little about your school. A founder will call you, understand your classes and come back with a written quote.",
       points: [
-        `One full day for ${joveDayRules.minimumStudents}+ students across Grades 1–10 (up to ${joveDayRules.maxStudentsPerDay} in a day).`,
-        `Billed per student with a ${formatINR(joveDayRules.minimumBilling)} minimum, plus GST. A ${joveDayRules.advancePercent}% advance locks your date.`,
-        "Reels, a full-day film and drone shots by our in-house studio are included.",
+        `Class sets of kits for Grades 1–10 at the school price, from ${trainingRules.minimumKits} kits (GST included).`,
+        `Teacher training at ${teacherTraining.price} plus GST, ${teacherTraining.hours} hours on your campus, from ${teacherTraining.minimumTeachers} teachers. A ${joveDayRules.advancePercent}% advance confirms the order.`,
+        "Lesson plans, teacher certificates and a short film of the training day are included.",
       ],
-      submitLabel: "Request a call back",
+      submitLabel: "Request a quote",
     },
     {
       id: "kits",
@@ -55,26 +56,13 @@ export function buildContactTabs(): ContactTabData[] {
       submitLabel: "Request a kit quote",
     },
     {
-      id: "studio",
-      label: "Studio & media",
-      kind: "studio",
-      title: "Cinematic media from FrameMind AI Studio",
-      blurb: "Every JOVE Day is filmed by our in-house studio. If you want film, reels or aerial footage beyond that, tell us what you are planning.",
-      points: [
-        `${mediaPack.name} is included with every JOVE Day (market value ${formatINR(mediaPack.marketValue)}).`,
-        "School films, admissions reels, event coverage and drone shots.",
-        "Drone shots are subject to local rules and your permission.",
-      ],
-      submitLabel: "Talk to the studio",
-    },
-    {
       id: "partner",
       label: "Partnerships & CSR",
       kind: "partner",
       title: "Partnerships, CSR and sponsorships",
-      blurb: "Want to sponsor robotics days for under-resourced schools, partner on a programme or collaborate with us? Start the conversation here.",
+      blurb: "Want to sponsor kits and teacher training for under-resourced schools, partner on a programme or collaborate with us? Start the conversation here.",
       points: [
-        "CSR and sponsored JOVE Days for schools that could not otherwise afford them.",
+        "CSR-sponsored kits and teacher training for schools that could not otherwise afford them.",
         "Education, technology and community partners.",
         "We reply with how we could work together, in writing, so your team can review.",
       ],

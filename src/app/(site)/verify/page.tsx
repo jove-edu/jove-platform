@@ -53,7 +53,7 @@ export default function VerifyPage() {
         eyebrow="Certificate verification"
         index="01"
         title={["Is this certificate", "the real thing?"]}
-        intro="Every certificate JOVE issues after a workshop carries a unique ID. Enter it to confirm who it was issued to, for which programme and when."
+        intro="Every certificate JOVE issues after a training or workshop carries a unique ID. Enter it to confirm who it was issued to, for which programme and when."
         aside={<CertificateSketch />}
       >
         <CertificateLookup className="max-w-xl" />

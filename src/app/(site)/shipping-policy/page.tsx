@@ -18,7 +18,7 @@ const sections: LegalSection[] = [
     body: (
       <>
         <P>
-          This policy applies to kits and other products ordered from the JOVE online store and delivered to an address in India. Workshop kits used on a JOVE Day travel with our team, so they are not shipped.
+          This policy applies to kits and other products ordered from the JOVE online store and delivered to an address in India. Kits for a school order are delivered as set out in the school&apos;s written quote.
         </P>
         <P>
           Returns and replacements are covered in our <A href="/refund-policy">Refund &amp; Cancellation Policy</A>, and the overall terms of sale in our <A href="/terms">Terms of Service</A>.

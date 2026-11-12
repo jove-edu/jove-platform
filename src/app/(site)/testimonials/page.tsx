@@ -3,7 +3,6 @@ import Image from "next/image";
 import { Award, ClipboardList, FileSignature, FileText, Film, Lock, Mic, Play, Quote, Star } from "lucide-react";
 import { getPublishedTestimonials, type PublicTestimonial } from "@/lib/public-data";
 import { site } from "@/lib/site";
-import { joveDaySchedule, mediaPack } from "@/lib/content/business";
 import { cn, formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { ConstructionCircle, CornerMarks, Crosshair, GridBackdrop, SectionLabel, SpecIndex } from "@/components/brand/Blueprint";
@@ -18,7 +17,7 @@ export const revalidate = 86400;
 export const metadata: Metadata = {
   title: "Testimonials — Stories from JOVE Schools",
   description:
-    "Consent-backed feedback from principals, teachers, parents and students after every JOVE Day. JOVE launches in October 2026 — our first stories are being written, and we never publish invented testimonials.",
+    "Consent-backed feedback from principals, teachers, parents and students in partner schools. JOVE launches in October 2026 — our first stories are being written, and we never publish invented testimonials.",
   alternates: { canonical: "/testimonials" },
 };
 
@@ -27,34 +26,29 @@ const heading = "text-[clamp(2rem,4.6vw,3.8rem)] font-bold leading-[1.02] tracki
 /** The Founding Partner Schools programme — same terms as shown on the home page. */
 const FOUNDING_SLOTS = 10;
 const foundingBenefits = [
-  { icon: Lock, title: "Founding-partner pricing, locked for a year", body: "Your per-student rates stay fixed for twelve months from your first JOVE Day." },
-  { icon: Film, title: "An extra reel in your Media Pack", body: `One more cinematic reel from ${site.studio.name}, on top of the standard pack.` },
+  { icon: Lock, title: "Founding-partner pricing, locked for a year", body: "Your kit and training prices stay fixed for twelve months from your first order." },
+  { icon: Film, title: "An extra reel of your training day", body: `One cinematic reel from ${site.studio.name}, on top of the training film.` },
   { icon: Award, title: "Credited as a launch partner", body: "With your permission, your school is named as a founding partner on our website and in our launch film." },
 ];
-
-const interview = joveDaySchedule.find((s) => /interview/i.test(s.title));
-const principalClip = mediaPack.items.find((i) => /testimonial/i.test(i.title));
 
 const feedbackSteps = [
   {
     icon: ClipboardList,
-    when: interview ? `JOVE Day · ${interview.time}` : "On the day",
+    when: "End of the training",
     title: "Feedback forms, before we pack up",
-    body: "Teachers and coordinators fill in a short form while the day is still fresh — what worked, what did not, and what we should change next time.",
+    body: "Every teacher fills in a short form while the training is still fresh: what worked, what did not, and what we should change next time.",
   },
   {
     icon: Mic,
-    when: "On the day",
-    title: "A filmed interview with the principal",
-    body: principalClip
-      ? `${principalClip.detail.replace(/\.$/, "")} — delivered ${principalClip.delivery.toLowerCase()}. It belongs to the school first.`
-      : "A short filmed interview that the school can use for its own admissions marketing.",
+    when: "A few weeks later",
+    title: "A check-in with the teachers",
+    body: "Once the kits are in use, we ask the teachers how the lessons are going in class, and help with anything that is not working.",
   },
   {
     icon: FileText,
     when: "After the day",
-    title: "A post-workshop report",
-    body: "School management receives a written report of the day. If something fell short, it is in the report — along with what we are doing about it.",
+    title: "A report after the training",
+    body: "School management receives a written report of the training. If something fell short, it is in the report, along with what we are doing about it.",
   },
   {
     icon: FileSignature,
@@ -157,7 +151,7 @@ export default async function TestimonialsPage() {
           ) : (
             <>
               <p>
-                JOVE launches in October 2026. We have not yet run a JOVE Day for a partner school — so there are no testimonials here, and we will not invent any.
+                JOVE launches in October 2026. We have not yet trained teachers at a partner school — so there are no testimonials here, and we will not invent any.
               </p>
               <p className="mt-4">
                 This page fills up the honest way: one school, one day and one piece of real feedback at a time. Here is how that will work — and how your school can be
@@ -193,7 +187,7 @@ export default async function TestimonialsPage() {
         <div className="flex flex-wrap gap-3">
           {has ? (
             <Button href="/contact" size="lg" arrow>
-              Book a JOVE Day
+              Get a quote
             </Button>
           ) : (
             <Button href="#founding" size="lg" arrow>
@@ -302,7 +296,7 @@ export default async function TestimonialsPage() {
                   </h2>
                   <Reveal delay={0.2}>
                     <p className="mt-6 max-w-xl text-base leading-relaxed text-paper/70 sm:text-lg">
-                      We are inviting {FOUNDING_SLOTS} schools to run the first JOVE Days with us and help shape the programme. The first stories on this page will be
+                      We are inviting {FOUNDING_SLOTS} schools to be the first to bring JOVE kits and teacher training into their classes and help shape the programme. The first stories on this page will be
                       theirs — and we intend to make being early worth it.
                     </p>
                   </Reveal>
@@ -383,12 +377,12 @@ export default async function TestimonialsPage() {
                 <SectionLabel index={idx.process}>How feedback is collected</SectionLabel>
               </Reveal>
               <h2 id="process-title" className={`mt-6 text-graphite ${heading}`}>
-                <RevealLines lines={["After every JOVE Day,", "we ask. Then we listen."]} />
+                <RevealLines lines={["After every training,", "we ask. Then we listen."]} />
               </h2>
             </div>
             <Reveal delay={0.2} className="lg:col-span-5">
               <p className="text-[15px] leading-relaxed text-charcoal">
-                Feedback is built into the day plan, not chased afterwards. It improves the next session first — and only becomes a testimonial if the person who gave
+                Feedback is built into the training, not chased afterwards. It improves the next training first — and only becomes a testimonial if the person who gave
                 it says so in writing.
               </p>
             </Reveal>
@@ -439,7 +433,7 @@ export default async function TestimonialsPage() {
             </h2>
             <Reveal delay={0.2}>
               <p className="mt-6 max-w-md text-base leading-relaxed text-charcoal">
-                A Virtual Lab your child finished, a kit you built at home, a JOVE Day at your school — praise and criticism are equally welcome. It goes straight to
+                A Virtual Lab your child finished, a kit you built at home, a training at your school: praise and criticism are equally welcome. It goes straight to
                 the founders.
               </p>
               <ul className="mt-8 space-y-3 text-[14px] leading-relaxed text-charcoal">
@@ -472,9 +466,9 @@ export default async function TestimonialsPage() {
       <CTASection
         eyebrow={has ? "Next step" : "Write the first story"}
         title={has ? ["Bring JOVE", "to your school."] : ["Your school could", "be the first quote."]}
-        body="A full day of hands-on Robotics & AI for Grades 1–10 — with reels, a highlight film and drone shots for your school, included."
-        primary={{ label: "Book a JOVE Day", href: "/contact" }}
-        secondary={{ label: "See how a JOVE Day runs", href: "/programs" }}
+        body="Robotics & AI kits for Grades 1–10 and teachers trained to teach them, with a film of the training for your school."
+        primary={{ label: "Get a quote", href: "/contact" }}
+        secondary={{ label: "See the kits and training", href: "/programs" }}
       />
     </>
   );

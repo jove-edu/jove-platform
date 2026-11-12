@@ -10,8 +10,8 @@ import { CTASection } from "@/components/site/CTASection";
 import { Reveal } from "@/components/site/Reveal";
 
 export const metadata: Metadata = {
-  title: "Where We Work — School Robotics & AI Workshops in North Karnataka",
-  description: `JOVE is based in ${BASE.town} and brings full-day Robotics & AI workshops to schools in Bagalkot, Vijayapura, Gadag, Koppal, Dharwad and Belagavi districts. See how we reach your town.`,
+  title: "Where We Work — Robotics & AI Kits and Teacher Training in North Karnataka",
+  description: `JOVE is based in ${BASE.town} and supplies Robotics & AI kits and trains teachers at schools in Bagalkot, Vijayapura, Gadag, Koppal, Dharwad and Belagavi districts. See how we reach your town.`,
   alternates: { canonical: "/areas" },
 };
 
@@ -29,10 +29,10 @@ export default function AreasPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <PageHero
         eyebrow="Where we work"
-        title={["JOVE Days across", "North Karnataka."]}
+        title={["Kits and training across", "North Karnataka."]}
         intro={
           <p>
-            We are based in {BASE.town} and take the whole JOVE Day to your campus: robots, kits, trainers and our film crew. These are the districts we travel to. Further away? Ask us; we
+            We are based in {BASE.town} and deliver the kits and train your teachers on your campus, with our film crew. These are the districts we travel to. Further away? Ask us; we
             plan longer trips school by school.
           </p>
         }
@@ -66,7 +66,7 @@ export default function AreasPage() {
                   <span className="mt-2 text-2xl font-bold tracking-[-0.02em] text-graphite">{a.title}</span>
                   <span className="mt-3 flex-1 text-sm leading-relaxed text-charcoal">{a.towns.join(" · ")}</span>
                   <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-graphite">
-                    Workshops in {a.name} <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden />
+                    Schools in {a.name} <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden />
                   </span>
                 </Link>
               </Reveal>

@@ -20,7 +20,7 @@ const BANDS = [
 
 /**
  * Public enquiry form → POST /api/public/submit → lands in HQ → Website Leads.
- * kind="workshop" shows school fields; "trainer" shows applicant fields; others are a simple contact form.
+ * kind="workshop" shows school fields (kits and teacher training); "trainer" shows applicant fields; others are a simple contact form.
  */
 export function LeadForm({ kind = "workshop", className, submitLabel, dark }: { kind?: Kind; className?: string; submitLabel?: string; dark?: boolean }) {
   const page = usePathname();
@@ -61,7 +61,7 @@ export function LeadForm({ kind = "workshop", className, submitLabel, dark }: { 
             <p className={cn("max-w-md text-sm leading-relaxed", dark ? "text-paper/70" : "text-charcoal")}>
               {kind === "trainer"
                 ? "We review every application personally. If your profile fits, we'll call you within a week for a short demo session."
-                : "A JOVE founder will call you within one working day to understand your school and lock a date."}
+                : "A JOVE founder will call you within one working day to understand your school and send a quote."}
             </p>
             <Button variant={dark ? "outline-light" : "secondary"} size="sm" onClick={() => setState("idle")}>
               Send another
@@ -107,8 +107,11 @@ export function LeadForm({ kind = "workshop", className, submitLabel, dark }: { 
 
             {kind === "workshop" && (
               <>
-                <Field label="Approx. students" htmlFor="lf-students">
-                  <Input id="lf-students" name="students" type="number" min={1} placeholder="e.g. 300" />
+                <Field label="Teachers to train" htmlFor="lf-teachers">
+                  <Input id="lf-teachers" name="teachers" type="number" min={1} placeholder="e.g. 12" />
+                </Field>
+                <Field label="Kits needed (approx.)" htmlFor="lf-kits">
+                  <Input id="lf-kits" name="kits" type="number" min={1} placeholder="e.g. 40" />
                 </Field>
                 <div className="sm:col-span-2">
                   <p className={cn("annot mb-2", dark ? "text-paper/60" : "text-charcoal")}>Grade groups</p>
@@ -124,15 +127,15 @@ export function LeadForm({ kind = "workshop", className, submitLabel, dark }: { 
                   </div>
                 </div>
                 <Field label="Interested in" htmlFor="lf-package">
-                  <Select id="lf-package" name="package" defaultValue="jove-day">
-                    <option value="jove-day">JOVE Day (one full day)</option>
-                    <option value="jove-quarter">JOVE Quarter (3 months)</option>
-                    <option value="jove-year">JOVE Year (academic year)</option>
-                    <option value="jove-club">JOVE Club (after school)</option>
+                  <Select id="lf-package" name="package" defaultValue="kits-training">
+                    <option value="kits-training">Kits + teacher training</option>
+                    <option value="kits">Kits only</option>
+                    <option value="training">Teacher training only</option>
+                    <option value="lab-setup">A robotics &amp; AI lab</option>
                     <option value="custom">Not sure yet</option>
                   </Select>
                 </Field>
-                <Field label="Preferred date" htmlFor="lf-date">
+                <Field label="Preferred training date" htmlFor="lf-date">
                   <Input id="lf-date" name="preferredDate" type="date" />
                 </Field>
               </>
@@ -144,14 +147,14 @@ export function LeadForm({ kind = "workshop", className, submitLabel, dark }: { 
             )}
 
             <Field label={kind === "trainer" ? "Tell us about your robotics / AI / teaching experience" : "Anything we should know?"} htmlFor="lf-msg" className="sm:col-span-2">
-              <Textarea id="lf-msg" name="message" rows={4} placeholder={kind === "trainer" ? "Projects, workshops taken, tools you know, portfolio links…" : "Dates, number of sections, special requests…"} />
+              <Textarea id="lf-msg" name="message" rows={4} placeholder={kind === "trainer" ? "Projects, workshops taken, tools you know, portfolio links…" : "Sections per grade, the kits you already have, special requests…"} />
             </Field>
 
             <div className="flex flex-col gap-3 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
               <p className={cn("text-xs", dark ? "text-paper/50" : "text-blueprint")}>We reply within one working day. No spam, ever.</p>
               <Button type="submit" variant={dark ? "light" : "primary"} size="lg" disabled={state === "sending"}>
                 {state === "sending" ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
-                {submitLabel || (kind === "trainer" ? "Apply as trainer" : kind === "workshop" ? "Request a JOVE Day" : "Send message")}
+                {submitLabel || (kind === "trainer" ? "Apply as trainer" : kind === "workshop" ? "Request a quote" : "Send message")}
               </Button>
             </div>
             {state === "error" && <p className="text-sm text-bad sm:col-span-2">{error}</p>}

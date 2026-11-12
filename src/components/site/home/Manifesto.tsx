@@ -6,40 +6,34 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { ConstructionCircle, SectionLabel, SketchDivider } from "@/components/brand/Blueprint";
 import { Reveal } from "@/components/site/Reveal";
-import { gradeBands, mediaPack } from "@/lib/content/business";
-import { formatINR } from "@/lib/utils";
+import { kits, teacherTraining } from "@/lib/content/business";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const LEAD = "The first school robotics & AI workshop that comes with".split(" ");
-const MARK = "its own film studio.".split(" ");
-
-const minStation = Math.min(...gradeBands.map((b) => b.studentsPerStation));
-const maxStation = Math.max(...gradeBands.map((b) => b.studentsPerStation));
-const minDur = Math.min(...gradeBands.map((b) => b.durationMin));
-const maxDur = Math.max(...gradeBands.map((b) => b.durationMin));
+const LEAD = "Robotics and AI that stay in your school,".split(" ");
+const MARK = "taught by your own teachers.".split(" ");
 
 const PROOFS = [
   {
-    title: "Hands-on for every student",
-    body: "No watching from the back row. Small teams work at fully-kitted stations and build, code and test a real robot in every session — kits, tools and consumables included.",
-    stat: `1 station : ${minStation}–${maxStation} students`,
+    title: "Kits in class sets",
+    body: "Real parts for every team: light-up cardboard robots in Grade 1 to AI vision robots in Grade 10, at the school price. Supports CBSE, ICSE and State board outcomes and NEP 2020's experiential learning.",
+    stat: `${kits.length} kits · Grades 1–10`,
   },
   {
-    title: "Age-designed for Grades 1–10",
-    body: `Four grade bands, four curricula — from light-up cardboard robots in Grade 1 to AI vision robots in Grade 10. Supports CBSE, ICSE & State board outcomes and NEP 2020's experiential learning.`,
-    stat: `${gradeBands.length} bands · ${minDur}–${maxDur} min`,
+    title: "Teachers trained and certified",
+    body: "A hands-on training on your campus: every teacher builds the projects, learns how to run them in class and how to fix the usual faults, and leaves with lesson plans and a JOVE certificate.",
+    stat: `${teacherTraining.hours} hours · from ${teacherTraining.minimumTeachers} teachers`,
   },
   {
-    title: "Cinematic Media Pack, free",
-    body: "FrameMind AI Studio, our in-house film studio, shoots the whole day: reels, a full-day highlight film, drone aerials and edited photos for your admissions season.",
-    stat: `Worth ${formatINR(mediaPack.marketValue)} · ₹0 extra`,
+    title: "Practice bench and a film",
+    body: "A free 3D bench with the same parts as the kits, to rehearse a build and project it in class. And our studio, FrameMind AI Studio, films the training day for your school.",
+    stat: "3D bench · training film",
   },
 ];
 
 const WORD = "inline-block text-[#bdb7ab] motion-reduce:text-graphite";
 
-/** "First with its own film studio" statement — words ink from blueprint grey to graphite as you scroll. */
+/** The positioning statement — words ink from blueprint grey to graphite as you scroll. */
 export function Manifesto() {
   const scope = useRef<HTMLElement>(null);
 
@@ -76,7 +70,7 @@ export function Manifesto() {
 
       <div className="container-bp relative">
         <div className="flex items-center justify-between gap-6">
-          <SectionLabel index="01">A first for schools</SectionLabel>
+          <SectionLabel index="01">Why kits and training</SectionLabel>
           <span className="annot hidden font-mono text-blueprint sm:block">Fig. 02 — Positioning</span>
         </div>
 
@@ -106,8 +100,8 @@ export function Manifesto() {
         </h2>
 
         <Reveal className="mt-10 max-w-2xl text-lg leading-relaxed text-charcoal sm:text-xl">
-          Robotics workshops exist. School films exist. JOVE is the first to put both in the same day — your students build real robots and AI, and our
-          studio turns it into content your school can be proud of.
+          A one-day workshop is over by evening. Kits in class sets and teachers who know how to use them mean robotics runs every week, in every
+          section, all year.
         </Reveal>
 
         <SketchDivider className="mt-16 sm:mt-24" />

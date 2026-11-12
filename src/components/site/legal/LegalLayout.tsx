@@ -10,7 +10,7 @@ export const LEGAL_UPDATED = "4 October 2026";
 
 export const legalPages = [
   { href: "/privacy", label: "Privacy Policy", blurb: "How we handle data — especially children's data" },
-  { href: "/terms", label: "Terms of Service", blurb: "Website, workshops, bookings & payments" },
+  { href: "/terms", label: "Terms of Service", blurb: "Website, kits, training, orders & payments" },
   { href: "/refund-policy", label: "Refund & Cancellation", blurb: "Rescheduling, cancellations & kit returns" },
   { href: "/shipping-policy", label: "Shipping Policy", blurb: "Dispatch, delivery & damaged parcels" },
 ] as const;

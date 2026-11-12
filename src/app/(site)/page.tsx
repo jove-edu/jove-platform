@@ -4,7 +4,7 @@ import { getPublishedTestimonials } from "@/lib/public-data";
 import { Hero } from "@/components/site/home/Hero";
 import { Marquee } from "@/components/site/home/Marquee";
 import { Manifesto } from "@/components/site/home/Manifesto";
-import { JoveDayTimeline } from "@/components/site/home/JoveDayTimeline";
+import { HowItWorks } from "@/components/site/home/HowItWorks";
 import { Programs } from "@/components/site/home/Programs";
 import { MediaPack } from "@/components/site/home/MediaPack";
 import { LabsTeaser } from "@/components/site/home/LabsTeaser";
@@ -17,9 +17,9 @@ import { Booking } from "@/components/site/home/Booking";
 
 export const revalidate = 86400;
 
-const title = `${site.name} — Robotics, AI & ML Workshops for Schools, with a Film Studio`;
+const title = `${site.name} — Robotics & AI Kits and Teacher Training for Schools`;
 const description =
-  "Full-day, hands-on Robotics, AI & Machine Learning workshops for Grades 1–10 — and the first school workshop company with its own in-house cinematic film studio. Every JOVE Day includes free reels, a full-day film and drone shots.";
+  "Robotics & AI kits in class sets for Grades 1–10, and hands-on training that certifies your teachers to teach with them: lesson plans for every project, a free 3D practice bench and a film of the training day.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -61,7 +61,7 @@ export default async function HomePage() {
       <Hero />
       <Marquee />
       <Manifesto />
-      <JoveDayTimeline />
+      <HowItWorks />
       <Programs />
       <MediaPack />
       <LabsTeaser />

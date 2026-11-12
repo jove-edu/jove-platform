@@ -46,7 +46,7 @@ export function Founders() {
           eyebrow="The founders"
           light
           title={["Two founders.", "In the room, every time."]}
-          intro="JOVE is founder-led and founder-delivered. Both of us teach on every JOVE Day — one runs the operation, the other runs the camera and the curriculum."
+          intro="JOVE is founder-led and founder-delivered. We are at every teacher training: one runs the operation and the kits, the other the curriculum and the camera."
         />
 
         <div className="mt-14 grid gap-6 lg:mt-20 lg:grid-cols-2">

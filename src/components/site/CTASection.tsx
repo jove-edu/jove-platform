@@ -1,15 +1,16 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { SectionLabel, CornerMarks } from "@/components/brand/Blueprint";
+import { teacherTraining } from "@/lib/content/business";
 import { Reveal, RevealLines } from "./Reveal";
 
 /** Dark closing call-to-action band used at the bottom of most pages. */
 export function CTASection({
   eyebrow = "Next step",
   title = ["Bring JOVE", "to your school."],
-  body = "One call. A date on your calendar. A full day your students will talk about for years — and the films to prove it.",
-  primary = { label: "Book a JOVE Day", href: "/contact" },
-  secondary = { label: "Try a Virtual Lab", href: "/labs" },
+  body = "One call, a written quote, and robotics in your classes this term: kits for every team and teachers trained to teach with them.",
+  primary = { label: "Get a quote", href: "/contact" },
+  secondary = { label: "Try the 3D bench", href: "/labs" },
 }: {
   eyebrow?: string;
   title?: string[];
@@ -51,9 +52,9 @@ export function CTASection({
           <CornerMarks className="text-paper/40" />
           {[
             ["Grades", "1 – 10"],
-            ["Hands-on", "Every student"],
-            ["Media Pack", "Reels · Film · Drone"],
-            ["Booking to day", "≈ 2 weeks"],
+            ["Kits", "Class sets"],
+            ["Teacher training", `${teacherTraining.hours} hours · certified`],
+            ["Lesson plans", "Every project"],
           ].map(([k, v]) => (
             <div key={k} className="bg-graphite px-5 py-6">
               <p className="annot text-paper/45">{k}</p>

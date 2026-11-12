@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import type { Metadata } from "next";
 import { BatteryCharging, Camera, GraduationCap, ShieldCheck } from "lucide-react";
 import { site } from "@/lib/site";
-import { gradeBands, joveDayRules, kits, packages, targets } from "@/lib/content/business";
+import { gradeBands, kits, targets, teacherTraining } from "@/lib/content/business";
 import { labStages, labs } from "@/lib/content/labs";
 import { formatINR } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
@@ -23,11 +23,11 @@ import { Roadmap, type RoadmapStep } from "@/components/site/about/Roadmap";
 export const metadata: Metadata = {
   title: "About — Our Story, Mission & Founders",
   description:
-    "Why JOVE exists, what Journey of Visionation & Excellence means, and the two founders building India's first school Robotics & AI workshop with its own in-house cinematic film studio.",
+    "Why JOVE exists, what Journey of Visionation & Excellence means, and the two founders bringing Robotics & AI kits and teacher training to schools, with their own in-house film studio.",
   alternates: { canonical: "/about" },
   openGraph: {
     title: "About JOVE — Journey of Visionation & Excellence",
-    description: "Hands-on Robotics & AI for Grades 1–10, filmed by our own studio. Our story, mission, values and founders.",
+    description: "Robotics & AI kits for Grades 1–10, and training that certifies teachers to teach them. Our story, mission, values and founders.",
     images: [{ url: "/images/studio/trainer-class.webp", width: 2400, height: 1340, alt: "Illustration of a trainer demonstrating a robotic arm to a class" }],
   },
 };
@@ -39,27 +39,27 @@ const problems = [
     n: "01",
     problem: "Learning stays on paper.",
     detail: "Robotics and AI often arrive as a chapter to memorise. Without parts on the table, the ideas stay abstract — and curiosity fades before it turns into skill.",
-    answer: "Every student builds.",
-    answerDetail: `Full-day, grade-wise sessions with a kit at every team station and trainers at every table — from ${gradeBands[0].grades} to ${gradeBands[gradeBands.length - 1].grades}.`,
+    answer: "Every team gets a kit.",
+    answerDetail: `Grade-wise kits in class sets with lesson plans for every project, from ${gradeBands[0].grades} to ${gradeBands[gradeBands.length - 1].grades}.`,
   },
   {
     n: "02",
-    problem: "Innovation stays invisible.",
-    detail: "Schools do remarkable work in STEM, but rarely have the crew or the time to capture it. Parents and prospective families seldom get to see it.",
-    answer: "Every JOVE Day becomes a film.",
-    answerDetail: `Our in-house studio, ${site.studio.name}, delivers reels, a full-day film and drone shots — included with every JOVE Day.`,
+    problem: "Teachers are left to work it out.",
+    detail: "Schools buy kits and equipment, but teachers rarely get the time or the help to learn them. The boxes stay on the shelf.",
+    answer: "We train your teachers.",
+    answerDetail: "Hands-on training on your campus: every teacher builds the projects, learns to run them in class and earns a JOVE certificate.",
   },
   {
     n: "03",
     problem: "A lab needs more than equipment.",
     detail: "Kits change outcomes only when students spend real hours with them, guided by someone who has built the thing before.",
     answer: "We bring the whole system.",
-    answerDetail: "Curriculum, trainers, kits and a day plan — and the learning continues at home with free Virtual Labs.",
+    answerDetail: "Kits, lesson plans and trained teachers, and a free 3D bench to rehearse every build before class and at home.",
   },
 ];
 
 const nameParts = [
-  { letter: "J", word: "Journey", body: "Learning is a path, not a period. A child who meets robots in Grade 1 can be training an AI by Grade 10 — so JOVE is built as levels, not one-off events." },
+  { letter: "J", word: "Journey", body: "Learning is a path, not a period. A child who meets robots in Grade 1 can be training an AI by Grade 10 — so JOVE is built as levels, grade by grade." },
   { letter: "O", word: "The ring & the arm", body: "In our mark, a robotic arm rises out of the O — a mechanical joint drawn like a blueprint. Ideas need a body before they can move the world." },
   { letter: "V", word: "Visionation", body: "Our own word: vision + innovation. Vision is seeing what could be; innovation is making it real. Visionation is the moment a student does both." },
   { letter: "E", word: "Excellence", body: "Not perfection — the habit of doing things properly. Precise sessions, safe kits and films worth sharing, every single time." },
@@ -67,47 +67,45 @@ const nameParts = [
 
 const mrps = kits.map((k) => k.mrp);
 const loopNodes: LoopNode[] = [
-  { n: "01", mode: "Offline · at school", title: "JOVE Day", line: `Full-day, hands-on sessions for ${gradeBands[0].grades.replace("Grades ", "Grades ")}… up to Grade 10.`, href: "/programs" },
-  { n: "02", mode: "Studio · FrameMind", title: "Media Pack", line: "Reels, a full-day film and drone shots — free.", href: "/studio" },
+  { n: "01", mode: "In class · kits", title: "Kits", line: "Class sets for Grades 1–10, with lesson plans.", href: "/programs" },
+  { n: "02", mode: "On campus · training", title: "Teacher training", line: "Teachers trained and certified to teach the kits.", href: "/programs#training" },
   { n: "03", mode: "Online · free", title: "Virtual Labs", line: labStages.map((s) => s.label).join(" → "), href: "/labs" },
   { n: "04", mode: "Online · at home", title: "Kit Store", line: `Kits from ${formatINR(Math.min(...mrps))} to ${formatINR(Math.max(...mrps))} to keep building.`, href: "/shop" },
 ];
-loopNodes[0].line = "Full-day, hands-on sessions for Grades 1–10, in your school.";
 
 const founderRoles: Record<string, { area: string; detail: string }[]> = {
   shivaprasad: [
-    { area: "School partnerships & closing", detail: "Every principal conversation, proposal and signed agreement." },
+    { area: "School partnerships & closing", detail: "Every principal conversation, quote and signed order." },
     { area: "Marketing", detail: "Campaigns, school outreach and the JOVE brand in the field." },
-    { area: "Business operations", detail: "Scheduling, SOPs and the team that makes each JOVE Day run." },
+    { area: "Business operations", detail: "Kit stock and delivery, training dates, SOPs and the team." },
     { area: "Finance", detail: "Pricing, invoices, payments and accounts." },
-    { area: "Transport & travel", detail: "Vehicles, routes and stays — team and kits on campus by 7:30 am." },
+    { area: "Transport & travel", detail: "Kit delivery, routes and stays, so the trainer is on campus on time." },
     { area: "Vendors", detail: "Kit components, printing and procurement." },
   ],
   chinmay: [
-    { area: `${site.studio.name}`, detail: "Founder of the in-house studio behind every reel, film and drone shot." },
+    { area: `${site.studio.name}`, detail: "Founder of the in-house studio that films every teacher training." },
     { area: "Brand & content", detail: "The JOVE identity, social media and storytelling." },
-    { area: "Curriculum design", detail: "Grade-wise sessions, kit projects and the Virtual Labs journeys." },
+    { area: "Curriculum design", detail: "Grade-wise lesson plans, kit projects, the teacher training and the 3D bench." },
     { area: "Technology", detail: "The website, Virtual Labs and JOVE HQ — the company's operating system." },
   ],
 };
 
-const teamOnSite = joveDayRules.teamSize.founders + joveDayRules.teamSize.trainers + joveDayRules.teamSize.media;
 
 const commitments = [
   {
     icon: ShieldCheck,
     title: "Child safety & verified trainers",
-    body: "Every JOVE trainer is background-verified, trained on our safety SOP and child-protection policy, and works under a founder's supervision on the day.",
+    body: "Every JOVE trainer is background-verified, trained on our safety SOP and child-protection policy, and works under a founder's supervision.",
   },
   {
     icon: BatteryCharging,
     title: "Low-voltage, child-safe kits",
-    body: "Student build stations run on low-voltage battery packs with age-graded parts and tools. Kits are checked out, checked in and inspected after every session.",
+    body: "Every kit runs on low-voltage battery packs or USB power, with age-graded parts and tools, and lists its parts so they can be counted in and out of class.",
   },
   {
     icon: Camera,
     title: "Consent-first media",
-    body: "We film only with the school's permission and collect consent forms before the day. Students' faces are blurred on request — and the school controls how its media is used.",
+    body: "We film the teacher training only with the school's permission and the consent of the teachers shown. Anyone can ask to be left out, and the school controls how its media is used.",
   },
   {
     icon: GraduationCap,
@@ -116,7 +114,6 @@ const commitments = [
   },
 ];
 
-const yearPkg = packages.find((p) => p.id === "jove-year");
 const roadmap: RoadmapStep[] = [
   {
     when: "Q4 2026",
@@ -125,22 +122,22 @@ const roadmap: RoadmapStep[] = [
     current: true,
     title: "Launch & our first partner schools",
     goals: [
-      "First JOVE Days with our Founding Partner Schools",
-      `Target cadence: ${targets.workshopsPerMonth} JOVE Days a month — one school a week`,
-      "Free Virtual Labs and the JOVE kit store open to every family",
-      "The full Media Pack delivered with every JOVE Day",
+      "Kits and teacher training for our Founding Partner Schools",
+      "Lesson plans for every project in the four kits",
+      "The free 3D bench and the JOVE kit store open to every family",
+      "A film of every teacher training by FrameMind AI Studio",
     ],
   },
   {
     when: "H1 2027",
     period: "Jan – Jun 2027",
     status: "Next",
-    title: "Programmes that stay all year",
+    title: "Support that stays all year",
     goals: [
-      "JOVE Quarter and JOVE Year partnerships",
-      "After-school JOVE Clubs on partner campuses",
-      "Teacher training & certification",
-      yearPkg?.includes.find((i) => /Robotics Corner/i.test(i)) ?? "Robotics Corners on JOVE Year campuses",
+      "Refresher sessions for trained teachers",
+      "More lesson plans for every kit",
+      "A network of JOVE-certified teachers",
+      "Turnkey Robotics & AI labs for partner campuses",
     ],
   },
   {
@@ -161,8 +158,8 @@ const roadmap: RoadmapStep[] = [
     title: "Expansion",
     goals: [
       "New cities, served by trained JOVE trainer teams",
-      "Turnkey Robotics & AI labs and Atal Tinkering Lab mentoring",
-      "CSR-funded JOVE Days in government schools",
+      "Atal Tinkering Lab mentoring",
+      "CSR-funded kits and teacher training in government schools",
       "Curriculum licensing for partner organisations",
     ],
   },
@@ -183,10 +180,10 @@ export default async function AboutPage() {
         intro={
           <>
             <p>
-              <strong className="font-semibold text-graphite">JOVE — {site.expansion}</strong> brings full-day, hands-on Robotics, AI &amp; Machine Learning
-              workshops to schools for Grades 1–10, and films every one of them with our own in-house cinematic studio.
+              <strong className="font-semibold text-graphite">JOVE — {site.expansion}</strong> supplies Robotics, AI &amp; Machine Learning kits to
+              schools for Grades 1–10 and trains their teachers to teach with them, filmed by our own in-house studio.
             </p>
-            <p className="mt-4">We launch in October 2026 with one promise: every student builds something real.</p>
+            <p className="mt-4">One promise: every student builds something real, taught by their own teachers.</p>
           </>
         }
         aside={
@@ -207,7 +204,7 @@ export default async function AboutPage() {
               {[
                 ["Founded", "2026"],
                 ["Grades", "1 – 10"],
-                ["Model", "Offline-first"],
+                ["Model", "Kits + training"],
               ].map(([k, v]) => (
                 <div key={k} className="px-3 py-3 first:pl-0">
                   <dt className="annot text-blueprint">{k}</dt>
@@ -223,7 +220,7 @@ export default async function AboutPage() {
             Meet the founders
           </Button>
           <Button href="/contact" variant="secondary" size="lg">
-            Book a JOVE Day
+            Get a quote
           </Button>
         </div>
       </PageHero>
@@ -375,7 +372,7 @@ export default async function AboutPage() {
               {
                 k: "Mission",
                 tag: "What we do, every day",
-                text: "To put real robotics and AI into the hands of every student from Grade 1 to Grade 10 — through full-day, hands-on workshops that schools are proud to show the world.",
+                text: "To put real robotics and AI into the hands of every student from Grade 1 to Grade 10 — through kits in every class and teachers trained to teach with them.",
               },
               {
                 k: "Vision",
@@ -468,18 +465,18 @@ export default async function AboutPage() {
               </SectionLabel>
             </Reveal>
             <h2 id="model-title" className="mt-6 text-[clamp(2rem,4.6vw,3.8rem)] font-bold leading-[1.02] tracking-[-0.03em]">
-              <RevealLines lines={["Offline-first.", "Online, always on."]} />
+              <RevealLines lines={["Kits in class.", "Online, always on."]} />
             </h2>
             <Reveal delay={0.2}>
               <p className="mt-6 max-w-md text-base leading-relaxed text-paper/70">
-                The real learning happens with real parts, in your school hall, with a trainer at the table. Everything online exists to extend that day — never
-                to replace it.
+                The real learning happens with real parts, in your classroom, with a teacher who has built it first. Everything online exists to support that,
+                never to replace it.
               </p>
             </Reveal>
             <ul className="mt-10 space-y-5">
               {[
-                { k: "Offline", t: "JOVE Days in schools", d: "Full-day, grade-wise sessions for Grades 1–10 — and JOVE Quarter, Year & Club programmes for schools that want more." },
-                { k: "Studio", t: "Every day becomes a film", d: `${site.studio.name} turns each JOVE Day into reels, a highlight film and drone shots for the school.` },
+                { k: "In class", t: "Kits and lesson plans", d: "Grade-wise kits in class sets for Grades 1–10, with a lesson plan for every project." },
+                { k: "Training", t: "Teachers trained and certified", d: `Hands-on training on campus, filmed by ${site.studio.name} for the school.` },
                 { k: "Online", t: "Virtual Labs & kit store", d: `A free 3D bench with the same parts as our kits (${labs.length} builds: ${labStages.map((s) => s.label.toLowerCase()).join(" → ")}) and take-home kits to keep building.` },
               ].map((r, i) => (
                 <Reveal as="li" key={r.k} delay={0.1 + i * 0.08} className="grid grid-cols-[84px_1fr] gap-4 border-t border-paper/15 pt-5">
@@ -503,7 +500,7 @@ export default async function AboutPage() {
               { k: "Grade bands", v: `${gradeBands.length}`, s: gradeBands.map((g) => g.name).join(" · ") },
               { k: "Free 3D bench builds", v: `${labs.length}`, s: "Same parts as our kits, in the browser" },
               { k: "JOVE kits", v: `${kits.length}`, s: `${formatINR(Math.min(...mrps))} – ${formatINR(Math.max(...mrps))} MRP` },
-              { k: "Team at every JOVE Day", v: `${teamOnSite}`, s: "2 founders · 2 trainers · 1 media lead" },
+              { k: "Teacher training", v: `${teacherTraining.hours} h`, s: "Hands-on, on campus, certified" },
             ].map((s) => (
               <div key={s.k} className="bg-ink px-5 py-6">
                 <dt className="annot text-paper/45">{s.k}</dt>
@@ -526,11 +523,11 @@ export default async function AboutPage() {
               <SectionLabel index="07">Founders</SectionLabel>
             </Reveal>
             <h2 id="founders-title" className="mt-6 text-[clamp(2rem,4.6vw,3.8rem)] font-bold leading-[1.02] tracking-[-0.03em] text-graphite">
-              <RevealLines lines={["Two founders.", "On the floor at", "every JOVE Day."]} />
+              <RevealLines lines={["Two founders.", "In the room at", "every training."]} />
             </h2>
             <Reveal delay={0.2}>
               <p className="mt-6 max-w-2xl text-base leading-relaxed text-charcoal sm:text-lg">
-                JOVE is founder-led by design. Between them, Shivaprasad and Chinmay own every part of the company — and both of them teach.
+                JOVE is founder-led by design. Between them, Shivaprasad and Chinmay own every part of the company, and both of them train teachers.
               </p>
             </Reveal>
           </div>
@@ -565,7 +562,7 @@ export default async function AboutPage() {
                     </ul>
                     <p className="mt-6 flex items-center gap-2 text-[13px] text-charcoal">
                       <span aria-hidden className="size-1.5 rounded-full bg-graphite" />
-                      Also delivers workshops on every JOVE Day.
+                      Also trains teachers at partner schools.
                     </p>
                   </div>
                 </article>
@@ -578,8 +575,8 @@ export default async function AboutPage() {
           <Reveal delay={0.1}>
             <div className="mt-6 flex flex-col items-start justify-between gap-5 rounded-[var(--radius-md)] border border-dashed border-graphite/30 bg-paper/70 px-6 py-5 sm:flex-row sm:items-center">
               <p className="max-w-2xl text-[14px] leading-relaxed text-charcoal">
-                <strong className="font-semibold text-graphite">Shared on every JOVE Day:</strong> both founders are part of the {teamOnSite}-person team on
-                campus — {joveDayRules.teamSize.founders} founders, {joveDayRules.teamSize.trainers} trainers and {joveDayRules.teamSize.media} media lead.
+                <strong className="font-semibold text-graphite">At every training:</strong> a founder leads or is on campus, with a JOVE trainer and the
+                FrameMind AI Studio crew.
               </p>
               <Button href="/careers" variant="secondary" size="sm" arrow>
                 Join the team
@@ -607,7 +604,7 @@ export default async function AboutPage() {
             </div>
             <Reveal delay={0.2} className="lg:col-span-5">
               <p className="text-base leading-relaxed text-paper/70">
-                Before excitement, before the films — safety, consent and sound pedagogy. These hold on every JOVE Day, in every school, for every grade.
+                Before excitement, before the films: safety, consent and sound pedagogy. These hold for every kit, every training and every grade.
               </p>
             </Reveal>
           </div>
@@ -655,8 +652,8 @@ export default async function AboutPage() {
       <CTASection
         eyebrow="Join the journey"
         title={["Be one of our", "first schools."]}
-        body="We're booking our launch term now. Bring a full day of hands-on Robotics & AI to your students — and a film of it to share with every parent."
-        primary={{ label: "Book a JOVE Day", href: "/contact" }}
+        body="We're taking our first school orders now. Kits for your classes, your teachers trained to teach them, and a film of the training to share."
+        primary={{ label: "Get a quote", href: "/contact" }}
         secondary={{ label: "Explore programmes", href: "/programs" }}
       />
     </>

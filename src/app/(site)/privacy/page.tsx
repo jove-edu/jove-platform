@@ -23,12 +23,12 @@ const sections: LegalSection[] = [
     body: (
       <>
         <P>
-          This policy is issued by <strong>{site.legalName}</strong> (“JOVE”, “we”, “us”), a company based in {site.location} that runs Robotics, AI &amp; Machine Learning workshops in schools, publishes free Virtual Labs
-          online and sells robotics kits. Our in-house production studio is {site.studio.name}.
+          This policy is issued by <strong>{site.legalName}</strong> (“JOVE”, “we”, “us”), a company based in {site.location} that supplies Robotics, AI &amp; Machine Learning kits to schools and trains their teachers,
+          publishes free Virtual Labs online and sells robotics kits. Our in-house production studio is {site.studio.name}.
         </P>
         <P>
           For the personal data described below, JOVE is the “data fiduciary” (the party that decides why and how the data is processed) under the Digital Personal Data Protection Act, 2023 (“DPDP Act”). Where a school
-          shares its students’ details with us to run a workshop, the school and JOVE each have responsibilities, set out in section 3.
+          shares its teachers’ or students’ details with us (for a training, or for a workshop booked before November 2026), the school and JOVE each have responsibilities, set out in section 3.
         </P>
         <P>
           <strong>Grievance contact:</strong> {site.founders[0].name}, {site.founders[0].role}. See section 13 for contact details.
@@ -57,14 +57,19 @@ const sections: LegalSection[] = [
               "To confirm, pack, ship and support your order, and to issue a GST invoice",
             ],
             [
-              "A school books a JOVE Day",
-              "School and contact-person details; class-wise student counts; where needed, student first names or roll numbers for teams, attendance and certificates",
-              "To plan and deliver the workshop and issue certificates",
+              "A school orders kits or teacher training",
+              "School and contact-person details; kits ordered; delivery address; teachers’ names for attendance and certificates",
+              "To deliver the kits, run the training and issue teachers’ certificates",
             ],
             [
-              "Students attend a workshop",
+              "Teachers attend a training",
+              "Teacher name and school for certificates; photographs and video of the training (only as described in section 4)",
+              "To issue certificates and to produce the school’s training film",
+            ],
+            [
+              "Students attended a workshop (before November 2026)",
               "Student name, grade and school for certificates; photographs and video (only as described in section 4)",
-              "To issue certificates and to produce the school’s Media Pack",
+              "To keep certificates verifiable and to deliver the school’s media",
             ],
             [
               "You use our Virtual Labs",
@@ -104,13 +109,13 @@ const sections: LegalSection[] = [
     body: (
       <>
         <P>
-          Our workshops are for students in Grades 1 to 10, so most of the people we teach are under 18. Under the DPDP Act, a person below 18 is a “child”, and processing a child’s personal data requires{" "}
+          Our kits are for students in Grades 1 to 10, and our earlier workshops taught them directly, so some of the people whose data we hold are under 18. Under the DPDP Act, a person below 18 is a “child”, and processing a child’s personal data requires{" "}
           <strong>verifiable consent from a parent or lawful guardian</strong>. This is how we handle that:
         </P>
         <UL
           items={[
             <span key="1">
-              <strong>Consent comes through the school.</strong> Before a JOVE Day, we give the school a short consent form for parents and guardians. The school, which already has a relationship with parents, collects it. We
+              <strong>Consent comes through the school.</strong> Before any JOVE activity with students, we give the school a short consent form for parents and guardians. The school, which already has a relationship with parents, collects it. We
               keep the record of consent, and we process a child’s data only where consent is on record.
             </span>,
             <span key="2">
@@ -143,11 +148,12 @@ const sections: LegalSection[] = [
     body: (
       <>
         <P>
-          Every JOVE Day is filmed by {site.studio.name} to produce the school’s Media Pack: reels, a full-day film, drone shots and photographs. Because this involves children’s images, we treat media as a separate, explicit
-          consent.
+          {site.studio.name} films the teacher training to produce the school’s training film and photos, with the consent of the teachers shown. Workshops before November 2026 were filmed for the school’s Media Pack.
+          Because that involved children’s images, we treat media as a separate, explicit consent.
         </P>
         <UL
           items={[
+            "Teachers are filmed at a training only with their consent; any teacher can ask to be left out or blurred.",
             "Students are filmed or photographed in an identifiable way only where a parent or guardian has consented in writing through the school.",
             "Students without consent are kept out of identifiable shots, or their faces are blurred, and we tell the crew before filming starts.",
             "The school may use the delivered media for its own marketing and admissions. JOVE may use the media in its portfolio; students’ faces are blurred on request.",
@@ -164,8 +170,8 @@ const sections: LegalSection[] = [
     body: (
       <UL
         items={[
-          "To respond to enquiries, prepare proposals and run bookings.",
-          "To deliver workshops, issue certificates and produce Media Packs.",
+          "To respond to enquiries, prepare quotes and run orders.",
+          "To deliver kits and trainings, issue certificates and produce training films.",
           "To process, ship and support store orders, and to keep accounting records.",
           "To keep our website and systems secure and to fix problems.",
           "To meet legal, tax and accounting obligations.",
@@ -183,7 +189,7 @@ const sections: LegalSection[] = [
         <UL
           items={[
             <span key="1">
-              <strong>The school</strong> concerned — for example, the certificates and Media Pack for its own students.
+              <strong>The school</strong> concerned — for example, the certificates and training film for its own teachers.
             </span>,
             <span key="2">
               <strong>Service providers</strong> who work for us under confidentiality: website hosting and storage, payment providers, courier and logistics partners, and communication tools (SMS, WhatsApp, email)
@@ -228,7 +234,7 @@ const sections: LegalSection[] = [
           head={["Data", "How long"]}
           rows={[
             ["Enquiries and leads", "Up to 24 months after the last interaction, then deleted"],
-            ["Student lists and attendance", "Deleted or anonymised within 12 months of the workshop"],
+            ["Teacher and student lists and attendance", "Deleted or anonymised within 12 months of the training or workshop"],
             ["Parental consent records", "For as long as we hold the related student data or media, plus 12 months"],
             ["Certificate record (name, grade, school, programme, date)", "Kept so that certificates remain verifiable at /verify; removable on request"],
             ["Raw photo and video footage", "Up to 24 months after delivery to the school, then deleted"],

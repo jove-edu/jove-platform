@@ -23,7 +23,7 @@ export function TeamGrid({ members }: { members: PublicMember[] }) {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="annot text-blueprint">The team</p>
-          <h3 className="mt-2 text-[clamp(1.6rem,3vw,2.3rem)] font-bold leading-tight tracking-[-0.03em] text-graphite">{members.length ? "On the floor with them" : "The team grows with every JOVE Day"}</h3>
+          <h3 className="mt-2 text-[clamp(1.6rem,3vw,2.3rem)] font-bold leading-tight tracking-[-0.03em] text-graphite">{members.length ? "On the floor with them" : "The team grows with every school"}</h3>
         </div>
       </div>
       <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

@@ -8,8 +8,8 @@ import { SectionHeading } from "./SectionHeading";
 const SLOTS = 10;
 
 const BENEFITS = [
-  { icon: Lock, title: "Founding-partner pricing, locked for a year", body: "Your per-student rates stay fixed for twelve months from your first JOVE Day." },
-  { icon: Film, title: "An extra reel in your Media Pack", body: "One more cinematic reel from FrameMind AI Studio, on top of the standard pack." },
+  { icon: Lock, title: "Founding-partner pricing, locked for a year", body: "Your kit and training prices stay fixed for twelve months from your first order." },
+  { icon: Film, title: "An extra reel of your training day", body: "One cinematic reel from FrameMind AI Studio, on top of the training film." },
   { icon: Award, title: "Featured as a launch partner", body: "With your permission, your school is credited as a founding partner on our website and launch film." },
 ];
 
@@ -70,7 +70,7 @@ function FoundingPartners() {
                 </li>
               ))}
             </ol>
-            <p className="mt-4 text-xs leading-relaxed text-blueprint">Each slot becomes a partner school once its first JOVE Day is booked.</p>
+            <p className="mt-4 text-xs leading-relaxed text-blueprint">Each slot becomes a partner school once its first order is confirmed.</p>
           </Reveal>
         </div>
       </div>

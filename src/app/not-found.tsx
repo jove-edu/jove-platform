@@ -14,9 +14,9 @@ export const metadata: Metadata = {
 
 const links: { href: string; label: string; note: string; icon: LucideIcon }[] = [
   { href: "/", label: "Home", note: "Back to the start of the blueprint", icon: Home },
-  { href: "/programs", label: "Programs", note: "Full-day workshops, Grades 1 to 10", icon: Layers },
+  { href: "/programs", label: "Programs", note: "Kits and lessons, Grades 1 to 10", icon: Layers },
   { href: "/labs", label: "Virtual Labs", note: "Free robotics and AI journeys", icon: FlaskConical },
-  { href: "/contact", label: "Contact", note: "Book a JOVE Day or ask us anything", icon: CalendarCheck },
+  { href: "/contact", label: "Contact", note: "Get a quote or ask us anything", icon: CalendarCheck },
 ];
 
 /** Pure-CSS entrance (no hydration needed, so the 404 copy is never hidden while JS loads). */

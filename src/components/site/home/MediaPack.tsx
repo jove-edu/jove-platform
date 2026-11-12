@@ -2,15 +2,14 @@ import { Clapperboard } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { GridBackdrop, SectionLabel } from "@/components/brand/Blueprint";
 import { Reveal, RevealLines } from "@/components/site/Reveal";
-import { mediaPack } from "@/lib/content/business";
+import { trainingFilm } from "@/lib/content/business";
 import { site } from "@/lib/site";
-import { formatINR } from "@/lib/utils";
 import { LazyVideo } from "./LazyVideo";
 
 const REELS = [
-  { src: "/videos/kids-build-sm.mp4", poster: "/videos/kids-build-poster.webp", label: "Reel 01", caption: "Build day", offset: "lg:translate-y-10" },
-  { src: "/videos/crew-sm.mp4", poster: "/videos/crew-poster.webp", label: "Reel 02", caption: "Behind the lens", offset: "-translate-y-4 lg:-translate-y-8 z-10 scale-[1.06]" },
-  { src: "/videos/trainer-sm.mp4", poster: "/videos/trainer-poster.webp", label: "Reel 03", caption: "The big demo", offset: "lg:translate-y-16" },
+  { src: "/videos/kids-build-sm.mp4", poster: "/videos/kids-build-poster.webp", label: "Clip 01", caption: "Hands on the kit", offset: "lg:translate-y-10" },
+  { src: "/videos/crew-sm.mp4", poster: "/videos/crew-poster.webp", label: "Clip 02", caption: "Behind the lens", offset: "-translate-y-4 lg:-translate-y-8 z-10 scale-[1.06]" },
+  { src: "/videos/trainer-sm.mp4", poster: "/videos/trainer-poster.webp", label: "Clip 03", caption: "The first test", offset: "lg:translate-y-16" },
 ];
 
 function Phone({ src, poster, label, caption, className }: { src: string; poster: string; label: string; caption: string; className?: string }) {
@@ -42,14 +41,14 @@ function Phone({ src, poster, label, caption, className }: { src: string; poster
   );
 }
 
-/** Cinematic graphite section — the free Media Pack, with drone footage behind and three reel phones. */
+/** Cinematic graphite section: FrameMind AI Studio films the teacher training, with three illustrative clips. */
 export function MediaPack() {
   return (
     <section aria-labelledby="media-title" className="relative isolate overflow-hidden bg-ink text-paper">
       <LazyVideo
-        src="/videos/drone.mp4"
-        srcSm="/videos/drone-sm.mp4"
-        poster="/videos/drone-poster.webp"
+        src="/videos/trainer.mp4"
+        srcSm="/videos/trainer-sm.mp4"
+        poster="/videos/trainer-poster.webp"
         className="absolute inset-0 -z-10 h-full w-full object-cover opacity-40 grayscale"
       />
       <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,var(--color-ink)_0%,rgb(22_22_22/0.55)_30%,rgb(22_22_22/0.7)_70%,var(--color-ink)_100%)]" />
@@ -62,41 +61,35 @@ export function MediaPack() {
         <div className="grid gap-14 lg:grid-cols-12 lg:gap-10">
           <div className="lg:col-span-6 xl:col-span-5">
             <SectionLabel index="04" light>
-              Media Pack · {site.studio.name}
+              Training film · {site.studio.name}
             </SectionLabel>
             <h2 id="media-title" className="mt-5 text-[clamp(2.2rem,1.2rem+3.6vw,4.5rem)] font-bold leading-[1] tracking-[-0.035em]">
-              <RevealLines lines={["Every JOVE Day", "becomes a film."]} />
+              <RevealLines lines={["Your training day,", "on film."]} />
             </h2>
             <Reveal delay={0.1}>
               <p className="mt-6 inline-flex items-center gap-2 border border-paper/30 bg-paper/[0.06] px-3 py-2 font-mono text-xs uppercase tracking-[0.14em] text-paper backdrop-blur-sm">
                 <Clapperboard className="size-4" aria-hidden />
-                Worth {formatINR(mediaPack.marketValue)} — free with every JOVE Day
+                Included with Kits + Teacher Training
               </p>
               <p className="mt-6 max-w-lg leading-relaxed text-paper/70 sm:text-[17px]">
-                Our in-house studio shoots the whole day — the build, the breakthroughs, the certificate ceremony — and hands your school content made for
-                admissions season and social media.
+                Our in-house studio films your teachers building and testing the projects, and hands your school a short film and photos for its website,
+                newsletters and social media.
               </p>
             </Reveal>
 
             <ol className="mt-10 divide-y divide-paper/10 border-y border-paper/10">
-              {mediaPack.items.map((item, i) => (
+              {trainingFilm.items.map((item, i) => (
                 <Reveal as="li" key={item.title} delay={i * 0.05} className="grid grid-cols-[2rem_1fr] gap-x-3 py-4 sm:grid-cols-[2rem_1fr_auto] sm:gap-x-5">
                   <span className="font-mono text-xs text-paper/40">{String(i + 1).padStart(2, "0")}</span>
                   <div>
                     <h3 className="font-semibold">{item.title}</h3>
                     <p className="mt-1 text-sm leading-relaxed text-paper/60">{item.detail}</p>
                   </div>
-                  <span className="col-start-2 mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-paper/45 sm:col-start-auto sm:mt-1 sm:text-right">
-                    {item.delivery}
-                  </span>
                 </Reveal>
               ))}
             </ol>
 
             <Reveal className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <Button href="/studio" variant="light" arrow>
-                Inside the studio
-              </Button>
               <Button href={site.studio.url} external variant="outline-light">
                 {site.studio.name} ↗
               </Button>
@@ -111,10 +104,10 @@ export function MediaPack() {
                 </Reveal>
               ))}
             </div>
-            <p className="annot mt-10 text-center text-paper/40 lg:mt-24">Illustrative footage · your reels are shot on your JOVE Day</p>
+            <p className="annot mt-10 text-center text-paper/40 lg:mt-24">Illustrative footage · your film is shot at your teacher training</p>
           </div>
         </div>
-        <p className="mt-14 max-w-3xl text-xs leading-relaxed text-paper/40">{mediaPack.rights}</p>
+        <p className="mt-14 max-w-3xl text-xs leading-relaxed text-paper/40">{trainingFilm.rights}</p>
       </div>
     </section>
   );

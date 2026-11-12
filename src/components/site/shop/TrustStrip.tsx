@@ -24,7 +24,7 @@ const ITEMS = [
   {
     icon: LifeBuoy,
     title: "Help from the people who made it",
-    body: "Stuck on a step? Message the JOVE team — the same people who design the kits and teach the workshops.",
+    body: "Stuck on a step? Message the JOVE team — the same people who design the kits and train the teachers.",
     href: "/contact",
     cta: "Contact us",
   },

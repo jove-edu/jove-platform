@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { CalendarCheck, Clapperboard, Handshake, MessageSquare, Package, type LucideIcon } from "lucide-react";
+import { CalendarCheck, Handshake, MessageSquare, Package, type LucideIcon } from "lucide-react";
 import { CornerMarks, SpecIndex } from "@/components/brand/Blueprint";
 import { LeadForm } from "@/components/site/LeadForm";
 import { analyticsRunning } from "@/lib/analytics";
@@ -11,7 +11,6 @@ import type { ContactTabData, ContactTabId } from "./tabs";
 const ICONS: Record<ContactTabId, LucideIcon> = {
   workshop: CalendarCheck,
   kits: Package,
-  studio: Clapperboard,
   partner: Handshake,
   general: MessageSquare,
 };

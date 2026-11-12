@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, MapPin } from "lucide-react";
 import { AREAS, areaBySlug, BASE, REACH } from "@/lib/content/areas";
-import { gradeBands, joveDayRules, mediaPack } from "@/lib/content/business";
+import { gradeBands, kits, teacherTraining, trainingFilm, trainingRules } from "@/lib/content/business";
 import { site } from "@/lib/site";
 import { formatINR } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const a = areaBySlug(slug);
   if (!a) return {};
-  const title = `Robotics & AI Workshops for Schools in ${a.name}`;
+  const title = `Robotics & AI Kits and Teacher Training for Schools in ${a.name}`;
   const description = a.description;
   return { title, description, alternates: { canonical: `/areas/${a.slug}` }, openGraph: { title: `${title} | JOVE`, description } };
 }
@@ -29,20 +29,21 @@ export default async function AreaPage({ params }: { params: Promise<{ slug: str
   const a = areaBySlug(slug);
   if (!a) notFound();
 
-  const prices = gradeBands.map((b) => b.pricePerStudent);
+  const prices = kits.map((k) => k.schoolPrice);
+  const kitOf = (id: string) => kits.find((k) => gradeBands.find((b) => b.id === id)?.kitId === k.id);
   const others = AREAS.filter((x) => x.slug !== a.slug);
   const url = `${site.url}/areas/${a.slug}`;
   const jsonLd = [
     {
       "@context": "https://schema.org",
       "@type": "Service",
-      name: `Robotics & AI workshops for schools in ${a.title}`,
-      serviceType: "School robotics and AI workshop",
+      name: `Robotics & AI kits and teacher training for schools in ${a.title}`,
+      serviceType: "School robotics and AI kits and teacher training",
       url,
       provider: { "@type": "EducationalOrganization", name: site.name, url: site.url },
       areaServed: { "@type": "AdministrativeArea", name: `${a.title}, ${BASE.state}` },
       audience: { "@type": "EducationalAudience", educationalRole: "school" },
-      offers: { "@type": "AggregateOffer", priceCurrency: "INR", lowPrice: Math.min(...prices), highPrice: Math.max(...prices), description: "Per student, JOVE Day, before GST" },
+      offers: { "@type": "AggregateOffer", priceCurrency: "INR", lowPrice: Math.min(...prices), highPrice: Math.max(...prices), description: "Per kit, school price, GST included" },
     },
     {
       "@context": "https://schema.org",
@@ -73,11 +74,11 @@ export default async function AreaPage({ params }: { params: Promise<{ slug: str
           <div className="mt-6 grid items-start gap-10 lg:grid-cols-12">
             <div className="lg:col-span-7">
               <SectionLabel>{`${a.title} · ${REACH[a.reach].label}`}</SectionLabel>
-              <h1 className="mt-5 text-[clamp(2.2rem,5.2vw,4.4rem)] font-bold leading-[1] tracking-[-0.03em] text-graphite">Robotics &amp; AI workshops for schools in {a.name}</h1>
+              <h1 className="mt-5 text-[clamp(2.2rem,5.2vw,4.4rem)] font-bold leading-[1] tracking-[-0.03em] text-graphite">Robotics &amp; AI kits and teacher training for schools in {a.name}</h1>
               <p className="mt-6 max-w-2xl text-base leading-relaxed text-charcoal sm:text-lg">{a.intro}</p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button href="/packages#estimate" size="lg" arrow>
-                  Request a proposal
+                <Button href="/packages#quote" size="lg" arrow>
+                  Build an estimate
                 </Button>
                 <Button href="/contact" variant="secondary" size="lg">
                   Talk to us
@@ -108,16 +109,16 @@ export default async function AreaPage({ params }: { params: Promise<{ slug: str
         <div aria-hidden className="bp-grid-fine pointer-events-none absolute inset-0 opacity-60" />
         <div className="container-bp relative grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <SectionLabel index="01">The day</SectionLabel>
+            <SectionLabel index="01">Kits and training</SectionLabel>
             <h2 id="day-title" className="mt-5 text-[clamp(1.8rem,3.6vw,2.8rem)] font-bold leading-tight tracking-[-0.03em] text-graphite">
-              A JOVE Day at your school in {a.name}
+              Kits and trained teachers at your school in {a.name}
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-charcoal">{a.plan}</p>
             <p className="mt-4 text-[15px] leading-relaxed text-charcoal">
-              Every JOVE Day includes the {mediaPack.name}: reels, a full-day film and drone shots of your students building, delivered to the school.
+              With Kits + Teacher Training, the {trainingFilm.name.charAt(0).toLowerCase() + trainingFilm.name.slice(1)} is included: a short film and photos for the school.
             </p>
             <Link href="/programs" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-graphite underline underline-offset-4">
-              The full programme, minute by minute <ArrowRight className="size-4" aria-hidden />
+              The kits and lessons, grade by grade <ArrowRight className="size-4" aria-hidden />
             </Link>
           </div>
           <ul className="grid gap-4 sm:grid-cols-2 lg:col-span-7">
@@ -125,7 +126,7 @@ export default async function AreaPage({ params }: { params: Promise<{ slug: str
               <Reveal as="li" key={b.id} delay={i * 0.06} className="rounded-[var(--radius-md)] border border-graphite/12 bg-paper p-5">
                 <p className="annot text-blueprint">{b.grades}</p>
                 <p className="mt-1 text-lg font-bold text-graphite">{b.name}</p>
-                <p className="mt-1 text-sm text-charcoal">{b.theme}</p>
+                <p className="mt-1 text-sm text-charcoal">{kitOf(b.id)?.name ?? b.theme}</p>
               </Reveal>
             ))}
           </ul>
@@ -143,11 +144,11 @@ export default async function AreaPage({ params }: { params: Promise<{ slug: str
           </div>
           <div className="space-y-4 text-[15px] leading-relaxed text-charcoal lg:col-span-7">
             <p>
-              A JOVE Day is priced per student by grade group: from <strong className="text-graphite">{formatINR(Math.min(...prices))}</strong> to{" "}
-              <strong className="text-graphite">{formatINR(Math.max(...prices))}</strong> per student, before GST, with a minimum of {formatINR(joveDayRules.minimumBilling)} for the day.
+              Kits are priced per kit at the school price: from <strong className="text-graphite">{formatINR(Math.min(...prices))}</strong> to{" "}
+              <strong className="text-graphite">{formatINR(Math.max(...prices))}</strong>, GST included, from {trainingRules.minimumKits} kits. Teacher training is {teacherTraining.price} plus GST, from {teacherTraining.minimumTeachers} teachers.
             </p>
-            <p>Travel and logistics for {a.title} are worked out for your town and written into your proposal, so the full amount is clear before you confirm.</p>
-            <Button href="/packages#estimate" variant="secondary" size="md" arrow>
+            <p>Delivery and travel for {a.title} are worked out for your town and written into your quote, so the full amount is clear before you confirm.</p>
+            <Button href="/packages#quote" variant="secondary" size="md" arrow>
               Work out your estimate
             </Button>
           </div>

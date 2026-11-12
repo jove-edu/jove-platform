@@ -2,22 +2,22 @@ import { Mail, MessageCircle, Phone } from "lucide-react";
 import { ConstructionCircle, SectionLabel } from "@/components/brand/Blueprint";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Reveal, RevealLines } from "@/components/site/Reveal";
-import { joveDayRules } from "@/lib/content/business";
+import { teacherTraining, trainingRules } from "@/lib/content/business";
 import { site, whatsappLink } from "@/lib/site";
 
 const STEPS = [
-  { title: "Tell us about your school", body: "Grades, approximate student numbers and a few preferred dates — it takes about two minutes." },
-  { title: "A call with a founder", body: "Shivaprasad, our Founder & CEO, calls to understand your goals and suggest the right mix of sessions for each grade." },
+  { title: "Tell us about your school", body: "The grades, how many teachers to train and roughly how many kits. It takes about two minutes." },
+  { title: "A call with a founder", body: "Shivaprasad, our Founder & CEO, calls to understand your classes and suggest the right kits for each grade." },
   {
-    title: "Proposal & date lock",
-    body: `Clear per-student pricing by grade (ex-GST, minimum ${joveDayRules.minimumStudents} students). A ${joveDayRules.advancePercent}% advance locks your date; the balance is due within ${joveDayRules.balanceDueDays} days of your JOVE Day.`,
+    title: "Written quote",
+    body: `Kits at the school price (GST included, from ${trainingRules.minimumKits} kits) and training at ${teacherTraining.price} plus GST, from ${teacherTraining.minimumTeachers} teachers.`,
   },
-  { title: "JOVE Day — and the film", body: "We arrive at 7:30 am with every kit and the film crew. Your reels and full-day film follow within days." },
+  { title: "Kits delivered, teachers trained", body: `We deliver the kits and train your teachers on campus in ${teacherTraining.hours} hours, with the film crew. Your teachers start teaching the next week.` },
 ];
 
-/** Final booking block: what happens next + the workshop enquiry form. */
+/** Final block: what happens next + the school enquiry form. */
 export function Booking() {
-  const wa = whatsappLink("Hi JOVE, I'd like to book a JOVE Day for our school.");
+  const wa = whatsappLink("Hi JOVE, I'd like a quote for kits and teacher training for our school.");
   const { email, phone } = site.contact;
 
   return (
@@ -29,9 +29,9 @@ export function Booking() {
       <div className="container-bp relative">
         <div className="sketch-frame grid bg-paper-50/85 shadow-[var(--shadow-lift)] lg:grid-cols-12">
           <div className="border-b border-graphite/15 p-6 sm:p-10 lg:col-span-5 lg:border-b-0 lg:border-r lg:p-12">
-            <SectionLabel index="11">Book a JOVE Day</SectionLabel>
+            <SectionLabel index="11">Get a quote</SectionLabel>
             <h2 id="book-title" className="mt-5 text-[clamp(2rem,1.2rem+3vw,3.5rem)] font-bold leading-[1.02] tracking-[-0.03em] text-graphite">
-              <RevealLines lines={["Lock a date", "for your school."]} />
+              <RevealLines lines={["Kits and training", "for your school."]} />
             </h2>
             <Reveal delay={0.1}>
               <p className="mt-5 leading-relaxed text-charcoal">
@@ -92,10 +92,10 @@ export function Booking() {
 
           <div className="p-6 sm:p-10 lg:col-span-7 lg:p-12">
             <p className="annot mb-6 flex items-center justify-between text-blueprint">
-              <span>Workshop enquiry</span>
+              <span>School enquiry</span>
               <span className="font-mono">Form JV-01</span>
             </p>
-            <LeadForm kind="workshop" submitLabel="Request dates & a quote" />
+            <LeadForm kind="workshop" submitLabel="Request a quote" />
           </div>
         </div>
       </div>

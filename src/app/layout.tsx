@@ -19,16 +19,16 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — ${site.expansion} | Robotics & AI Workshops for Schools`,
+    default: `${site.name} — ${site.expansion} | Robotics & AI Kits and Teacher Training for Schools`,
     template: `%s | ${site.name}`,
   },
   description: site.description,
   applicationName: site.name,
   keywords: [
-    "robotics workshop for schools",
-    "AI workshop for students",
-    "machine learning workshop",
-    "STEM workshop India",
+    "robotics kits for schools",
+    "robotics teacher training",
+    "AI kits for students",
+    "STEM teacher training India",
     "school robotics program",
     "Atal Tinkering Lab",
     "robotics kits",

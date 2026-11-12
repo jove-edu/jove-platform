@@ -34,7 +34,7 @@ export default function LabsPage() {
       <CTASection
         eyebrow="Want the real thing?"
         title={["Now build it", "with your hands."]}
-        body="In a JOVE workshop every student builds these with real kits, then takes on the bigger builds: cars that chase light and robots that decide for themselves."
+        body="In class, students build these with real JOVE kits, then take on the bigger builds: cars that chase light and robots that decide for themselves."
         primary={{ label: "Bring JOVE to your school", href: "/contact" }}
         secondary={{ label: "See the programs", href: "/programs" }}
       />

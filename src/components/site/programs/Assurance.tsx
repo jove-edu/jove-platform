@@ -1,8 +1,8 @@
-import { BatteryLow, Camera, ShieldCheck, Users } from "lucide-react";
-import { gradeBands, joveDayRules } from "@/lib/content/business";
+import { BatteryLow, Camera, GraduationCap, ShieldCheck } from "lucide-react";
+import { gradeBands } from "@/lib/content/business";
 import { CornerMarks } from "@/components/brand/Blueprint";
 import { Reveal } from "@/components/site/Reveal";
-import { cn, pad2 } from "@/lib/utils";
+import { pad2 } from "@/lib/utils";
 import { shortGrades } from "./data";
 
 /* ── Curriculum alignment ─────────────────────────────────────────────── */
@@ -13,10 +13,10 @@ const frameworks = [
     title: "NEP 2020",
     sub: "National Education Policy",
     points: [
-      "Experiential, hands-on learning — every student builds and tests something real",
+      "Experiential, hands-on learning: every team builds and tests something real",
       "Play- and toy-based discovery for the foundational years",
       "Coding and computational thinking introduced early, as NEP recommends",
-      "Teamwork, problem-solving and communication at every station",
+      "Teamwork, problem-solving and communication at every kit",
     ],
   },
   {
@@ -36,8 +36,8 @@ const frameworks = [
     sub: "ATL framework",
     points: [
       "Uses the same building blocks: electronics, sensors, microcontrollers and robotics",
-      "A strong warm-up for schools with an ATL — students arrive knowing the tools",
-      "A practical first step for schools still planning a lab",
+      "Fits straight into an ATL: the kits and lesson plans give the lab a year of projects",
+      "A practical first step for schools still planning a lab, with a turnkey lab setup when you are ready",
       "Projects end in a showcase, in the ATL spirit of making and sharing",
     ],
   },
@@ -92,61 +92,28 @@ export function CurriculumAlignment() {
 
 /* ── Safety ───────────────────────────────────────────────────────────── */
 
-const RATIO = 60;
-const team = joveDayRules.teamSize;
-
 const safety = [
-  { icon: BatteryLow, title: "Low-voltage kits", detail: "Every build runs on battery packs or 5 V USB power — students never handle mains wiring. Tools are checked and counted in and out." },
+  { icon: BatteryLow, title: "Low-voltage kits", detail: "Every build runs on battery packs or 5 V USB power, so students never handle mains wiring. Each kit lists its parts so tools and pieces can be counted in and out." },
+  { icon: GraduationCap, title: "Teachers trained for the classroom", detail: "The training covers safe handling, class set-up and managing teams at the kits, so your teachers run every session with confidence." },
   { icon: ShieldCheck, title: "Verified trainers", detail: "Every JOVE trainer is background-verified, trained on our safety SOP and child-protection policy, and works under a founder's supervision." },
-  { icon: Users, title: `1 trainer : ~${RATIO} students`, detail: `Plus a school teacher in every batch. On a JOVE Day the team on site is ${team.founders} founders, ${team.trainers} trainers and ${team.media} media lead.` },
-  { icon: Camera, title: "Consent-first filming", detail: "Photo and drone shots only with the school's permission and under local drone rules. Consent forms are collected and faces are blurred on request." },
+  { icon: Camera, title: "Consent-first filming", detail: "We film the teacher training only with the school's permission and the consent of the teachers shown. Anyone can ask to be left out of the film." },
 ];
 
-/** Safety promises + a ratio figure drawn as a station plan: one trainer, ~60 students, one teacher. */
+/** Safety promises for kits in class and for the training day. */
 export function SafetyPanel() {
   return (
-    <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
-      <div className="grid gap-4 sm:grid-cols-2 lg:col-span-7">
-        {safety.map(({ icon: Icon, title, detail }, i) => (
-          <Reveal key={title} delay={i * 0.07} className="h-full">
-            <div className="relative h-full rounded-[var(--radius-md)] border border-paper/15 bg-paper/[0.04] p-5">
-              <span className="grid size-10 place-items-center rounded-[var(--radius-sm)] border border-paper/20 bg-paper/5">
-                <Icon className="size-[18px] text-paper" strokeWidth={1.6} aria-hidden />
-              </span>
-              <p className="mt-4 text-base font-semibold text-paper">{title}</p>
-              <p className="mt-1.5 text-sm leading-relaxed text-paper/65">{detail}</p>
-            </div>
-          </Reveal>
-        ))}
-      </div>
-      <Reveal delay={0.15} className="lg:col-span-5">
-        <figure className="relative rounded-[var(--radius-lg)] border border-paper/15 bg-ink/40 p-6 shadow-[var(--shadow-lift)] sm:p-8">
-          <CornerMarks className="m-3 text-paper/35" />
-          <div className="flex items-baseline justify-between">
-            <span className="annot text-paper/55">Fig. — Supervision ratio</span>
-            <span className="font-mono text-3xl font-medium tracking-tight text-paper">1 : {RATIO}</span>
-          </div>
-          <div aria-hidden className="mt-6 grid grid-cols-10 gap-2">
-            {Array.from({ length: RATIO }, (_, i) => (
-              <span key={i} className="aspect-square rounded-full border border-paper/35" />
-            ))}
-          </div>
-          <div aria-hidden className="mt-5 flex items-center gap-6 border-t border-dashed border-paper/20 pt-5">
-            <span className="flex items-center gap-2 text-xs text-paper/75">
-              <span className="size-4 rounded-full bg-paper" /> JOVE trainer
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {safety.map(({ icon: Icon, title, detail }, i) => (
+        <Reveal key={title} delay={i * 0.07} className="h-full">
+          <div className="relative h-full rounded-[var(--radius-md)] border border-paper/15 bg-paper/[0.04] p-5">
+            <span className="grid size-10 place-items-center rounded-[var(--radius-sm)] border border-paper/20 bg-paper/5">
+              <Icon className="size-[18px] text-paper" strokeWidth={1.6} aria-hidden />
             </span>
-            <span className="flex items-center gap-2 text-xs text-paper/75">
-              <span className="hatch-light size-4 rounded-full border border-paper/70" /> School teacher
-            </span>
-            <span className="flex items-center gap-2 text-xs text-paper/75">
-              <span className="size-4 rounded-full border border-paper/35" /> Student
-            </span>
+            <p className="mt-4 text-base font-semibold text-paper">{title}</p>
+            <p className="mt-1.5 text-sm leading-relaxed text-paper/65">{detail}</p>
           </div>
-          <figcaption className={cn("mt-4 text-xs leading-relaxed text-paper/55")}>
-            About {RATIO} students per JOVE trainer, with a school teacher in every batch for class management. Larger grade groups run as extra batches.
-          </figcaption>
-        </figure>
-      </Reveal>
+        </Reveal>
+      ))}
     </div>
   );
 }

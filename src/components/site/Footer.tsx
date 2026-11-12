@@ -23,7 +23,7 @@ export function Footer() {
               <Logo variant="wordmark" tone="white" />
             </div>
             <p className="mt-6 max-w-md text-sm leading-relaxed text-paper/65">
-              Full-day Robotics, AI &amp; Machine Learning workshops for Grades 1–10 — with a cinematic film crew in every school. Precision learning, built for the real world.
+              Robotics &amp; AI kits for Grades 1–10, and training that certifies your teachers to teach with them. Precision learning, built for the real world.
             </p>
             <div className="mt-8 flex flex-wrap gap-6 text-sm">
               {site.contact.email && (

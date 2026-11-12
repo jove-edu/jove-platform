@@ -1,6 +1,6 @@
 import "server-only";
 import { store, StoreConflictError } from "@/lib/store";
-import { addOns, clubRules, gradeBands, joveDayRules, kits, mediaPack, schoolDiscountPercent, targets, type GradeBandId, type KitId } from "@/lib/content/business";
+import { addOns, clubRules, gradeBands, joveDayRules, kits, mediaPack, schoolDiscountPercent, targets, trainingRules, type GradeBandId, type KitId } from "@/lib/content/business";
 import { fingerprint, kitFigures } from "@/lib/pricebook/math";
 import { RESERVED_COST_LINES, type BomLine, type CostLine, type CostLineType, type KitBook, type KitParts, type MoneyLine, type PriceBook, type PublicPrices, type RevenueStream, type Rounding } from "@/lib/pricebook/types";
 import { uid } from "@/lib/utils";
@@ -36,6 +36,7 @@ export function startingBook(): PriceBook {
       balanceDueDays: joveDayRules.balanceDueDays,
       gstPercent: joveDayRules.gstPercent,
     },
+    training: { ...trainingRules },
     club: { ...clubRules },
     mediaPackValue: mediaPack.marketValue,
     addOns: Object.fromEntries(PRICED_ADD_ONS.map((a) => [a.id, a.priceValue])),
@@ -115,6 +116,7 @@ export function cleanBook(input: unknown, base: PriceBook, strict = false): Pric
   const tg = obj(planner.targets);
   const rules = obj(i.rules);
   const club = obj(i.club);
+  const training = obj(i.training);
   const kitsIn = obj(i.kits);
   const bandsIn = obj(i.bands);
   const addOnsIn = obj(i.addOns);
@@ -156,6 +158,11 @@ export function cleanBook(input: unknown, base: PriceBook, strict = false): Pric
       advancePercent: num(rules.advancePercent, base.rules.advancePercent, 0, 100),
       balanceDueDays: num(rules.balanceDueDays, base.rules.balanceDueDays, 0, 365),
       gstPercent: num(rules.gstPercent, base.rules.gstPercent, 0, 40, 1),
+    },
+    training: {
+      hours: num(training.hours, base.training.hours, 1, 40, 1),
+      minimumTeachers: num(training.minimumTeachers, base.training.minimumTeachers, 1, 500),
+      minimumKits: num(training.minimumKits, base.training.minimumKits, 1, 5000),
     },
     club: { pricePerMonth: num(club.pricePerMonth, base.club.pricePerMonth, 0, 100_000), minimumStudents: num(club.minimumStudents, base.club.minimumStudents, 1, 5000) },
     mediaPackValue: num(i.mediaPackValue, base.mediaPackValue, 0, 10_000_000),
@@ -214,6 +221,7 @@ export function publish(book: PriceBook): PublicPrices {
     schoolDiscountPercent: book.schoolDiscountPercent,
     bands: book.bands,
     rules: book.rules,
+    training: book.training,
     club: book.club,
     mediaPackValue: book.mediaPackValue,
     addOns: book.addOns,

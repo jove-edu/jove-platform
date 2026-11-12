@@ -58,6 +58,15 @@ export interface WorkshopRules {
   gstPercent: number;
 }
 
+/** Teacher training and school kit orders: how long a training is and the smallest order. */
+export interface TrainingRules {
+  /** hours of one teacher training */
+  hours: number;
+  minimumTeachers: number;
+  /** smallest school kit order at the school price */
+  minimumKits: number;
+}
+
 export interface ClubRules {
   pricePerMonth: number;
   minimumStudents: number;
@@ -121,6 +130,7 @@ export interface PublicPrices {
   schoolDiscountPercent: number;
   bands: Record<GradeBandId, BandPrices>;
   rules: WorkshopRules;
+  training: TrainingRules;
   club: ClubRules;
   mediaPackValue: number;
   /** add-on id → price */
@@ -137,6 +147,7 @@ export interface PriceBook {
   kits: Record<KitId, KitBook>;
   bands: Record<GradeBandId, BandPrices>;
   rules: WorkshopRules;
+  training: TrainingRules;
   club: ClubRules;
   /** typical market value of the free Media Pack */
   mediaPackValue: number;

@@ -50,7 +50,7 @@ export function LabsTeaser() {
           id="labs-title"
           index="05"
           eyebrow="Virtual Labs · free"
-          title={["Try the workshop", "before we arrive."]}
+          title={["Try the kits", "before they arrive."]}
           intro="A free 3D bench with the same parts as our kits: wire a circuit pin by pin, switch on and see it work. No sign-up, no install. At home or on the classroom projector."
           action={
             <Button href="/labs" variant="secondary" arrow>

@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import { upsertRecord } from "@/lib/hq/records";
 import { apiError, clientIp, rateLimit } from "@/lib/hq/api";
 import { StoreReadOnlyError } from "@/lib/store";
-import { cleanEstimate } from "@/lib/estimate";
+import { cleanKitQuote } from "@/lib/kit-quote";
 import { cleanApplication } from "@/lib/content/careers";
 
 /**
  * Public website forms → HQ "Website Leads" (data/leads.json).
- * POST { kind, name, phone, email, organisation, role, city, students, gradeBands[], package, preferredDate, message, page, estimate (workshop estimator choices), application (careers form), website(honeypot) }
+ * POST { kind, name, phone, email, organisation, role, city, teachers, kits, gradeBands[], package, preferredDate, message, page, quote (kits and teachers from the estimator), application (careers form), website(honeypot) }
+ * kind "workshop" is a school enquiry (kits and teacher training since Nov 2026; the value is kept so old leads still match).
  */
 const KINDS = ["workshop", "trainer", "contact", "kits", "studio", "partner"];
 
@@ -40,7 +41,11 @@ export async function POST(req: Request) {
   if (email && !/^\S+@\S+\.\S+$/.test(email)) return NextResponse.json({ error: "Please enter a valid email." }, { status: 400 });
 
   const bands = Array.isArray(body.gradeBands) ? (body.gradeBands as unknown[]).map(String).filter((b) => ["g1-2", "g3-5", "g6-8", "g9-10"].includes(b)) : [];
-  const pkg = ["jove-day", "jove-quarter", "jove-year", "jove-club", "custom"].includes(str("package")) ? str("package") : undefined;
+  const pkg = ["kits-training", "kits", "training", "lab-setup", "custom"].includes(str("package")) ? str("package") : undefined;
+  const count = (k: string) => {
+    const n = Math.round(Number(body[k]));
+    return Number.isFinite(n) && n > 0 && n < 100_000 ? n : undefined;
+  };
 
   try {
     await upsertRecord(
@@ -54,13 +59,15 @@ export async function POST(req: Request) {
         organisation: str("organisation", 160),
         role: str("role", 80),
         city: str("city", 80),
-        students: Number(body.students) || undefined,
+        students: kind === "trainer" ? count("students") : undefined,
+        teachers: count("teachers"),
+        kits: count("kits"),
         gradeBands: bands,
         package: pkg,
         preferredDate: /^\d{4}-\d{2}-\d{2}$/.test(str("preferredDate")) ? str("preferredDate") : undefined,
         message: str("message", 3000),
         page: str("page", 120),
-        estimate: kind === "workshop" ? cleanEstimate(body.estimate) : undefined,
+        quote: kind === "workshop" ? cleanKitQuote(body.quote) : undefined,
         application: kind === "trainer" ? cleanApplication(body.application) : undefined,
       },
       "Website",

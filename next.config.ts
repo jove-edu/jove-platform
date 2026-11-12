@@ -44,7 +44,11 @@ const nextConfig: NextConfig = {
   },
   // the old Virtual Labs (and the bench's first address) now live on /labs
   async redirects() {
-    return [{ source: "/labs/:slug", destination: "/labs", permanent: true }];
+    return [
+      { source: "/labs/:slug", destination: "/labs", permanent: true },
+      // the public Studio page closed with the Nov 2026 move to kits and teacher training
+      { source: "/studio", destination: "/packages", permanent: false },
+    ];
   },
   async headers() {
     return [

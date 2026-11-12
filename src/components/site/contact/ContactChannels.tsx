@@ -8,7 +8,7 @@ type Channel = { label: string; value: string; href: string; external?: boolean;
 /** Direct channels (only the configured ones), who replies, and the response promise. */
 export function ContactChannels() {
   const { email, phone } = site.contact;
-  const wa = whatsappLink("Hi JOVE, we would like to know more about a JOVE Day for our school.");
+  const wa = whatsappLink("Hi JOVE, we would like to know more about kits and teacher training for our school.");
 
   const channels: Channel[] = [];
   if (wa) channels.push({ label: "WhatsApp", value: "Message a founder", href: wa, external: true, icon: WhatsappIcon });
@@ -34,7 +34,7 @@ export function ContactChannels() {
             Within <span className="font-mono">1</span> working day
           </p>
           <p className="mt-3 text-sm leading-relaxed text-paper/70">
-            Every enquiry is read by a founder, not a call centre. Ask for a JOVE Day and we will phone you within one working day to understand your school and find a date.
+            Every enquiry is read by a founder, not a call centre. Ask for a quote and we will phone you within one working day to understand your school and your classes.
           </p>
         </div>
       </div>

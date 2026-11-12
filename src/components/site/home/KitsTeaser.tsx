@@ -28,7 +28,7 @@ export function KitsTeaser() {
           index="07"
           eyebrow="Robotics & AI kits"
           title={["Take the robot", "home."]}
-          intro="The same kits we build with in the workshop, boxed for home. Every kit comes with an illustrated guide and free Virtual Labs — shipped to your door."
+          intro="The same kits schools use in class, for home too. Every kit comes with an illustrated guide and the free 3D bench, shipped to your door."
           action={
             <Button href="/shop" variant="secondary" arrow>
               Visit the kit store
