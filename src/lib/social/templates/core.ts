@@ -13,22 +13,22 @@ import { CTAS, WATCH, bareSite, caption, choice, dateHero, dotDate, hashtags, li
 
 const picture = (key: string, label: string, help?: string): FieldSpec => ({ key, label, kind: "image", help });
 
-/* ───────────────────────────── JOVE Day at a school ───────────────────────────── */
+/* ───────────────────────────── a teacher training at a school ───────────────────────────── */
 
 const STAGES: Record<string, { label: string; tag: string; eyebrow: string; sub: string }> = {
-  coming: { label: "Coming soon", tag: "JOVE Day · Announcement", eyebrow: "JOVE Day is coming to", sub: "A full day of Robotics, AI and Machine Learning, hands-on, for every grade group. Filmed by our own studio." },
-  today: { label: "Today", tag: "JOVE Day · Today", eyebrow: "Today, JOVE Day at", sub: "The stations are set, the cameras are rolling. Today every group builds something that works." },
-  thanks: { label: "Thank you", tag: "JOVE Day · Thank you", eyebrow: "Thank you", sub: "For a day of building, testing and showing. The film is on its way." },
+  coming: { label: "Coming soon", tag: "Teacher training · Announcement", eyebrow: "We are training the teachers of", sub: "Hands-on Robotics and AI training, so every class can build with JOVE kits all year." },
+  today: { label: "Today", tag: "Teacher training · Today", eyebrow: "Today, teacher training at", sub: "Every teacher builds every project, then teaches one back. The camera is rolling." },
+  thanks: { label: "Thank you", tag: "Teacher training · Thank you", eyebrow: "Thank you", sub: "For a day of building and teaching. Classes start next week, and the film is on its way." },
 };
 const ALL_GRADES = "Grades 1 to 10";
-/** "every grade group" is true only when the whole school takes part: a school that booked some grades is named by them */
+/** kept for posts saved before Nov 2026, whose line may still say "every grade group" */
 const forGrades = (line: string, grades: string) => (grades ? line.replace("for every grade group", `for ${grades}`) : line);
 
 const joveDay: TemplateDef = {
   id: "jove-day",
-  name: "JOVE Day at a school",
+  name: "Teacher training at a school",
   group: "Announcements",
-  blurb: "We are coming, we are here today, or thank you: one design for all three.",
+  blurb: "We are training a school's teachers soon, today, or thank you: one design for all three.",
   formats: ["post", "square", "story", "wide"],
   tones: ["paper", "graphite", "photo"],
   fields: [
@@ -36,9 +36,9 @@ const joveDay: TemplateDef = {
     { key: "school", label: "School", kind: "text", placeholder: "School name, as the school writes it", help: "Name a school only after it has approved the post.", max: 48 },
     { key: "city", label: "City or town", kind: "text", placeholder: "Bagalkot", max: 28 },
     { key: "date", label: "Date", kind: "date" },
-    { key: "grades", label: "Grades taking part", kind: "text", placeholder: ALL_GRADES, help: `Leave empty for ${ALL_GRADES}. Type it only when the school has booked some of its grades.`, max: 20 },
+    { key: "grades", label: "Grades the kits are for", kind: "text", placeholder: ALL_GRADES, help: `Leave empty for ${ALL_GRADES}. Type it only when the school ordered kits for some of its grades.`, max: 20 },
     { key: "line", label: "One line (optional)", kind: "textarea", rows: 2, placeholder: "Leave empty for the standard line", max: 150 },
-    picture("picture", "Picture (optional)", "A photo of the day. With the Photo look it fills the frame."),
+    picture("picture", "Picture (optional)", "A photo of the training, with the teachers' consent. With the Photo look it fills the frame."),
   ],
   sample: { stage: "coming", school: "Your school's name", city: "City", date: "2026-11-14", grades: "", line: "" },
   draw(p, { values: v, pictures, facts }) {
@@ -63,7 +63,7 @@ const joveDay: TemplateDef = {
         { label: "Where", value: val(v, "city") },
         { label: "For", value: val(v, "grades") || ALL_GRADES },
       ],
-      cta: val(v, "stage") === "thanks" ? "Book a JOVE Day" : undefined,
+      cta: val(v, "stage") === "thanks" ? "Get a quote" : undefined,
     });
   },
   caption(v) {
@@ -72,21 +72,21 @@ const joveDay: TemplateDef = {
     const stage = val(v, "stage");
     const grades = val(v, "grades");
     if (stage === "today")
-      return caption({ hook: `Today at ${school}: stations set, cameras rolling.`, body: [grades ? `${grades}: every group builds something that works.` : "Every grade group builds something that works, from a first circuit to a camera that learns to see.", "The reels and the highlight film follow."], credit: true, cta: CTAS.follow, tags: hashtags("robotics", "schools", "studio") });
+      return caption({ hook: `Today at ${school}: the teachers are building.`, body: [grades ? `Kits for ${grades}: every teacher builds every project and teaches one back.` : "Every teacher builds every project, from a first circuit to a camera that learns to see, and teaches one back.", "The film of the day follows."], credit: true, cta: CTAS.follow, tags: hashtags("robotics", "schools", "studio") });
     if (stage === "thanks")
-      return caption({ hook: `Thank you, ${school}.`, body: ["A full day of building, testing and showing what was built.", "Reels and the highlight film are being edited now."], credit: true, cta: CTAS.book, tags: hashtags("robotics", "schools", "studio") });
-    return caption({ hook: `JOVE Day is coming to ${school} on ${when}.`, body: [forGrades("A full day of Robotics, AI and Machine Learning, hands-on, for every grade group.", grades), "Our own film studio records the day, and the school receives the film."], credit: true, cta: CTAS.book, tags: hashtags("robotics", "schools") });
+      return caption({ hook: `Thank you, ${school}.`, body: ["Your teachers built, tested and taught every project. They are certified, and the kits are ready for class.", "The film of the training is being edited now."], credit: true, cta: CTAS.book, tags: hashtags("robotics", "schools", "studio") });
+    return caption({ hook: `On ${when} we train the teachers of ${school}.`, body: [grades ? `Robotics and AI kits for ${grades}, and hands-on training for the teachers who will teach them.` : "Robotics and AI kits for their classes, and hands-on training for the teachers who will teach them.", "Our own film studio records the training for the school."], credit: true, cta: CTAS.book, tags: hashtags("robotics", "schools") });
   },
 };
 
 /* ───────────────────────────── hiring ───────────────────────────── */
 
 const ROLES: Record<string, { label: string; line: string }> = {
-  trainer: { label: "Freelance Trainer (Robotics and AI)", line: "Lead hands-on sessions on JOVE Days. Kits, plans and training are ours; the patience and the energy are yours." },
-  lead: { label: "Lead Trainer", line: "Run a hall on JOVE Days, coach the trainers and keep every station working." },
-  editor: { label: "Editor Intern (FrameMind AI Studio)", line: "Cut reels and highlight films from real school workshop days, with our in-house studio." },
-  partnerships: { label: "Partnerships Associate", line: "Meet principals, explain a JOVE Day honestly and help schools book one." },
-  other: { label: "Another role (type it below)", line: "Help bring full-day Robotics and AI workshops, and their films, to schools." },
+  trainer: { label: "Freelance Teacher Trainer (Robotics and AI)", line: "Train school teachers to teach JOVE kits. Kits, plans and training are ours; the patience and the energy are yours." },
+  lead: { label: "Lead Trainer", line: "Lead teacher trainings, coach the trainers and keep every build working." },
+  editor: { label: "Editor Intern (FrameMind AI Studio)", line: "Cut the films of real teacher trainings at schools, with our in-house studio." },
+  partnerships: { label: "Partnerships Associate", line: "Meet principals, explain kits and teacher training honestly and help schools order." },
+  other: { label: "Another role (type it below)", line: "Help bring Robotics and AI kits, and trained teachers, to schools." },
 };
 
 /** The careers page the hiring QR code opens: the box on the design, else the JOVE careers page. */
@@ -165,8 +165,8 @@ const milestone: TemplateDef = {
   tones: ["paper", "graphite"],
   fields: [
     { key: "figure", label: "The number", kind: "text", placeholder: "01", help: "Only a number that is true today. We never round up or borrow someone else's.", max: 7 },
-    { key: "unit", label: "What it counts", kind: "text", placeholder: "JOVE Day", max: 22 },
-    { key: "label", label: "Headline", kind: "text", placeholder: "Our first JOVE Day is done", max: 56 },
+    { key: "unit", label: "What it counts", kind: "text", placeholder: "Teachers trained", max: 22 },
+    { key: "label", label: "Headline", kind: "text", placeholder: "Our first teachers are trained", max: 56 },
     { key: "line", label: "One line (optional)", kind: "textarea", rows: 2, max: 140 },
     { key: "date", label: "As of (date)", kind: "date" },
   ],
@@ -188,7 +188,7 @@ const milestone: TemplateDef = {
 const MOMENTS: Record<string, string> = {
   build: "Build moment",
   lens: "Behind the lens",
-  day: "JOVE Day",
+  day: "Training day",
   studio: "Studio day",
   kit: "Kit build",
   team: "Team",
@@ -217,7 +217,7 @@ const moment: TemplateDef = {
   },
   caption(v) {
     const lens = val(v, "kind") === "lens" || val(v, "kind") === "studio";
-    // the credit belongs to a workshop day: a studio day, a kit on a desk or a team photo is not one
+    // the credit belongs to a training day: a studio day, a kit on a desk or a team photo is not one
     return caption({ hook: val(v, "headline") || "[The moment, not the company]", body: [val(v, "line"), [val(v, "place"), shortDate(val(v, "date"))].filter(Boolean).join(" · ")], credit: ["build", "day", "lens"].includes(val(v, "kind") || "build"), cta: lens ? CTAS.follow : CTAS.book, tags: lens ? hashtags("studio", "robotics") : hashtags("robotics", "schools") });
   },
 };
@@ -314,7 +314,7 @@ const learn: TemplateDef = {
   fields: [
     { key: "title", label: "Title", kind: "text", placeholder: "How a robot decides", max: 54 },
     { key: "points", label: "Points, one per line. Add a line about it after a | sign.", kind: "textarea", rows: 5, placeholder: "Sense | A sensor measures the world", max: 90 },
-    { key: "cta", label: "Call to action", kind: "select", options: [{ value: "", label: "None" }, { value: "Try the free Virtual Lab", label: "Try the free Virtual Lab" }, { value: "Save for science week", label: "Save for science week" }, { value: "Book a JOVE Day", label: "Book a JOVE Day" }] },
+    { key: "cta", label: "Call to action", kind: "select", options: [{ value: "", label: "None" }, { value: "Try the free Virtual Lab", label: "Try the free Virtual Lab" }, { value: "Save for science week", label: "Save for science week" }, { value: "Get a quote", label: "Get a quote" }] },
   ],
   sample: { title: "How a robot decides", points: "Sense | A sensor measures light, distance or sound.\nThink | A small program compares it with a rule.\nAct | A motor, a light or a buzzer responds.", cta: "Try the free Virtual Lab" },
   draw(p, { values: v, facts }) {
@@ -322,7 +322,7 @@ const learn: TemplateDef = {
   },
   caption(v) {
     const items = linesOf(v, "points").map(splitLine);
-    return caption({ hook: `${val(v, "title") || "[Title]"}: ${items.map((i) => i.title.toLowerCase()).join(", ")}.`, body: items.map((i, n) => `${n + 1}. ${i.title}${i.text ? `: ${i.text}` : ""}`), cta: val(v, "cta").includes("Lab") ? CTAS.learn : val(v, "cta").includes("Book") ? CTAS.book : CTAS.save, tags: hashtags("robotics", "ai") });
+    return caption({ hook: `${val(v, "title") || "[Title]"}: ${items.map((i) => i.title.toLowerCase()).join(", ")}.`, body: items.map((i, n) => `${n + 1}. ${i.title}${i.text ? `: ${i.text}` : ""}`), cta: val(v, "cta").includes("Lab") ? CTAS.learn : /Book|quote/.test(val(v, "cta")) ? CTAS.book : CTAS.save, tags: hashtags("robotics", "ai") });
   },
 };
 
@@ -393,18 +393,18 @@ const carousel: TemplateDef = {
   formats: ["post", "square", "story"],
   tones: ["paper", "graphite"],
   fields: [
-    { key: "tag", label: "Topic", kind: "select", options: ["Learn with JOVE", "For schools", "JOVE Day", "Behind the lens", "Founders and craft"].map((value) => ({ value, label: value })) },
-    { key: "hook", label: "First slide: the hook", kind: "text", placeholder: "A JOVE Day, hour by hour", help: "A question or a surprising line.", max: 60 },
+    { key: "tag", label: "Topic", kind: "select", options: ["Learn with JOVE", "For schools", "Teacher training", "Behind the lens", "Founders and craft"].map((value) => ({ value, label: value })) },
+    { key: "hook", label: "First slide: the hook", kind: "text", placeholder: "A teacher training, hour by hour", help: "A question or a surprising line.", max: 60 },
     { key: "line", label: "First slide: one line under it (optional)", kind: "textarea", rows: 2, max: 120 },
     { key: "points", label: "One slide per line (up to 8). Add the text after a | sign, 25 words at most.", kind: "textarea", rows: 6, max: 190 },
-    { key: "cta", label: "Last slide: the one action", kind: "select", options: ["Book a JOVE Day", "Try the free Virtual Lab", "Shop JOVE Kits", "Save this for later", "Send this to your coordinator"].map((value) => ({ value, label: value })) },
+    { key: "cta", label: "Last slide: the one action", kind: "select", options: ["Get a quote", "Try the free Virtual Lab", "Shop JOVE Kits", "Save this for later", "Send this to your coordinator"].map((value) => ({ value, label: value })) },
   ],
   sample: {
-    tag: "JOVE Day",
-    hook: "A JOVE Day, hour by hour",
+    tag: "Teacher training",
+    hook: "A teacher training, hour by hour",
     line: "One school, one day, every grade.",
     points: "Set-up | The team arrives early and builds the stations in two halls.\nOpening show | A robot and drone show for the whole school.\nSessions | Each grade group builds, tests and fixes its own project.\nShowcase | Students present what they built and receive certificates.",
-    cta: "Book a JOVE Day",
+    cta: "Get a quote",
   },
   pages: (v) => slidesOf(v).length + 2,
   draw(p, { values: v, page, pages, facts }) {
@@ -412,12 +412,12 @@ const carousel: TemplateDef = {
     const base = { tag: val(v, "tag") || "JOVE", index: `${String(page + 1).padStart(2, "0")} / ${String(pages).padStart(2, "0")}`, foot: bareSite(facts.website) };
     if (page === 0) poster(p, { ...base, eyebrow: "Swipe to read", headline: val(v, "hook") || "The hook", sub: val(v, "line"), dim: `${slides.length} ${slides.length === 1 ? "point" : "points"}` });
     else if (page <= slides.length) point(p, { ...base, number: String(page).padStart(2, "0"), title: slides[page - 1].title, text: slides[page - 1].text, more: true });
-    else poster(p, { ...base, eyebrow: "Your turn", headline: val(v, "cta") || "Book a JOVE Day", sub: /Lab/.test(val(v, "cta")) ? "Free, in the browser, no sign-up." : /Kits/.test(val(v, "cta")) ? "Everything in the box, by age." : /Book/.test(val(v, "cta")) ? "A full day of Robotics and AI for Grades 1 to 10. The film is on us." : "", cta: /Save|Send/.test(val(v, "cta")) ? undefined : "Link in bio" });
+    else poster(p, { ...base, eyebrow: "Your turn", headline: val(v, "cta") || "Get a quote", sub: /Lab/.test(val(v, "cta")) ? "Free, in the browser, no sign-up." : /Kits/.test(val(v, "cta")) ? "Everything in the box, by age." : /Book|quote/.test(val(v, "cta")) ? "Kits for Grades 1 to 10, and teachers trained to teach them." : "", cta: /Save|Send/.test(val(v, "cta")) ? undefined : "Link in bio" });
   },
   caption(v) {
     const slides = slidesOf(v);
     const cta = val(v, "cta");
-    return caption({ hook: val(v, "hook") || "[The hook]", body: [val(v, "line"), ...slides.map((s, n) => `${n + 1}. ${s.title}`)], credit: val(v, "tag") === "JOVE Day", cta: /Lab/.test(cta) ? CTAS.learn : /Kits/.test(cta) ? CTAS.shop : /Save/.test(cta) ? CTAS.save : /Send/.test(cta) ? CTAS.share : CTAS.book, tags: hashtags("robotics", "schools") });
+    return caption({ hook: val(v, "hook") || "[The hook]", body: [val(v, "line"), ...slides.map((s, n) => `${n + 1}. ${s.title}`)], credit: ["Teacher training", "JOVE Day"].includes(val(v, "tag")), cta: /Lab/.test(cta) ? CTAS.learn : /Kits/.test(cta) ? CTAS.shop : /Save/.test(cta) ? CTAS.save : /Send/.test(cta) ? CTAS.share : CTAS.book, tags: hashtags("robotics", "schools") });
   },
 };
 

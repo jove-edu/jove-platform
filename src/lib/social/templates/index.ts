@@ -9,7 +9,7 @@ export const GROUP_ORDER: TemplateGroup[] = ["Announcements", "Promotion", "Hiri
 
 export const GROUP_NOTES: Record<TemplateGroup, string> = {
   Announcements: "Where we are going, what is happening, what is coming up.",
-  Promotion: "What a JOVE Day is and why a school should book one.",
+  Promotion: "Kits and teacher training, and why a school should order them.",
   Hiring: "Open roles.",
   Milestones: "Real numbers and firsts.",
   Kits: "Kits ready, shipping, back in stock.",

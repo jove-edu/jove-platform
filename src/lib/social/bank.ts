@@ -6,7 +6,7 @@
  *
  * Nothing here invents a fact: a number is typed by the person, or read from the price list the website uses.
  */
-import { gradeBands, joveDayRules, kits, targets, type KitId } from "@/lib/content/business";
+import { kits, targets, teacherTraining, trainingRules, type KitId } from "@/lib/content/business";
 import type { FieldSpec, Values } from "./types";
 import { TAGS, hashtags, rupees, val, type CtaKey, type TagSet } from "./words";
 
@@ -28,7 +28,7 @@ export interface CaptionKind {
   hook: (v: Values) => string;
   /** the short lines under it */
   body: (v: Values) => string[];
-  /** a workshop is shown, so the credit line goes in */
+  /** a training is shown, so the credit line goes in */
   credit: boolean;
   /** the call to action it starts with ("" = none) */
   cta: CtaKey | "";
@@ -44,7 +44,7 @@ const part = (v: Values, key: string, name: string) => val(v, key) || `[${name}]
 /** "Grades 3–5 · Ages 8–11" → "Grades 3 to 5" */
 const gradesOf = (text: string) => text.split("·")[0].trim().replace(/\s*[–-]\s*/g, " to ");
 
-const lowestPrice = Math.min(...gradeBands.map((b) => b.pricePerStudent));
+const lowestKit = Math.min(...kits.map((k) => k.schoolPrice));
 const kitOf = (v: Values) => kits.find((k) => k.id === val(v, "kit")) ?? kits[0];
 /** The two junior kits have no code in them, so "code it" would not be true for those. */
 const CODED: Record<KitId, boolean> = { spark: false, explorer: false, builder: true, innovator: true };
@@ -56,28 +56,28 @@ export const CAPTION_KINDS: CaptionKind[] = [
   {
     id: "build",
     name: "Build moment",
-    when: "A build that worked, on a real workshop day.",
-    fields: [{ key: "grade", label: "Grade", kind: "text", placeholder: "Grade 5", max: 20 }, school, project],
+    when: "A build that worked, on a real training day.",
+    fields: [school, project],
     start: {},
     hook: () => "The moment the motor spins.",
-    body: (v) => [`${part(v, "grade", "Grade")} students at ${part(v, "school", "School")} built ${part(v, "project", "project")} today, and every circuit worked by the end of the session.`],
+    body: (v) => [`The teachers of ${part(v, "school", "School")} built ${part(v, "project", "project")} today, and every circuit worked by the end of the training.`],
     credit: true,
     cta: "book",
     sets: ["robotics", "schools"],
-    note: "Post only what happened. If a circuit did not work by the end, change that line before you copy.",
+    note: "Post only what happened. If a circuit did not work by the end, change that line before you copy. Teachers shown must have agreed.",
   },
   {
     id: "lens",
     name: "Behind the lens",
-    when: "How the film crew covers a JOVE Day.",
-    fields: [{ key: "students", label: "Students that day", kind: "text", placeholder: "250", help: "The real count for that day, never a round guess.", max: 5 }],
+    when: "How the film crew covers a teacher training.",
+    fields: [{ key: "teachers", label: "Teachers that day", kind: "text", placeholder: "12", help: "The real count for that day, never a round guess.", max: 5 }],
     start: {},
-    hook: (v) => `One workshop. Two halls. A film crew, a drone and ${part(v, "students", "number")} young engineers.`,
-    body: () => ["Here is how we make a JOVE Day look like cinema."],
+    hook: (v) => `One room. A film crew, a box of kits and ${part(v, "teachers", "number")} teachers building robots.`,
+    body: () => ["Here is how we make a training day look like cinema."],
     credit: true,
     cta: "follow",
     sets: ["studio", "robotics"],
-    note: "Drone shots only with the school's permission and within the drone rules.",
+    note: "Film only with the school's permission; any teacher can ask to be left out.",
   },
   {
     id: "learn",
@@ -98,17 +98,17 @@ export const CAPTION_KINDS: CaptionKind[] = [
   {
     id: "schools",
     name: "For schools",
-    when: "What a JOVE Day is and what it costs, said plainly.",
+    when: "What JOVE offers schools and what it costs, said plainly.",
     fields: [],
     start: {},
-    hook: () => `A full day of Robotics and AI for Grades 1 to 10, from ${rupees(lowestPrice)} per student (ex-GST, minimum ${joveDayRules.minimumStudents} students).`,
-    body: () => ["Every kit, trainer and cable is ours.", "The film is on us."],
+    hook: () => `Robotics and AI kits for Grades 1 to 10 from ${rupees(lowestKit)} a kit (incl. GST), and training for your teachers at ${rupees(teacherTraining.pricePerTeacher)} per teacher (ex-GST).`,
+    body: () => ["Lesson plans for every project and a certificate for every teacher.", "We film the training for your school."],
     credit: false,
     cta: "book",
     sets: ["schools", "robotics"],
     facts: () => [
-      { label: "Lowest price per student", value: `${rupees(lowestPrice)}, ex-GST` },
-      { label: "Smallest JOVE Day", value: `${joveDayRules.minimumStudents} students` },
+      { label: "Kits from", value: `${rupees(lowestKit)}, incl. GST (from ${trainingRules.minimumKits} kits)` },
+      { label: "Teacher training", value: `${rupees(teacherTraining.pricePerTeacher)} per teacher, ex-GST (from ${teacherTraining.minimumTeachers})` },
     ],
     note: "The price and the minimum are read from the price list. A founder changes them in Prices & Costs, never here.",
   },
@@ -121,7 +121,7 @@ export const CAPTION_KINDS: CaptionKind[] = [
       { key: "today", label: "Where JOVE is today", kind: "text", placeholder: "JOVE launches in October 2026.", help: "One true line. A plan is written as a plan.", max: 80 },
     ],
     // "today" starts empty: a line that is true this month is wrong the next
-    start: { why: "a Robotics and AI day with real kits and a real film crew", today: "" },
+    start: { why: "real Robotics and AI kits in every class, and teachers trained to teach them", today: "" },
     hook: (v) => `We are two founders building something we wish our school had: ${part(v, "why", "what you are building")}.`,
     body: (v) => [part(v, "today", "where JOVE is today")],
     credit: false,
@@ -131,15 +131,15 @@ export const CAPTION_KINDS: CaptionKind[] = [
   {
     id: "school",
     name: "School celebration",
-    when: "For the school to post from its own handle after its JOVE Day.",
+    when: "For the school to post from its own handle after its teacher training.",
     fields: [school, project],
     start: {},
-    hook: (v) => `What an incredible day at ${part(v, "school", "School")}.`,
-    body: (v) => [`Our students built ${part(v, "project", "project")}, tested it and presented it with pride.`, "Thank you, JOVE, for bringing Robotics and AI to our campus."],
+    hook: (v) => `Robotics and AI arrive in our classrooms at ${part(v, "school", "School")}.`,
+    body: (v) => [`Our teachers built ${part(v, "project", "project")}, tested it and are now certified to teach it.`, "Thank you, JOVE, for the kits and the training."],
     credit: true,
     cta: "",
     sets: ["robotics", "schools"],
-    note: "Written in the school's voice, for the school's own handle. It goes to the school with its Media Pack: the posting kit is in Media Studio.",
+    note: "Written in the school's voice, for the school's own handle. It goes to the school with its training film: the posting kit is in Media Studio.",
   },
   {
     id: "kit",
@@ -172,10 +172,10 @@ export const CAPTION_KINDS: CaptionKind[] = [
 export const HOOKS: { line: string; fits: string }[] = [
   { line: "Wait for it.", fits: "A build payoff: the motor spins, the light comes on." },
   { line: "Can a machine learn to see a pen?", fits: "An AI session." },
-  { line: "7:30 am. Empty hall. 3:20 pm. Whole school cheering.", fits: "A real JOVE Day, start to finish. Use that day's own times." },
+  { line: "9 am: a box of kits. 1 pm: every teacher's robot moving.", fits: "A real training, start to finish. Use that day's own times." },
   { line: "Robot or not?", fits: "The Grades 1 to 2 game." },
   { line: "They failed six times. Then this.", fits: "A debugging story. Write the real number of attempts." },
-  { line: "A robotics workshop that comes with a film crew.", fits: "The studio: what makes JOVE different." },
+  { line: "Robotics that stays in your school, taught by your own teachers.", fits: "The offer: what makes JOVE different." },
   { line: "This is what a Grade 5 robot looks like.", fits: "A finished build. Write the real grade." },
 ];
 
@@ -232,7 +232,7 @@ export function tagMix(sets: PickableSet[], turn: number): string[] {
 export const CAPTION_RULES: { name: string; rule: string }[] = [
   { name: "Hook", rule: `The first ${FIRST_LINE} characters show before “more”. Lead with the moment, not the company.` },
   { name: "Body", rule: "Two to four short lines: what the students built and learned. One idea in each sentence." },
-  { name: "Credit", rule: "Where a workshop is shown: “Workshop by JOVE · Film by FrameMind AI Studio”." },
+  { name: "Credit", rule: "Where a training is shown: “Training by JOVE · Film by FrameMind AI Studio”." },
   { name: "Action", rule: "One call to action. Only one." },
   { name: "Hashtags", rule: "Five to eight after a line break, two of them core. In the whole caption: one exclamation mark at most, two emoji at most." },
 ];
@@ -247,11 +247,11 @@ export const DO_NOT_USE: string[] = [
 
 /** The vocabulary of Voice and Tone: the words on the left are ours. */
 export const SAY_NOT: { say: string; not: string }[] = [
-  { say: "workshop day, JOVE Day", not: "seminar, “fun class”" },
+  { say: "teacher training, kits for schools", not: "seminar, “fun class”, workshop for students" },
   { say: "build, test, debug", not: "play with gadgets" },
   { say: "students, young engineers", not: "customers" },
   { say: `target: ${targets.yearOneSchools} schools in year one`, not: `trusted by ${targets.yearOneSchools} schools` },
-  { say: `from ${rupees(lowestPrice)} per student, ex-GST`, not: "cheapest, unbeatable price" },
+  { say: `kits from ${rupees(lowestKit)}, incl. GST`, not: "cheapest, unbeatable price" },
   { say: "we aim to, we plan to", not: "guaranteed results" },
   { say: "real-world skills", not: "futuristic, revolutionary, game-changing" },
   { say: "in-house film studio", not: "viral content" },
@@ -269,7 +269,7 @@ export interface Flag {
 const WORDS: { find: RegExp; level: Flag["level"]; text: string }[] = [
   { find: /\bnumber\s*(one|1)\b|\bno\.\s*1\b|#1\b/i, level: "fix", text: "“Number 1” is a superlative we cannot prove." },
   { find: /\bbest\b/i, level: "look", text: "“Best” is a superlative. Keep it only if it is not a claim about JOVE." },
-  { find: /\b(cheapest|unbeatable)\b/i, level: "fix", text: "Say the price itself (“from ... per student, ex-GST”), not “cheapest” or “unbeatable”." },
+  { find: /\b(cheapest|unbeatable)\b/i, level: "fix", text: "Say the price itself (“kits from ..., incl. GST”), not “cheapest” or “unbeatable”." },
   { find: /\bguarantee[ds]?\b/i, level: "fix", text: "We do not promise results. Say “we aim to” or “we plan to”." },
   { find: /\b(revolutionary|game[- ]changing|futuristic)\b/i, level: "fix", text: "Say “real-world skills”, not “revolutionary”, “game-changing” or “futuristic”." },
   { find: /\bviral\b/i, level: "fix", text: "Say “in-house film studio”, not “viral”." },
@@ -289,7 +289,7 @@ export function review(text: string): Flag[] {
   const emoji = (text.match(/\p{Extended_Pictographic}/gu) ?? []).length;
   if (emoji > 2) flags.push({ level: "fix", text: `${emoji} emoji. A caption has two at most, and never in place of a word.` });
   if (text.includes("—")) flags.push({ level: "fix", text: "There is a long dash. Use a full stop or a comma." });
-  if (text.includes("₹") && !/GST/i.test(text)) flags.push({ level: "fix", text: "A price is shown without its GST status: “ex-GST” for workshops, “incl. GST” for kits." });
+  if (text.includes("₹") && !/GST/i.test(text)) flags.push({ level: "fix", text: "A price is shown without its GST status: “ex-GST” for training, “incl. GST” for kits." });
   const tags = (text.match(/#[\p{L}\p{N}_]+/gu) ?? []).length;
   if (tags && (tags < 5 || tags > 8)) flags.push({ level: "fix", text: `${tags} ${tags === 1 ? "hashtag" : "hashtags"}. A caption has five to eight.` });
   for (const w of WORDS) if (w.find.test(text)) flags.push({ level: w.level, text: w.text });

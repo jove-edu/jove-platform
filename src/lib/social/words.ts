@@ -93,7 +93,7 @@ export function hashtags(...sets: TagSet[]): string[] {
 /* ───────────────────────────── calls to action ───────────────────────────── */
 
 export const CTAS = {
-  book: "Book a JOVE Day for your school. Link in bio.",
+  book: "Kits and teacher training for your school: get a quote. Link in bio.",
   learn: "Try the free Virtual Lab. Link in bio.",
   shop: "Shop JOVE Kits. Link in bio.",
   engage: "Which grade should we feature next? Tell us below.",
@@ -105,10 +105,10 @@ export type CtaKey = keyof typeof CTAS;
 /** the one action under a thumbnail or an episode cover (not one of the seven of the bank, which are for posts) */
 export const WATCH = "Watch the full video. Link in bio.";
 
-export const CREDIT = "Workshop by JOVE · Film by FrameMind AI Studio";
+export const CREDIT = "Training by JOVE · Film by FrameMind AI Studio";
 
 /**
- * A caption in the house structure: hook line, two to four short lines, the credit where a workshop is shown,
+ * A caption in the house structure: hook line, two to four short lines, the credit where a training is shown,
  * one call to action, then the hashtags after a line break.
  */
 export function caption(o: { hook: string; body?: (string | false | undefined)[]; credit?: boolean; cta?: string; tags: string[] }): Caption {

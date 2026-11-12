@@ -59,7 +59,7 @@ export interface FounderPlan {
 const shivaprasad: FounderPlan = {
   id: "shivaprasad",
   account: "Shivaprasad (personal)",
-  headline: "Full-day Robotics and AI workshops for schools, Grades 1 to 10",
+  headline: "Robotics and AI kits and teacher training for schools, Grades 1 to 10",
   purpose:
     "This is where a principal looks you up before agreeing to a meeting. It should show the person who answers the phone, plans the day and stands in the hall: how you think, how you run things, and that you tell the truth about a company that is new.",
   readers: [
@@ -78,7 +78,7 @@ const shivaprasad: FounderPlan = {
       id: "why",
       name: "Why JOVE, why now",
       about: "The reason the company exists, and where it honestly stands today.",
-      posts: ["Why you started, told through one story from your own school years", "What a JOVE Day is, for someone who has never seen one", "What is ready today and what is still being built"],
+      posts: ["Why you started, told through one story from your own school years", "What kits plus teacher training means for a school, for someone who has never seen it", "What is ready today and what is still being built"],
     },
     {
       id: "schools",
@@ -110,9 +110,9 @@ const shivaprasad: FounderPlan = {
     { pillar: "why", text: "The school day I wish I had looked like this: ..." },
     { pillar: "why", text: "Why we are starting JOVE now and not later: ..." },
     { pillar: "why", text: "JOVE is new. Here is what is ready, and what is not yet: ..." },
-    { pillar: "why", text: "One thing every child should leave a workshop able to do: ..." },
+    { pillar: "why", text: "One thing every child should be able to do after a term with the kits: ..." },
     { pillar: "why", text: "NEP 2020 asks for learning by doing. In one hall, that looks like: ..." },
-    { pillar: "schools", text: "What a school actually gets on a JOVE Day: ..." },
+    { pillar: "schools", text: "What a school actually gets with kits and teacher training: ..." },
     { pillar: "schools", text: "Our prices, in plain numbers: ...", tip: "Copy the numbers from the price list and say ex-GST." },
     { pillar: "schools", text: "What we ask a school to arrange, and nothing more: ..." },
     { pillar: "schools", text: "The first time a principal asked us ..." },
@@ -124,7 +124,7 @@ const shivaprasad: FounderPlan = {
     { pillar: "running", text: "What we got wrong this week: ..." },
     { pillar: "running", text: "A checklist we rewrote this week, and why: ..." },
     { pillar: "running", text: "What I look for when we meet a trainer: ..." },
-    { pillar: "running", text: "Our first JOVE Day. What we learned: ...", after: "Only once the day has been held." },
+    { pillar: "running", text: "Our first teacher training. What we learned: ...", after: "Only once the training has been held." },
     { pillar: "honest", text: "Our target for year one, and where we stand today: ...", tip: "Write the target as a target. Count only what is real." },
     { pillar: "honest", text: "A number we will not publish until it is real: ..." },
     { pillar: "honest", text: "What I changed my mind about this month: ..." },
@@ -182,7 +182,7 @@ const chinmay: FounderPlan = {
       id: "studio",
       name: "Building the studio honestly",
       about: "Running a small studio inside a new company, told as it is.",
-      posts: ["Why a workshop company has its own film crew", "What you got wrong, and what you changed", "The tools on your desk, the AI ones named plainly"],
+      posts: ["Why a kits company has its own film crew", "What you got wrong, and what you changed", "The tools on your desk, the AI ones named plainly"],
     },
   ],
   rhythm: [
@@ -211,7 +211,7 @@ const chinmay: FounderPlan = {
     { pillar: "build", text: "From sketch to box: how one kit came together: ..." },
     { pillar: "build", text: "A bug I chased this week: ..." },
     { pillar: "build", text: "What a Grade 1 build and a Grade 10 build have in common: ..." },
-    { pillar: "studio", text: "Why a workshop company has its own film studio: ..." },
+    { pillar: "studio", text: "Why we film every teacher training: ..." },
     { pillar: "studio", text: "This picture is an illustration, and it says so. Here is why: ..." },
     { pillar: "studio", text: "What I got wrong this week: ..." },
     { pillar: "studio", text: "The tools on my desk this month, AI ones included: ..." },

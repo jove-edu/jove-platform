@@ -2,10 +2,10 @@
  * The designs of Social Studio, part 2 (promotion, more announcements, video series, festival days and the
  * founders' own posts). Same rules as part 1: see core.ts.
  *
- * Prices and the Media Pack list are read from the price list the website uses, lab names from the Virtual Labs
+ * Prices and the training film list are read from the price list the website uses, lab names from the Virtual Labs
  * and the founders' names from the site profile, so a post can never disagree with the website.
  */
-import { gradeBands, joveDayRules, mediaPack } from "@/lib/content/business";
+import { kits, teacherTraining, trainingFilm, trainingRules } from "@/lib/content/business";
 import { labs } from "@/lib/content/labs";
 import { site } from "@/lib/site";
 import { figure, list, photo, poster, thumb, type Fact } from "../layouts";
@@ -17,133 +17,123 @@ const ALL_SIZES: FormatId[] = ["post", "square", "story", "wide"];
 
 /** a typed line as a sentence: a full stop is added unless it already ends with one */
 const sentence = (s: string) => (s && !/[.?!…]$/.test(s) ? `${s}.` : s);
-const CONSENT = "Photos of children need the school's consent. No name, class or crest without approval.";
+const CONSENT = "Photos of teachers need their consent, and of children the school's. No name, class or crest without approval.";
 
-/* ───────────────────────────── what a JOVE Day costs (from the price list) ───────────────────────────── */
+/* ───────────────────────────── what kits and training cost (from the price list) ───────────────────────────── */
 
-const fromPrice = Math.min(...gradeBands.map((b) => b.pricePerStudent));
-const PRICE = `From ${rupees(fromPrice)} per student, ex-GST`;
-const MINIMUM = `${joveDayRules.minimumStudents} students`;
+const fromKit = Math.min(...kits.map((k) => k.schoolPrice));
+const PRICE = `Kits from ${rupees(fromKit)}, incl. GST`;
+const TRAINING = `Training ${rupees(teacherTraining.pricePerTeacher)} per teacher, ex-GST`;
 const dayFacts: Fact[] = [
-  { label: "Price", value: PRICE },
-  { label: "Minimum", value: MINIMUM },
+  { label: "Kits", value: PRICE },
+  { label: "Training", value: TRAINING },
   { label: "For", value: "Grades 1 to 10" },
 ];
 
-/* ───────────────────────────── what is a JOVE Day ───────────────────────────── */
+/* ───────────────────────────── kits + teacher training (id kept for saved posts) ───────────────────────────── */
 
-const PROMO_HEADLINE = "A full day of Robotics and AI";
+const PROMO_HEADLINE = "Robotics and AI, taught by your teachers";
 
 const promoJoveDay: TemplateDef = {
   id: "promo-jove-day",
-  name: "What is a JOVE Day",
+  name: "Kits + teacher training",
   group: "Promotion",
-  blurb: "The JOVE Day in one post: what it is, three points, and the price from the price list.",
+  blurb: "The offer in one post: what it is, three points, and the prices from the price list.",
   formats: ALL_SIZES,
   tones: ["paper", "graphite", "photo"],
   fields: [
     { key: "headline", label: "Headline (up to 8 words)", kind: "text", placeholder: PROMO_HEADLINE, max: 40 },
     { key: "line", label: "One line", kind: "textarea", rows: 3, max: 120 },
-    { key: "points", label: "Three points (one per line)", kind: "textarea", rows: 3, help: "Only what every JOVE Day includes. The price and the minimum are read from the price list.", max: 48 },
+    { key: "points", label: "Three points (one per line)", kind: "textarea", rows: 3, help: "Only what every school receives. The prices are read from the price list.", max: 48 },
     picture("picture", "Picture (for the Photo look)", `${CONSENT} Until you add one, an illustration is shown and labelled.`),
   ],
   sample: {
     headline: PROMO_HEADLINE,
-    line: "On your campus, for Grades 1 to 10. Every kit, trainer and cable is ours. The film is on us.",
-    points: "Every grade group builds its own project\nKits, tools and certificates included\nReels and a highlight film by our own studio",
+    line: "Kits in class sets for Grades 1 to 10, and hands-on training that certifies your teachers to teach them.",
+    points: "A kit for every team, every grade\nTeachers trained and certified\nLesson plans for every project",
   },
-  stock: () => ({ picture: "/images/studio/kids-build.webp" }),
+  stock: () => ({ picture: "/images/studio/trainer-class.webp" }),
   draw(p, { values: v, pictures, facts }) {
-    const base = { tag: "For schools · JOVE Day", foot: bareSite(facts.website) };
+    const base = { tag: "For schools · Kits + training", foot: bareSite(facts.website) };
     const headline = val(v, "headline") || PROMO_HEADLINE;
     if (p.tone === "photo") {
-      photo(p, { ...base, headline, sub: val(v, "line"), chips: [PRICE, `Min. ${MINIMUM}`], picture: pictures.picture });
+      photo(p, { ...base, headline, sub: val(v, "line"), chips: [PRICE, TRAINING], picture: pictures.picture });
       return;
     }
     const points = linesOf(v, "points").slice(0, 3);
     poster(p, {
       ...base,
-      eyebrow: "What is a JOVE Day?",
+      eyebrow: "Kits + teacher training",
       headline,
       // Square and Wide are short sheets: with the points on them, the line stays in the caption
       sub: p.portrait || !points.length ? val(v, "line") : "",
       bullets: points,
       facts: dayFacts,
-      cta: "Book a JOVE Day",
-      hero: p.wide ? { top: "Grades", main: "1–10", bottom: "One full day" } : null,
+      cta: "Get a quote",
+      hero: p.wide ? { top: "Grades", main: "1–10", bottom: "Kits + training" } : null,
     });
   },
   caption(v) {
     const headline = val(v, "headline") || PROMO_HEADLINE;
-    const priced = `from ${rupees(fromPrice)} per student (ex-GST, minimum ${MINIMUM}).`;
     return caption({
-      hook: /[.?!]$/.test(headline) ? `${headline} F${priced.slice(1)}` : `${headline}, ${priced}`,
-      body: [val(v, "line"), ...linesOf(v, "points").slice(0, 3).map((l) => `· ${l}`)],
+      hook: /[.?!]$/.test(headline) ? headline : `${headline}.`,
+      body: [val(v, "line"), ...linesOf(v, "points").slice(0, 3).map((l) => `· ${l}`), `${PRICE} (school price, from ${trainingRules.minimumKits} kits). ${TRAINING}, from ${teacherTraining.minimumTeachers} teachers.`],
       cta: CTAS.book,
       tags: hashtags("schools", "robotics"),
     });
   },
 };
 
-/* ───────────────────────────── the Media Pack ───────────────────────────── */
+/* ───────────────────────────── the training film (id kept for saved posts) ───────────────────────────── */
 
-const PACK_TITLE = "The JOVE Media Pack";
-const PACK_VALUE = `Market value about ${rupees(mediaPack.marketValue)}`;
+const PACK_TITLE = "Your training day, on film";
 const PACK_CTAS: Record<string, { pill?: string; line: string }> = {
-  book: { pill: "Book a JOVE Day", line: CTAS.book },
+  book: { pill: "Get a quote", line: CTAS.book },
   share: { line: CTAS.share },
 };
 
 const mediaPackPost: TemplateDef = {
   id: "media-pack",
-  name: "The free Media Pack",
+  name: "The training film",
   group: "Promotion",
-  blurb: "What every school receives with its JOVE Day, read from the Media Pack list.",
+  blurb: "What a school receives on film with Kits + Teacher Training, read from the price list.",
   formats: ALL_SIZES,
   tones: ["paper", "graphite"],
   fields: [
     { key: "title", label: "Title", kind: "text", placeholder: PACK_TITLE, max: 30 },
-    { key: "detail", label: "Under each item", kind: "select", options: [{ value: "", label: "Nothing: the names only" }, { value: "delivery", label: "When the school receives it" }], help: "Post and Story show the most items. Square and Wide show the first four." },
-    { key: "value", label: "Market value", kind: "select", options: [{ value: "", label: "Leave it out" }, { value: "show", label: `Show it: ${PACK_VALUE.toLowerCase()}` }], help: "Our own estimate, from the price list. It is always worded as “market value about”." },
-    { key: "cta", label: "Call to action", kind: "select", options: [{ value: "book", label: "Book a JOVE Day" }, { value: "share", label: "None on the design (caption: send this to your coordinator)" }] },
+    { key: "detail", label: "Under each item", kind: "select", options: [{ value: "", label: "Nothing: the names only" }, { value: "delivery", label: "What it is" }] },
+    { key: "cta", label: "Call to action", kind: "select", options: [{ value: "book", label: "Get a quote" }, { value: "share", label: "None on the design (caption: send this to your coordinator)" }] },
   ],
-  sample: { title: PACK_TITLE, detail: "", value: "", cta: "book" },
+  sample: { title: PACK_TITLE, detail: "", cta: "book" },
   draw(p, { values: v, facts }) {
     list(p, {
-      tag: "For schools · Media Pack",
-      index: val(v, "value") === "show" ? PACK_VALUE : undefined,
+      tag: "For schools · Training film",
       foot: bareSite(facts.website),
-      eyebrow: "Free with every JOVE Day",
+      eyebrow: "With Kits + Teacher Training",
       title: val(v, "title") || PACK_TITLE,
-      // a Story has no caption, so the condition on drone shots is printed on the design itself
-      items: mediaPack.items.map((i) => ({ title: i.title, text: /drone/i.test(i.title) ? "Where drone rules and the school allow" : val(v, "detail") === "delivery" ? i.delivery : undefined })),
+      items: trainingFilm.items.map((i) => ({ title: i.title, text: val(v, "detail") === "delivery" ? i.detail : undefined })),
       cta: (choice(PACK_CTAS, val(v, "cta")) ?? PACK_CTAS.book).pill,
     });
   },
   caption(v) {
     return caption({
-      hook: "A robotics workshop that comes with a film crew.",
-      body: [
-        "Every school that books a JOVE Day receives the Media Pack, free:",
-        ...mediaPack.items.map((i) => `· ${i.title}`),
-        "Made by FrameMind AI Studio, our in-house studio. Drone shots depend on local rules and the school's permission.",
-        val(v, "value") === "show" && `${PACK_VALUE}, included.`,
-      ],
+      hook: "Your teachers' training day, on film.",
+      body: ["With Kits + Teacher Training, our in-house studio FrameMind AI Studio films the day:", ...trainingFilm.items.map((i) => `· ${i.title}`), "Teachers who do not want to appear are left out."],
       cta: (choice(PACK_CTAS, val(v, "cta")) ?? PACK_CTAS.book).line,
       tags: hashtags("studio", "schools"),
     });
   },
 };
 
-/* ───────────────────────────── now booking ───────────────────────────── */
+/* ───────────────────────────── taking orders (id kept for saved posts) ───────────────────────────── */
 
-const BOOKING_LINE = "A full day of Robotics and AI on your campus. Tell us your dates and we will send a proposal.";
+const BOOKING_LINE = "Kits for your classes and training for your teachers. Tell us your grades and we will send a quote.";
 
 const nowBooking: TemplateDef = {
   id: "now-booking",
-  name: "Now booking",
+  name: "Taking orders",
   group: "Promotion",
-  blurb: "Bookings are open for a month or a term, with the price from the price list.",
+  blurb: "Orders open for a month or a term, with the prices from the price list.",
   formats: ALL_SIZES,
   tones: ["paper", "graphite"],
   fields: [
@@ -153,20 +143,20 @@ const nowBooking: TemplateDef = {
   sample: { when: "the coming term", line: "" },
   draw(p, { values: v, facts }) {
     poster(p, {
-      tag: "For schools · Bookings",
+      tag: "For schools · Orders",
       foot: bareSite(facts.website),
-      eyebrow: "JOVE Days",
-      headline: `Now booking for ${val(v, "when") || "the coming term"}`,
+      eyebrow: "Kits + teacher training",
+      headline: `Taking orders for ${val(v, "when") || "the coming term"}`,
       sub: val(v, "line") || BOOKING_LINE,
       facts: dayFacts,
-      cta: "Book a JOVE Day",
-      hero: p.wide ? { top: "Grades", main: "1–10", bottom: "One full day" } : null,
+      cta: "Get a quote",
+      hero: p.wide ? { top: "Grades", main: "1–10", bottom: "Kits + training" } : null,
     });
   },
   caption(v) {
     return caption({
-      hook: `Now booking JOVE Days for ${val(v, "when") || "the coming term"}.`,
-      body: [val(v, "line") || "A full day of Robotics and AI for Grades 1 to 10, on your campus.", `${PRICE}. Minimum ${MINIMUM}.`, "Every kit, trainer and cable is ours. The film is on us."],
+      hook: `Now taking school orders for ${val(v, "when") || "the coming term"}.`,
+      body: [val(v, "line") || "Robotics and AI kits for Grades 1 to 10, and hands-on training for your teachers.", `${PRICE}. ${TRAINING}.`, "Lesson plans and teacher certificates included."],
       cta: CTAS.book,
       tags: hashtags("schools", "robotics"),
     });
@@ -306,11 +296,11 @@ const countdown: TemplateDef = {
   id: "countdown",
   name: "Countdown",
   group: "Announcements",
-  blurb: "Days to go to a launch, a JOVE Day or an event.",
+  blurb: "Days to go to a launch, a training or an event.",
   formats: ALL_SIZES,
   tones: ["paper", "graphite"],
   fields: [
-    { key: "what", label: "To what?", kind: "text", placeholder: "Our first JOVE Day", max: 36 },
+    { key: "what", label: "To what?", kind: "text", placeholder: "Our first teacher training", max: 36 },
     { key: "date", label: "Its date", kind: "date" },
     { key: "days", label: "Days to go (leave empty to count from today)", kind: "text", placeholder: "Counted from today", help: "Left empty, the design counts from today to the date above: download it on the day you post. Type a number only for a post you are making ahead.", max: 3 },
     { key: "line", label: "One line (optional)", kind: "textarea", rows: 2, max: 90 },
@@ -403,7 +393,7 @@ const festival: TemplateDef = {
   },
 };
 
-/* ───────────────────────────── after a JOVE Day ───────────────────────────── */
+/* ───────────────────────────── after a teacher training ───────────────────────────── */
 
 /** "248 | Students" → a number with its label */
 const countsOf = (v: Values) =>
@@ -414,24 +404,24 @@ const countsOf = (v: Values) =>
 
 const dayRecap: TemplateDef = {
   id: "day-recap",
-  name: "JOVE Day recap",
+  name: "Training recap",
   group: "Milestones",
-  blurb: "After a JOVE Day: the school, the date and up to three real numbers.",
+  blurb: "After a teacher training: the school, the date and up to three real numbers.",
   formats: ALL_SIZES,
   tones: ["paper", "graphite", "photo"],
   fields: [
     { key: "school", label: "School", kind: "text", placeholder: "School name, as the school writes it", help: "Name a school only after it has approved the post.", max: 48 },
-    { key: "date", label: "Date of the JOVE Day", kind: "date" },
-    { key: "numbers", label: "Up to three numbers, one per line: the number, a | sign, what it counts", kind: "textarea", rows: 3, placeholder: "248 | Students", help: "Only real numbers, counted on the day. Leave a line out if you do not have the number.", max: 26 },
+    { key: "date", label: "Date of the training", kind: "date" },
+    { key: "numbers", label: "Up to three numbers, one per line: the number, a | sign, what it counts", kind: "textarea", rows: 3, placeholder: "12 | Teachers trained", help: "Only real numbers, counted on the day. Leave a line out if you do not have the number.", max: 26 },
     { key: "line", label: "One line (optional)", kind: "textarea", rows: 2, placeholder: "What the students built", max: 130 },
     picture("picture", "Photo of the day (optional)", `${CONSENT} With the Photo look it fills the frame.`),
   ],
-  sample: { school: "Your school's name", date: "2026-11-14", numbers: "000 | Students\n00 | Projects built\n00 | Grades", line: "A full day of building, testing and showing what was built." },
+  sample: { school: "Your school's name", date: "2026-11-14", numbers: "00 | Teachers trained\n00 | Kits\n00 | Grades", line: "Every teacher built every project and taught one back." },
   draw(p, { values: v, pictures }) {
     const date = val(v, "date");
     const school = val(v, "school") || "School name";
     const counts = countsOf(v);
-    const base = { tag: "JOVE Day · Recap", index: dotDate(date), foot: "Film by FrameMind AI Studio" };
+    const base = { tag: "Teacher training · Recap", index: dotDate(date), foot: "Film by FrameMind AI Studio" };
     if (p.tone === "photo") {
       photo(p, { ...base, headline: school, sub: val(v, "line"), chips: counts.map((n) => `${n.title} ${n.text}`.trim()), picture: pictures.picture });
       return;
@@ -445,21 +435,21 @@ const dayRecap: TemplateDef = {
     const lead = !pic && first && first.title.length <= 6 && first.text.length <= 12 ? first : null;
     poster(p, {
       ...base,
-      eyebrow: "A JOVE Day at",
+      eyebrow: "Teachers trained at",
       headline: school,
       // a square sheet keeps its room for the school's name
       sub: square && pic ? "" : val(v, "line"),
       hero: lead ? { main: lead.title, bottom: lead.text } : dateHero(date),
       picture: pic,
       facts: lead || !counts.length ? [{ label: "Date", value: longDate(date) }, ...rest.map(asFact)] : counts.map(asFact),
-      cta: square ? undefined : "Book a JOVE Day",
+      cta: square ? undefined : "Get a quote",
     });
   },
   caption(v) {
     const school = val(v, "school") || "[School]";
     const when = shortDate(val(v, "date"));
     return caption({
-      hook: `A full day of building at ${school}${when ? `, ${when}` : ""}.`,
+      hook: `The teachers of ${school} are trained${when ? `, ${when}` : ""}.`,
       body: [val(v, "line"), countsOf(v).map((n) => `${n.title} ${n.text.toLowerCase()}`.trim()).join(" · ")],
       credit: true,
       cta: CTAS.book,
@@ -528,7 +518,7 @@ const founderNote: TemplateDef = {
   tones: ["paper", "graphite", "photo"],
   fields: [
     WHO,
-    { key: "headline", label: "Headline (up to 8 words)", kind: "text", placeholder: "Why we film every workshop", max: 46 },
+    { key: "headline", label: "Headline (up to 8 words)", kind: "text", placeholder: "Why we film every training", max: 46 },
     { key: "lines", label: "Two or three short lines", kind: "textarea", rows: 4, help: `${OWN_WORDS} The full note goes in the caption.`, max: 70 },
     picture("portrait", "Your photo (optional)", "With the Photo look it fills the frame, which suits a portrait. On Paper and Graphite it sits in a wide box: use Up · down to keep your face in view."),
   ],
@@ -562,7 +552,7 @@ const founderNote: TemplateDef = {
   caption(v) {
     return caption({
       hook: sentence(val(v, "headline") || "[Headline]"),
-      body: [...linesOf(v, "lines"), "I am building JOVE: full-day Robotics and AI workshops for schools, filmed by our own studio."],
+      body: [...linesOf(v, "lines"), "I am building JOVE: Robotics and AI kits for schools, and training for the teachers who teach them."],
       cta: CTAS.follow,
       tags: hashtags("founders", "robotics"),
     });
