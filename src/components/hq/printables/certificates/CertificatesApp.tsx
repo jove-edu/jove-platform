@@ -11,7 +11,7 @@ import { CollectionManager, downloadText } from "@/components/hq/CollectionManag
 import { certificateCodes, useCollection, useHq, useLookup } from "@/components/hq/data";
 import { EmptyState, PageHeader, Panel } from "@/components/hq/ui";
 import { can, OPS_TRAINER } from "@/lib/hq/roles";
-import { gradeBands, kits, packages } from "@/lib/content/business";
+import { gradeBands, packages } from "@/lib/content/business";
 import { uid } from "@/lib/utils";
 import { isIso, parseNameLines, qs, shortDate } from "../util";
 import { useToday } from "../hooks";

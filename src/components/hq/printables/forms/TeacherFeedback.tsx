@@ -7,12 +7,12 @@ import { clampInt, longDate, type Q } from "../util";
 
 const AREAS = [
   "Planning, communication and punctuality of the JOVE team",
-  "Quality and age-appropriateness of the workshop content",
-  "How the trainers engaged and handled the students",
-  "Hands-on time and how much the students built themselves",
-  "Safety, discipline and care for school property",
-  "The film crew: professional and not disruptive to learning",
-  "Overall value of the JOVE Day for our school",
+  "How clearly the trainer explained each project",
+  "Hands-on time: building every project myself",
+  "The lesson plans and teacher guides",
+  "How to handle faults and keep a class safe",
+  "The film crew: professional and not in the way",
+  "How ready I feel to teach the kits in class",
 ];
 
 function Page({ school, date, email }: { school: string; date: string; email: string }) {
@@ -21,16 +21,16 @@ function Page({ school, date, email }: { school: string; date: string; email: st
       <header className="flex items-start justify-between gap-6 border-b-2 border-graphite pb-[3.5mm]">
         <Wordmark mm={38} />
         <div className="text-right">
-          <h1 className="text-[17pt] font-bold leading-tight tracking-[-0.02em]">School feedback form</h1>
-          <Annot>For principals &amp; teachers · takes 3 minutes</Annot>
+          <h1 className="text-[17pt] font-bold leading-tight tracking-[-0.02em]">Teacher training feedback</h1>
+          <Annot>For every teacher · takes 3 minutes</Annot>
         </div>
       </header>
 
       <div className="mt-[5mm] grid grid-cols-3 gap-x-[6mm] gap-y-[3.2mm]">
         <WriteLine label="School" value={school} className="col-span-2" />
-        <WriteLine label="Workshop date" value={date} />
+        <WriteLine label="Training date" value={date} />
         <WriteLine label="Your name" />
-        <WriteLine label="Designation" />
+        <WriteLine label="Subject / grades you teach" />
         <WriteLine label="Phone / email (optional)" />
       </div>
 
@@ -66,7 +66,7 @@ function Page({ school, date, email }: { school: string; date: string; email: st
 
       <section className="mt-[5mm] grid grid-cols-2 gap-x-[8mm] text-[9pt]">
         <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span className="font-semibold">Would you book JOVE again?</span>
+          <span className="font-semibold">Would you recommend JOVE training to a colleague?</span>
           <span className="flex items-center gap-1"><TickBox mm={3.6} /> Yes</span>
           <span className="flex items-center gap-1"><TickBox mm={3.6} /> Maybe</span>
           <span className="flex items-center gap-1"><TickBox mm={3.6} /> No</span>

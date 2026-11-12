@@ -44,10 +44,10 @@ interface Gen {
 
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 const school: F = { k: "school", label: "School", t: "text", ph: "e.g. Sri Vidya High School", half: true };
-const date: F = { k: "date", label: "Workshop date", t: "date", half: true };
+const date: F = { k: "date", label: "Date", t: "date", half: true };
 const pages = (label: string, max = 40, help?: string): F => ({ k: "pages", label, t: "number", min: 1, max, help, half: true });
 
-/* Brochures are for schools we have not worked with yet, so they take a typed name instead of a workshop. */
+/* Brochures are for schools we have not worked with yet, so they take a typed name instead of a training. */
 const preparedFor: F = { k: "for", label: "Prepared for (optional)", t: "text", ph: "e.g. Sri Vidya High School", help: "Printed on the cover. Leave empty for copies you can hand to any school." };
 const contactPerson: F = { k: "contact", label: "Who the school should call (optional)", t: "text", ph: "e.g. Shivaprasad Reddy S S", half: true };
 const contactPhone: F = { k: "phone", label: "Phone to print (optional)", t: "text", ph: "Empty = the phone in Settings", half: true };
@@ -80,44 +80,21 @@ const GENERATORS: Gen[] = [
   {
     id: "brochure-pricing",
     group: "brochures",
-    title: "Brochure: Packages & pricing",
-    blurb: "The price sheet for the management meeting: per-student prices by grade, JOVE Day, Quarter, Year and Club, add-ons and payment terms. Prices come from the live price list. Dark graphite design.",
+    title: "Brochure: Kits & training pricing",
+    blurb: "The price sheet for the management meeting: kit prices by grade, the teacher training, the four ways to start, a worked example and payment terms. Prices come from the live price list. Dark graphite design.",
     route: "/hq/print/brochures/pricing",
     sheet: brochureSheet,
     fields: [preparedFor, { k: "valid", label: "Prices valid until (optional)", t: "text", ph: "e.g. 31 March 2027", help: "Printed on the front cover." }, contactPerson, contactPhone, sheets],
     defaults: { sides: "both" },
     summary: brochureSummary,
   },
-  {
-    id: "brochure-studio",
-    group: "brochures",
-    title: "Brochure: The free Media Pack",
-    blurb: "Your school, on film: the reels, full-day film, drone shots and photos our in-house studio delivers free with every JOVE Day. Picture-led cinema design.",
-    route: "/hq/print/brochures/studio",
-    sheet: brochureSheet,
-    fields: [preparedFor, contactPerson, contactPhone, sheets],
-    defaults: { sides: "both" },
-    summary: brochureSummary,
-  },
-  {
-    id: "consent",
-    group: "forms",
-    title: "Photo, video & drone consent",
-    blurb: "Per-student parent slip in plain language with separate opt-ins for photos, video, drone and social media, plus a parent signature.",
-    route: "/hq/print/forms/consent",
-    sheet: "2 slips per A4",
-    fields: [school, date, { k: "names", label: "Student names (optional)", t: "textarea", ph: "One name per line to pre-print each slip", help: "Leave empty for blank slips." }, pages("Sheets, when no names are pasted", 40, "2 slips on each sheet.")],
-    defaults: { pages: "1" },
-    summary: (v) => {
-      const n = textLines(v.names).length;
-      return n ? `${plural(n, "slip")} · ${plural(Math.ceil(n / 2), "sheet")}` : `${plural(clampInt(v.pages, 1, 40, 1) * 2, "blank slip")} · ${plural(clampInt(v.pages, 1, 40, 1), "sheet")}`;
-    },
-  },
+  // "The free Media Pack" brochure is off the list since Nov 2026 (no Media Pack is sold); /hq/print/brochures/studio still opens it
+  // The parents' photo, video and drone consent slip was for JOVE Days (off the list since Nov 2026; /hq/print/forms/consent still opens it)
   {
     id: "student-feedback",
     group: "forms",
     title: "Student feedback form",
-    blurb: "Smiley-face version for Grades 1 to 5 and a short written form for Grades 6 to 10. Feeds the Reputation tab once entered.",
+    blurb: "For teachers to hand out after a robotics lesson with JOVE kits: smiley faces for Grades 1 to 5, a short written form for Grades 6 to 10. Feeds the Reputation tab once entered.",
     route: "/hq/print/forms/student-feedback",
     sheet: "4 per A4 (smiley) · 2 per A4 (short)",
     fields: [
@@ -136,8 +113,8 @@ const GENERATORS: Gen[] = [
   {
     id: "teacher-feedback",
     group: "forms",
-    title: "Teacher & principal feedback",
-    blurb: "One-page school feedback form with ratings, what worked, what to improve and a would-you-rebook question.",
+    title: "Teacher training feedback",
+    blurb: "One page for each teacher at the end of a training: ratings, what worked, what to improve, how ready they feel to teach the kits, and permission to quote.",
     route: "/hq/print/forms/teacher-feedback",
     sheet: "1 per A4",
     fields: [school, date, pages("Copies", 60)],
@@ -152,7 +129,7 @@ const GENERATORS: Gen[] = [
     route: "/hq/print/forms/attendance",
     sheet: "10 to 40 rows per A4",
     fields: [
-      { k: "title", label: "Session title", t: "text", ph: "JOVE Day · Session 1" },
+      { k: "title", label: "Session title", t: "text", ph: "Teacher training" },
       school,
       date,
       { k: "grade", label: "Class / section", t: "text", ph: "Grade 7B", half: true },
@@ -218,17 +195,7 @@ const GENERATORS: Gen[] = [
     fields: [pages("Sheets", 50), { k: "ruled", label: "Add faint writing lines", t: "checkbox" }],
     defaults: { pages: "1" },
   },
-  {
-    id: "poster",
-    group: "stationery",
-    title: "Workshop announcement poster",
-    blurb: "“JOVE Day is coming to your school” poster: date, grade sessions, what students will build and a note about the film crew.",
-    route: "/hq/print/stationery/poster",
-    sheet: "A4 portrait",
-    fields: [school, date, { k: "bands", label: "Grade sessions to list", t: "bands", help: "Leave all unticked to show every grade band." }, { k: "note", label: "Extra note (optional)", t: "text", ph: "e.g. Please return consent slips by Friday" }, pages("Copies", 20)],
-    defaults: { pages: "1" },
-    summary: (v) => plural(clampInt(v.pages, 1, 20, 1), "copy", "copies"),
-  },
+  // The "JOVE Day is coming" poster is off the list since Nov 2026 (/hq/print/stationery/poster still opens it)
   {
     id: "kit-stickers",
     group: "stationery",
@@ -254,7 +221,7 @@ const GENERATORS: Gen[] = [
     id: "table-tents",
     group: "stationery",
     title: "Station table tents",
-    blurb: "Folded A5 tents with a big station number and team name so every table is easy to find in the hall.",
+    blurb: "Folded A5 tents with a big table number and team name, for a class or a teacher training working in teams.",
     route: "/hq/print/stationery/table-tents",
     sheet: "2 tents per A4 · fold at the dashed line",
     fields: [
@@ -272,30 +239,20 @@ const GENERATORS: Gen[] = [
   {
     id: "safety",
     group: "stationery",
-    title: "Workshop room safety rules",
-    blurb: "A4 poster of plain-language rules for the workshop hall: power, tools, batteries, movement and who to ask for help.",
+    title: "Robotics class safety rules",
+    blurb: "A4 poster of plain-language rules for the room where the kits are used: power, tools, batteries, movement and who to ask for help.",
     route: "/hq/print/stationery/safety",
     sheet: "A4 portrait",
     fields: [school, pages("Copies", 20)],
     defaults: { pages: "1" },
     summary: (v) => plural(clampInt(v.pages, 1, 20, 1), "copy", "copies"),
   },
-  {
-    id: "checklist",
-    group: "stationery",
-    title: "Trainer day checklist card",
-    blurb: "Pocket-friendly card for the day: pack list, set-up, safety, filming handshake and wrap-up. One per trainer.",
-    route: "/hq/print/stationery/checklist",
-    sheet: "2 cards per A4",
-    fields: [school, date, { k: "lead", label: "Lead trainer", t: "text", half: true }, pages("Sheets", 20, "2 cards on each sheet.")],
-    defaults: { pages: "1" },
-    summary: (v) => `${plural(clampInt(v.pages, 1, 20, 1) * 2, "card")} · ${plural(clampInt(v.pages, 1, 20, 1), "sheet")}`,
-  },
+  // The trainer's JOVE Day card is off the list since Nov 2026: a training's checklist is in HQ → Trainings (/hq/print/stationery/checklist still opens it)
 ];
 
 const GROUPS: { value: Group; label: string; blurb: string }[] = [
   { value: "brochures", label: "Brochures", blurb: "A3 brochures to hand over when you meet a school." },
-  { value: "forms", label: "Forms & feedback", blurb: "Consent, feedback and attendance for the day." },
+  { value: "forms", label: "Forms & feedback", blurb: "Feedback and attendance for a training or a class." },
   { value: "badges", label: "Badges & IDs", blurb: "Name tags and team identity cards." },
   { value: "stationery", label: "Stationery & posters", blurb: "Letterhead, cards, posters and station signs." },
 ];
@@ -362,12 +319,12 @@ function GeneratorForm({ gen, values, set, shared }: { gen: Gen; values: Values;
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {wantsWorkshop && (
-        <Field label="Prefill from a workshop (optional)" htmlFor="pf-workshop" className="sm:col-span-2">
+        <Field label="Prefill from a training (optional)" htmlFor="pf-workshop" className="sm:col-span-2">
           <Select id="pf-workshop" value="" onChange={(e) => prefill(e.target.value)}>
-            <option value="">Choose a workshop to fill school, date and trainer…</option>
+            <option value="">Choose a training to fill school, date and trainer…</option>
             {workshops.map((w) => (
               <option key={w.id} value={w.id}>
-                {String(w.title || "Untitled workshop")}
+                {String(w.title || "Untitled")}
                 {isIso(w.date) ? ` · ${String(w.date).slice(0, 10)}` : ""}
               </option>
             ))}

@@ -7,8 +7,8 @@ import { Annot, Mark, Sheet, SheetFooter, WriteLine, Wordmark } from "../PrintBi
 import { clampInt, type Q } from "../util";
 
 const RULES: { icon: LucideIcon; title: string; text: string }[] = [
-  { icon: Ear, title: "Listen first", text: "Hear the trainer's instructions before you touch any parts." },
-  { icon: Zap, title: "Power last", text: "Switch on only after your trainer has checked your circuit." },
+  { icon: Ear, title: "Listen first", text: "Hear your teacher's instructions before you touch any parts." },
+  { icon: Zap, title: "Power last", text: "Switch on only after your teacher has checked your circuit." },
   { icon: BatteryWarning, title: "Batteries with care", text: "Never force, bend or join the wrong ends. Tell us if one feels warm." },
   { icon: Wrench, title: "Tools the safe way", text: "Point tools down, use one at a time and pass them handle-first." },
   { icon: Hand, title: "Fingers clear", text: "Wheels and arms move. Switch the robot off before you touch it." },
@@ -26,7 +26,7 @@ function Poster({ q }: { q: Q }) {
       <header className="relative flex items-start justify-between gap-6 border-b-2 border-graphite pb-[4mm]">
         <Wordmark mm={40} />
         <Annot className="text-right text-[6.6pt]">
-          Workshop room
+          Robotics class
           <br />
           {q.school ? q.school : "Safety first"}
         </Annot>
@@ -35,7 +35,7 @@ function Poster({ q }: { q: Q }) {
       <div className="relative mt-[8mm]">
         <p className="font-mono text-[8pt] uppercase tracking-[0.3em] text-blueprint">Read together before we build</p>
         <h1 className="mt-[1.6mm] text-[34pt] font-bold leading-[1] tracking-[-0.035em]">
-          Workshop
+          Robotics class
           <br />
           safety rules
         </h1>
@@ -63,7 +63,7 @@ function Poster({ q }: { q: Q }) {
       </section>
 
       <div className="relative mt-[5mm] grid grid-cols-2 gap-x-[8mm]">
-        <WriteLine label="Lead trainer" />
+        <WriteLine label="Teacher" />
         <WriteLine label="School coordinator" />
       </div>
       <SheetFooter className="relative mt-[5mm]" />
@@ -74,7 +74,7 @@ function Poster({ q }: { q: Q }) {
 export function SafetyPoster({ q }: { q: Q }) {
   const copies = clampInt(q.pages, 1, 20, 1);
   return (
-    <PrintShell title="Workshop room safety rules poster" back="/hq/printables" toolbar={<span className="text-xs text-blueprint">{copies} cop{copies === 1 ? "y" : "ies"} · A4 portrait</span>}>
+    <PrintShell title="Robotics class safety rules poster" back="/hq/printables" toolbar={<span className="text-xs text-blueprint">{copies} cop{copies === 1 ? "y" : "ies"} · A4 portrait</span>}>
       {Array.from({ length: copies }, (_, i) => (
         <Poster key={i} q={q} />
       ))}

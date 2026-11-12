@@ -4,17 +4,17 @@ import { PrintShell } from "@/components/print/PrintShell";
 import { Annot, Sheet, Smiley, TickBox, Tile, WriteLine, Wordmark } from "../PrintBits";
 import { chunk, clampInt, longDate, type Q } from "../util";
 
-const SMILEY_QS = ["I liked building my robot.", "I learned something new today.", "My trainer helped me when I was stuck.", "I want another JOVE Day!"];
-const SHORT_QS = ["The workshop was interesting.", "The trainer explained things clearly.", "I got enough hands-on time.", "The difficulty was right for me.", "Overall experience."];
+const SMILEY_QS = ["I liked building my robot.", "I learned something new today.", "My teacher helped me when I was stuck.", "I want to build another robot!"];
+const SHORT_QS = ["The lesson was interesting.", "My teacher explained things clearly.", "I got enough hands-on time.", "The difficulty was right for me.", "Overall experience."];
 
 function SmileyCard({ school, date }: { school: string; date: string }) {
   return (
     <Tile w={105} h={148.3} className="flex flex-col px-[7mm] pb-[5mm] pt-[6mm]">
       <header className="flex items-start justify-between gap-3">
         <Wordmark mm={20} />
-        <Annot className="text-right">{[school, date].filter(Boolean).join(" · ") || "JOVE Day"}</Annot>
+        <Annot className="text-right">{[school, date].filter(Boolean).join(" · ") || "Robotics with JOVE"}</Annot>
       </header>
-      <h2 className="mt-[3mm] text-[12pt] font-bold leading-tight tracking-[-0.02em]">How was your JOVE Day?</h2>
+      <h2 className="mt-[3mm] text-[12pt] font-bold leading-tight tracking-[-0.02em]">How was your robotics lesson?</h2>
       <p className="text-[7pt] text-charcoal">Circle the face that is like you. There are no wrong answers.</p>
 
       <ol className="mt-[3mm] space-y-[2.6mm]">
@@ -70,7 +70,7 @@ function ShortCard({ school, date }: { school: string; date: string }) {
       <header className="flex items-start justify-between gap-6">
         <Wordmark mm={25} />
         <div className="text-right">
-          <h2 className="text-[12.5pt] font-bold leading-tight tracking-[-0.02em]">JOVE Day: student feedback</h2>
+          <h2 className="text-[12.5pt] font-bold leading-tight tracking-[-0.02em]">Robotics with JOVE: student feedback</h2>
           <Annot>{[school, date].filter(Boolean).join(" · ") || "Grades 6–10 · takes 2 minutes"}</Annot>
         </div>
       </header>
@@ -95,7 +95,7 @@ function ShortCard({ school, date }: { school: string; date: string }) {
             </tbody>
           </table>
           <p className="mt-[2.4mm] text-[8pt]">
-            I would recommend JOVE Day to a friend: <TickBox mm={3.2} className="ml-1" /> Yes <TickBox mm={3.2} className="ml-2" /> Maybe <TickBox mm={3.2} className="ml-2" /> No
+            I would like more robotics lessons: <TickBox mm={3.2} className="ml-1" /> Yes <TickBox mm={3.2} className="ml-2" /> Maybe <TickBox mm={3.2} className="ml-2" /> No
           </p>
         </div>
 
