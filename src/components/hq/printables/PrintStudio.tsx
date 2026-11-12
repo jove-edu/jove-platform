@@ -70,7 +70,7 @@ const GENERATORS: Gen[] = [
     id: "brochure-intro",
     group: "brochures",
     title: "Brochure: Meet JOVE",
-    blurb: "The introduction to hand over at a first meeting: who we are, what a JOVE Day is, and how it helps the school and its students. Blueprint design on a light ground.",
+    blurb: "The introduction to hand over at a first meeting: who we are, the kits by grade, the teacher training and how it helps the school and its students. Blueprint design on a light ground.",
     route: "/hq/print/brochures/intro",
     sheet: brochureSheet,
     fields: [preparedFor, contactPerson, contactPhone, sheets],

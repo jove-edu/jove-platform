@@ -3,18 +3,19 @@
 /**
  * "Meet JOVE" — the introduction brochure a founder hands to a principal at a first meeting.
  * Theme: Blueprint (light). Warm paper, a 5 mm drawing grid, a sheet frame, pencil drawings that sit
- * directly on the grid, and two solid graphite blocks (the Media Pack inside, the contact block on the back).
+ * directly on the grid, and two solid graphite blocks (the training film inside, the contact block on the back).
  *
  * A3 landscape, two sheets, folded once to A4:
  *   OUTSIDE — back cover (left half) · front cover (right half)
- *   INSIDE  — the JOVE Day, the timetable, the four sessions, what students and the school take away
+ *   INSIDE  — kits + teacher training, the training, the four kits, what students and the school take away
+ * (Since Nov 2026 JOVE supplies kits and trains the school's teachers; there are no student workshop days.)
  *
  * Every size is in mm / pt and every box has a fixed position, so the sheet prints exactly as it previews.
  * Every number is imported from the content files; nothing is typed by hand.
  */
 import Image from "next/image";
-import { Captions, Drone, Film, Images, Mic, Smartphone, type LucideIcon } from "lucide-react";
-import { gradeBands, joveDayRules, joveDaySchedule, kits, mediaPack, type GradeBandId } from "@/lib/content/business";
+import { Film, Images, type LucideIcon } from "lucide-react";
+import { gradeBands, joveDayRules, kits, teacherTraining, trainingFilm, trainingRules, type GradeBandId } from "@/lib/content/business";
 import { labs } from "@/lib/content/labs";
 import { site } from "@/lib/site";
 import { cn, formatINR } from "@/lib/utils";
@@ -27,42 +28,24 @@ import { BrochureShell, Half, Qr, Spread, sessionLength, useBrochureInfo, useQr,
 const gradeNumbers = gradeBands.flatMap((b) => (b.grades.match(/\d+/g) ?? []).map(Number));
 const GRADE_MIN = Math.min(...gradeNumbers);
 const GRADE_MAX = Math.max(...gradeNumbers);
-const PRICE_FROM = Math.min(...gradeBands.map((b) => b.pricePerStudent));
+const KIT_SCHOOL_FROM = Math.min(...kits.map((k) => k.schoolPrice));
 const SESSION_MIN = Math.min(...gradeBands.map((b) => b.durationMin));
 const SESSION_MAX = Math.max(...gradeBands.map((b) => b.durationMin));
 const TEAM_MIN = Math.min(...gradeBands.map((b) => b.studentsPerStation));
 const TEAM_MAX = Math.max(...gradeBands.map((b) => b.studentsPerStation));
 const TEAM_SIZE = TEAM_MIN === TEAM_MAX ? `${TEAM_MIN}` : `${TEAM_MIN}–${TEAM_MAX}`;
-const HALLS = new Set(joveDaySchedule.map((s) => s.hall).filter((h) => /^Hall\b/.test(h))).size;
 const FREE_LABS = labs.filter((l) => l.free).length;
 const KIT_FROM = Math.min(...kits.map((k) => k.mrp));
 
 const band = (id: GradeBandId) => gradeBands.find((b) => b.id === id) ?? gradeBands[0];
 
-const toMin = (t: string) => {
-  const [h, m] = t.split(":").map(Number);
-  return h * 60 + (m || 0);
-};
-/** a count as a word at the start of a sentence: 2 → "Two" */
-const countWord = (n: number) => ["No", "One", "Two", "Three", "Four", "Five", "Six"][n] ?? String(n);
 /** 75 → "1 h 15 min" · 180 → "3 hours" (the same on every brochure) */
 const lasts = sessionLength;
 const plain = (s: string) => s.replace(/\s\+\s/g, " and ").replace(/\s&\s/g, " and ");
 /** up to the first full stop that ends a sentence (so "S. S." or "Dr." inside a name does not cut it short) */
 const firstSentence = (s: string) => /^.*?[.!?](?=\s+[A-Z][a-z]|\s*$)/.exec(s)?.[0] ?? s;
 
-/* the timetable, read from joveDaySchedule */
-const LANES = [...new Set(joveDaySchedule.map((s) => s.hall))].filter((h) => h === "Assembly" || /^Hall\b/.test(h));
-const laneSlots = joveDaySchedule.filter((s) => LANES.includes(s.hall));
-const DAY_START = Math.min(...laneSlots.map((s) => toMin(s.time)));
-const DAY_END = Math.max(...laneSlots.map((s) => toMin(s.end)));
-const pauses = joveDaySchedule.filter((s) => s.hall === "Both" && toMin(s.time) > DAY_START && toMin(s.end) < DAY_END);
-const hhmm = (min: number) => `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
-const ARRIVE = joveDaySchedule[0].time;
-const PACKED = joveDaySchedule[joveDaySchedule.length - 1].end;
-
-const mediaIcon = (title: string): LucideIcon =>
-  /reel/i.test(title) ? Smartphone : /film/i.test(title) ? Film : /drone/i.test(title) ? Drone : /photo/i.test(title) ? Images : /testimonial|interview/i.test(title) ? Mic : Captions;
+const filmIcon = (title: string): LucideIcon => (/photo/i.test(title) ? Images : Film);
 
 /* ───────────────────────────── geometry helpers (millimetres) ───────────────────────────── */
 
@@ -229,28 +212,25 @@ function FrontCover({ info }: { info: BrochureInfo }) {
       <p className="absolute flex items-center gap-[2.4mm] font-mono text-[7.6pt] font-medium uppercase leading-none tracking-[0.17em]" style={at(12, 48.5, 183)}>
         <span aria-hidden className="h-[0.3mm] w-[9mm] bg-graphite" />
         <span>
-          Robotics · AI · Machine Learning workshops for Grades {GRADE_MIN} to {GRADE_MAX}
+          Robotics · AI · Machine Learning kits and teacher training, Grades {GRADE_MIN} to {GRADE_MAX}
         </span>
       </p>
 
       <h1 className="absolute text-[46pt] font-bold leading-[0.98] tracking-[-0.035em]" style={at(12, 56, 185)}>
-        <span className="block">Every student builds</span>
-        <span className="block">something real</span>
+        <span className="block">Robotics in every</span>
+        <span className="block">class, taught by</span>
         <span className="block">
-          in{" "}
           <span className="relative inline-block">
-            one school day.
+            your teachers.
             <span className="absolute inset-x-0 top-full block pt-[1.2mm] tracking-normal">
-              <Dim>
-                {hhmm(DAY_START)} to {hhmm(DAY_END)}
-              </Dim>
+              <Dim>{teacherTraining.hours} hours of training</Dim>
             </span>
           </span>
         </span>
       </h1>
 
       <p className="absolute text-[10.5pt] font-medium leading-[1.42]" style={at(12, 116, 112)}>
-        One full day on your campus. We bring the kits, the trainers and our own film studio, and every grade group from Grade {GRADE_MIN} to Grade {GRADE_MAX} gets a hands-on session of its own.
+        A kit for every team, from Grade {GRADE_MIN} to Grade {GRADE_MAX}, and hands-on training on your campus that certifies your teachers to teach with them.
       </p>
 
       {/* title block, in the corner of the frame where a drawing sheet keeps it */}
@@ -285,10 +265,10 @@ function FrontCover({ info }: { info: BrochureInfo }) {
 /* ───────────────────────────── OUTSIDE · back cover (left half) ───────────────────────────── */
 
 const STEPS: { title: string; text: string }[] = [
-  { title: "We talk, then we visit", text: "We call you, then visit your campus or walk you through a JOVE Day online." },
-  { title: "You get a written proposal", text: `The timetable, the price for each grade group, what the school provides and what we bring. A JOVE Day needs at least ${joveDayRules.minimumStudents} students and a minimum billing of ${formatINR(joveDayRules.minimumBilling)} before GST.` },
-  { title: "Your date is confirmed", text: `A ${joveDayRules.advancePercent}% advance holds the date. Consent forms then go home to parents.` },
-  { title: "JOVE Day", text: `We set up, run the day and pack up. The balance is due within ${joveDayRules.balanceDueDays} days of the workshop.` },
+  { title: "We talk, then we visit", text: "We call you, then visit your campus with a kit, or walk you through the kits and the 3D bench online." },
+  { title: "You get a written quote", text: `The kits for each grade, the teachers to train and the date, with GST shown line by line. School prices apply from ${trainingRules.minimumKits} kits; a training is for ${teacherTraining.minimumTeachers} teachers or more.` },
+  { title: "Your order is confirmed", text: `A ${joveDayRules.advancePercent}% advance confirms it. We dispatch the kits and fix the training date.` },
+  { title: "Teachers trained", text: `We train and certify your teachers on campus and film the day. The balance is due within ${joveDayRules.balanceDueDays} days of the training.` },
 ];
 
 function BackCover({ info, qrSrc }: { info: BrochureInfo; qrSrc: string }) {
@@ -305,14 +285,12 @@ function BackCover({ info, qrSrc }: { info: BrochureInfo; qrSrc: string }) {
       </Tag>
       <Folio n={4} className="right-[12mm]" />
       <h2 className="absolute text-[22pt] font-bold leading-[1.02] tracking-[-0.03em]" style={at(15, 24.5, 183)}>
-        A workshop team with its own film studio.
+        A kits company with its own film studio.
       </h2>
       <div className="absolute text-[9.5pt] leading-[1.45]" style={at(15, 38.6, 88, 56)} data-fit="back-who">
-        <p>JOVE stands for {site.expansion}. We are a young company with one job: to put real Robotics, AI and Machine Learning into the hands of school students, in their own school.</p>
-        <p className="mt-[2.2mm]">{site.studio.name} is our in-house film studio. It films every JOVE Day, and the school receives the films free.</p>
-        <p className="mt-[2.2mm]">
-          You deal with the founders directly, and {joveDayRules.teamSize.founders >= site.founders.length ? "both of us are" : "a founder is"} at your school on the day.
-        </p>
+        <p>JOVE stands for {site.expansion}. We are a young company with one job: to put real Robotics, AI and Machine Learning into every class, taught by the school&apos;s own teachers.</p>
+        <p className="mt-[2.2mm]">{site.studio.name} is our in-house film studio. It films your teachers&apos; training day for the school.</p>
+        <p className="mt-[2.2mm]">You deal with the founders directly, and a founder is at your school for the training.</p>
       </div>
       <ul className="absolute flex flex-col gap-[4.5mm]" style={at(110, 39.6, 88, 54)} data-fit="back-founders">
         {site.founders.map((f) => (
@@ -334,25 +312,25 @@ function BackCover({ info, qrSrc }: { info: BrochureInfo; qrSrc: string }) {
 
       {/* 08 after the day */}
       <Tag n="08" className="absolute left-[15mm] top-[101mm]">
-        After the day
+        After the training
       </Tag>
       <div aria-hidden className="absolute" style={at(15, 108, 88, 43)}>
         <Drawing src="/images/kits/kit-knolling.webp" />
         <Corners />
       </div>
       <div className="absolute" style={at(15, 154.5, 88, 38)} data-fit="back-after">
-        <h3 className="text-[12.5pt] font-bold leading-[1.1] tracking-[-0.02em]">Students can keep building.</h3>
+        <h3 className="text-[12.5pt] font-bold leading-[1.1] tracking-[-0.02em]">Robotics every week, all year.</h3>
         <p className="mt-[1.4mm] text-[8.8pt] leading-[1.38]">
-          Our Virtual Lab is free at {info.web}/labs: a 3D bench with the same parts as our kits, so you can try {FREE_LABS} of our builds with your students before you book.
+          The kits stay in your school. Our 3D bench is free at {info.web}/labs, with the same parts as our kits: teachers rehearse a build before class, and students try {FREE_LABS} builds at home.
         </p>
         <p className="mt-[1.4mm] text-[8.8pt] leading-[1.38]">
-          Workshop kits stay with JOVE, which keeps the price low. The same {kits.length} kits can be bought to take home, from {formatINR(KIT_FROM)} (MRP, GST included).
+          Parents can buy the same {kits.length} kits for home, from {formatINR(KIT_FROM)} (MRP, GST included).
         </p>
       </div>
 
       {/* 09 first call to JOVE Day */}
       <Tag n="09" className="absolute left-[110mm] top-[101mm]">
-        From first call to JOVE Day
+        From first call to trained teachers
       </Tag>
       <span aria-hidden className="absolute w-[0.25mm] bg-graphite/60" style={{ left: "113.1mm", top: "112mm", height: "68mm" }} />
       <ol className="absolute flex flex-col justify-between" style={at(110, 108.5, 88, 84)} data-fit="back-steps">
@@ -374,15 +352,17 @@ function BackCover({ info, qrSrc }: { info: BrochureInfo; qrSrc: string }) {
         What it costs
       </Tag>
       <div className="absolute" style={at(15, 208.4, 88, 26)} data-fit="back-price-figure">
-        <p className="font-mono text-[7pt] font-medium uppercase leading-none tracking-[0.15em]">A JOVE Day, from</p>
+        <p className="font-mono text-[7pt] font-medium uppercase leading-none tracking-[0.15em]">Kits for schools, from</p>
         <p className="mt-[3mm] flex items-baseline gap-[2.8mm]">
-          <Money value={PRICE_FROM} className="text-[42pt]" />
-          <span className="text-[11pt] font-bold leading-none tracking-[-0.01em]">per student</span>
+          <Money value={KIT_SCHOOL_FROM} className="text-[42pt]" />
+          <span className="text-[11pt] font-bold leading-none tracking-[-0.01em]">per kit</span>
         </p>
       </div>
       <div className="absolute text-[8.8pt] leading-[1.38]" style={at(110, 207.6, 88, 28)} data-fit="back-price">
-        <p>The price depends on the grade group and excludes GST. GST is added on the invoice where applicable. Kits, certificates and the Media Pack are included.</p>
-        <p className="mt-[1.6mm] font-bold">Ask us for the pricing sheet. It sets out every grade group, package and add-on.</p>
+        <p>
+          GST included, from {trainingRules.minimumKits} kits. Teacher training is {formatINR(teacherTraining.pricePerTeacher)} per teacher plus GST, from {teacherTraining.minimumTeachers} teachers, with lesson plans and certificates.
+        </p>
+        <p className="mt-[1.6mm] font-bold">Ask us for the pricing sheet. It sets out every kit and the training.</p>
       </div>
 
       {/* 11 contact: the solid block on the outside */}
@@ -430,10 +410,10 @@ const TEXT_H = 95;
 
 const SPEC: { k: string; v: string }[] = [
   { k: "Grades", v: `${GRADE_MIN} to ${GRADE_MAX}, in ${gradeBands.length} grade groups` },
-  { k: "Students in one day", v: `${joveDayRules.minimumStudents} to ${joveDayRules.maxStudentsPerDay}` },
-  { k: "Session length", v: `${lasts(SESSION_MIN)} to ${lasts(SESSION_MAX)}` },
-  { k: "Team stations", v: `1 kit for ${TEAM_SIZE} students` },
-  { k: "Space we need", v: `${HALLS} halls or large rooms` },
+  { k: "Kits", v: `${kits.length}, one for each grade group` },
+  { k: "One kit for", v: `a team of ${TEAM_SIZE} students` },
+  { k: "Lessons", v: `${lasts(SESSION_MIN)} to ${lasts(SESSION_MAX)}` },
+  { k: "Teacher training", v: `${teacherTraining.hours} hours, on campus` },
 ];
 
 function BandCard({ id, i, x }: { id: GradeBandId; i: number; x: number }) {
@@ -450,7 +430,7 @@ function BandCard({ id, i, x }: { id: GradeBandId; i: number; x: number }) {
         <Callout n={i + 1} />
         <span>{b.grades}</span>
         <span aria-hidden className="h-[0.22mm] flex-1 bg-graphite/50" />
-        <span>{lasts(b.durationMin)}</span>
+        <span>{kit ? `${formatINR(kit.schoolPrice)} a kit` : lasts(b.durationMin)}</span>
       </div>
       <div className="mt-[2.2mm] flex items-baseline gap-[2.6mm]">
         <h3 className="shrink-0 text-[14.5pt] font-bold leading-none tracking-[-0.025em]">{b.name}</h3>
@@ -470,17 +450,17 @@ function BandCard({ id, i, x }: { id: GradeBandId; i: number; x: number }) {
 function InsideLeft() {
   return (
     <>
-      {/* 01 the JOVE Day */}
+      {/* 01 kits + teacher training */}
       <Tag n="01" className="absolute left-[15mm] top-[16mm]">
-        The JOVE Day
+        Kits + teacher training
       </Tag>
       <Folio n={2} className="right-[12mm]" />
       <h2 className="absolute text-[25pt] font-bold leading-[1.02] tracking-[-0.03em]" style={at(15, 24.5, 183)}>
-        <span className="block">One full day on your campus.</span>
-        <span className="block">Every grade group takes part.</span>
+        <span className="block">Kits in every class.</span>
+        <span className="block">Teachers who can teach them.</span>
       </h2>
       <p className="absolute text-[9.5pt] leading-[1.45]" style={at(15, 46, 88, 32)} data-fit="in-intro">
-        A JOVE Day is a Robotics and AI workshop that runs through one normal school day. We open with a live robot and drone show for the whole school. Each grade group then has its own hands-on session at team stations, and the day closes with a student showcase and a certificate ceremony.
+        We supply Robotics and AI kits in class sets, one kind for each grade group, with a lesson plan for every project. Then we train your teachers on your campus: every teacher builds every project, learns to run it in class and earns a JOVE certificate.
       </p>
       <div className="absolute border-[0.25mm] border-graphite bg-white" style={at(110, 46.6, 88, 31.4)} data-fit="in-spec">
         <p className="flex h-[4.9mm] items-center border-b-[0.25mm] border-graphite px-[2.4mm] font-mono text-[6.5pt] uppercase leading-none tracking-[0.17em] text-charcoal">At a glance</p>
@@ -496,7 +476,7 @@ function InsideLeft() {
 
       {/* 03 the four sessions (figures 1 and 2; 3 and 4 are on the right half) */}
       <Tag n="03" className="absolute left-[15mm] top-[82.6mm]">
-        A session for each grade group
+        A kit for each grade group
       </Tag>
       <BandCard id="g1-2" i={0} x={15} />
       <BandCard id="g3-5" i={1} x={110} />
@@ -507,7 +487,7 @@ function InsideLeft() {
         <h3 className="mt-[2.6mm] text-[14pt] font-bold leading-[1.05] tracking-[-0.025em]">How it helps your students</h3>
         <ul className="mt-[3.4mm] flex flex-1 flex-col justify-between">
           <Point title="They build and test something real">
-            Teams of {TEAM_SIZE} share a station and a real kit. Before the session ends, their robot lights up, moves or sees.
+            Teams of {TEAM_SIZE} share a real kit. Before the lesson ends, their robot lights up, moves or sees.
           </Point>
           <Point title="Real circuits, sensors and code">
             {band("g3-5").grades} wire a breadboard and write block code. {band("g6-8").grades} wire sensors to an Arduino and program it.
@@ -518,7 +498,7 @@ function InsideLeft() {
           <Point title="They work in teams and present">
             Teams show and explain what they built. {band("g9-10").grades} also debate responsible AI and pitch an idea.
           </Point>
-          <Point title="A certificate for every student">Handed over at the closing ceremony, with a QR code that can be checked on our website.</Point>
+          <Point title="They can practise at home">The free 3D bench has the same parts as the kits, so students build again from home.</Point>
         </ul>
       </div>
 
@@ -527,17 +507,17 @@ function InsideLeft() {
         <Tag n="05">For your school</Tag>
         <h3 className="mt-[2.6mm] text-[14pt] font-bold leading-[1.05] tracking-[-0.025em]">How it helps your school</h3>
         <ul className="mt-[3.4mm] flex flex-1 flex-col justify-between">
-          <Point title="No lab needed">We bring every kit, tool and trainer. You provide the rooms, a projector or screen, power points and tables.</Point>
-          <Point title="A report for your management">After the workshop, your management receives a written report of the day.</Point>
+          <Point title="Your teachers, trained and certified">{`${teacherTraining.hours} hands-on hours on campus, then a JOVE certificate for every teacher who completes it.`}</Point>
+          <Point title="Lesson plans for every project">Step by step, with the questions to ask and the usual faults to fix. No lab needed: a classroom with tables and power.</Point>
           <Point title="It supports your syllabus">
-            Sessions support CBSE, ICSE and State Board science and computer-science outcomes, NEP 2020&apos;s emphasis on experiential learning and coding, and the Atal Tinkering Lab framework.
+            The lessons support CBSE, ICSE and State Board science and computer-science outcomes, NEP 2020&apos;s emphasis on experiential learning and coding, and the Atal Tinkering Lab framework.
           </Point>
           <Point title="Safe by design">
             Trainers are background-verified and trained on our safety SOP and child-protection policy. Kits are <span className="whitespace-nowrap">low-voltage</span> and child-safe.
           </Point>
           {/* the fifth point is the block across the fold: a leader line points to it */}
           <li className="flex items-center gap-[2mm] pl-[5mm] font-mono text-[6.8pt] font-medium uppercase leading-none tracking-[0.15em]">
-            <span>And the day on film, free: see 06</span>
+            <span>And the training on film: see 06</span>
             <span aria-hidden className="h-[0.22mm] flex-1 bg-graphite" />
           </li>
         </ul>
@@ -548,112 +528,32 @@ function InsideLeft() {
 
 /* ───────────────────────────── INSIDE · right half ───────────────────────────── */
 
-const LANE_X = 23; // width of the lane-name column
-const AXIS_W = 160; // 183 mm text column minus the lane names
-const LANE_H = 11.4;
-const AXIS_Y = 5.4; // the time labels sit above the lanes
-const px = (min: number) => ((min - DAY_START) * AXIS_W) / (DAY_END - DAY_START);
-
-/** The day drawn to scale from joveDaySchedule: one lane for the whole school, one for each hall. */
-function Timetable() {
-  const hours: number[] = [];
-  for (let h = Math.ceil(DAY_START / 60); h * 60 < DAY_END - 20; h++) if (h * 60 > DAY_START + 20) hours.push(h * 60);
-  const lanesH = LANES.length * LANE_H;
-  const mid = (DAY_START + DAY_END) / 2;
+/** The teacher training, from the price book: what every teacher does and takes away. */
+function TrainingPlan() {
   return (
-    <div className="absolute" style={at(12, 24.5, 183, AXIS_Y + lanesH)}>
-      {/* time axis */}
-      <div className="absolute font-mono text-[6.5pt] leading-none tracking-[0.04em]" style={at(LANE_X, 0, AXIS_W, AXIS_Y)}>
-        <span className="absolute left-0 top-0">{hhmm(DAY_START)}</span>
-        {hours.map((t) => (
-          <span key={t} className="absolute top-0" style={{ left: mm(px(t) + 0.8) }}>
-            {hhmm(t)}
-          </span>
-        ))}
-        <span className="absolute right-0 top-0">{hhmm(DAY_END)}</span>
-      </div>
-      {/* lanes */}
-      <div className="absolute border-y-[0.25mm] border-graphite bg-white" style={at(0, AXIS_Y, 183, lanesH)}>
-        {hours.map((t) => (
-          <span key={t} aria-hidden className="absolute bottom-0 w-[0.2mm] bg-graphite/30" style={{ left: mm(LANE_X + px(t)), top: mm(LANE_H) }} />
-        ))}
-        {hours.map((t) => (
-          <span key={t} aria-hidden className="absolute top-0 h-[1.5mm] w-[0.2mm] bg-graphite" style={{ left: mm(LANE_X + px(t)) }} />
-        ))}
-        <span aria-hidden className="absolute inset-y-0 w-[0.25mm] bg-graphite" style={{ left: mm(LANE_X) }} />
-        {pauses.map((p) => (
-          <div key={p.title} className="hatch absolute grid place-items-center border-x-[0.2mm] border-graphite/60" style={at(LANE_X + px(toMin(p.time)), LANE_H, px(toMin(p.end)) - px(toMin(p.time)), lanesH - LANE_H)}>
-            <span className="bg-white px-[0.5mm] py-[0.6mm] font-mono text-[6.5pt] uppercase leading-none tracking-[0.04em]">{p.title.split(" ")[0]}</span>
-          </div>
-        ))}
-        {LANES.map((lane, li) => (
-          <div key={lane} className={cn("absolute inset-x-0", li > 0 && "border-t-[0.2mm] border-graphite/40")} style={{ top: mm(li * LANE_H), height: mm(LANE_H) }}>
-            <p className="absolute left-[2mm] top-1/2 -translate-y-1/2 font-mono text-[6.5pt] font-medium uppercase leading-[1.25] tracking-[0.12em]">
-              {lane === "Assembly" ? (
-                <>
-                  Whole
-                  <br />
-                  school
-                </>
-              ) : (
-                lane
-              )}
-            </p>
-            {joveDaySchedule
-              .filter((s) => s.hall === lane)
-              .map((s) => {
-                const a = toMin(s.time);
-                const z = toMin(s.end);
-                const left = LANE_X + px(a);
-                const w = px(z) - px(a);
-                const bi = gradeBands.findIndex((b) => b.name === s.title || b.grades === s.who);
-                if (lane === "Assembly") {
-                  const before = (a + z) / 2 > mid;
-                  return (
-                    <div key={s.title}>
-                      <span aria-hidden className="absolute bg-graphite" style={at(left, 1.4, w, LANE_H - 2.8)} />
-                      <p className={cn("absolute top-1/2 -translate-y-1/2 whitespace-nowrap text-[7.6pt] font-bold leading-none", before && "text-right")} style={before ? { right: mm(183 - left + 2) } : { left: mm(left + w + 2) }}>
-                        {plain(s.title)}
-                      </p>
-                    </div>
-                  );
-                }
-                if (bi < 0) {
-                  return (
-                    <div key={s.title} className="absolute flex items-center border-[0.25mm] border-dashed border-graphite/70 bg-white px-[1.6mm]" style={at(left, 1.4, w, LANE_H - 2.8)}>
-                      <p className="text-[7.2pt] italic leading-[1.15] text-charcoal">{/overflow|batch/i.test(s.title) ? "Second batch, if booked" : plain(s.title)}</p>
-                    </div>
-                  );
-                }
-                return (
-                  <div key={s.title} className="absolute flex items-center gap-[1.1mm] border-[0.25mm] border-graphite bg-paper px-[1mm]" style={at(left, 1.4, w, LANE_H - 2.8)}>
-                    <Callout n={bi + 1} size={3.8} />
-                    <div className="min-w-0">
-                      <p className="whitespace-nowrap text-[7pt] font-bold leading-none tracking-[-0.015em]">{s.title}</p>
-                      <p className="mt-[0.8mm] whitespace-nowrap font-mono text-[6.5pt] leading-none">{gradeBands[bi].grades}</p>
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-        ))}
-      </div>
-    </div>
+    <ol className="absolute grid grid-cols-2 gap-x-[6mm] gap-y-[2.2mm]" style={at(12, 24.5, 183, 40)} data-fit="in-training">
+      {teacherTraining.includes.map((x, i) => (
+        <li key={x} className="flex gap-[2.4mm]">
+          <Callout n={i + 1} size={5} />
+          <p className="text-[8.8pt] leading-[1.32]">{plain(x)}</p>
+        </li>
+      ))}
+    </ol>
   );
 }
 
 function InsideRight() {
   return (
     <>
-      {/* 02 the day, hour by hour */}
+      {/* 02 the teacher training */}
       <Tag n="02" className="absolute left-[12mm] top-[16mm]">
-        The day, hour by hour
+        {teacherTraining.name}
       </Tag>
       <Folio n={3} className="right-[15mm]" />
-      <Timetable />
+      <TrainingPlan />
       <p className="absolute text-[8.6pt] leading-[1.4]" style={at(12, 66.2, 183, 13)} data-fit="in-timetable-note">
-        <span className="font-bold">{countWord(HALLS)} halls run side by side, so every grade group has its session on the same day.</span> Our team arrives at {ARRIVE} to set up and is packed up by {PACKED}. Timings are indicative: we fix the final timetable with your coordinator. Drone flights
-        depend on local drone rules and school permission.
+        <span className="font-bold">{teacherTraining.hours} hours on your campus, from {teacherTraining.minimumTeachers} teachers.</span> The kits reach you first, so your teachers train on the boxes they will use in class. We fix the date with your coordinator, and a JOVE trainer and the film crew
+        come to you.
       </p>
 
       {/* 03 figures 3 and 4 */}
@@ -664,37 +564,28 @@ function InsideRight() {
       <div className="absolute bg-graphite text-paper" style={at(12, BAND_Y, 188, 285.8 - BAND_Y)}>
         <div className="absolute" style={at(6, 7, 66, 70)} data-fit="in-media-lead">
           <Tag n="06" light>
-            Free with every JOVE Day
+            With Kits + Teacher Training
           </Tag>
           <h3 className="mt-[3.6mm] text-[23pt] font-bold leading-[1.02] tracking-[-0.03em]">
-            <span className="block">Your JOVE Day</span>
-            <span className="block">on film. Free.</span>
+            <span className="block">Your training</span>
+            <span className="block">day, on film.</span>
           </h3>
           <p className="mt-[3.2mm] text-[9pt] leading-[1.42] text-paper/90">
-            {site.studio.name} is our own film studio. It films the whole day, and your school receives a Media Pack for admissions and social media.
-          </p>
-          <p className="mt-[4mm] flex items-end gap-[2.2mm] border-t-[0.25mm] border-paper/40 pt-[3.2mm]">
-            <span className="pb-[0.4mm] font-mono text-[6.8pt] uppercase leading-none tracking-[0.15em] text-paper/80">about</span>
-            <Money value={mediaPack.marketValue} className="text-[21pt]" />
-            <span className="pb-[0.4mm] font-mono text-[6.8pt] uppercase leading-[1.35] tracking-[0.15em] text-paper/80">
-              typical
-              <br />
-              market value
-            </span>
+            {site.studio.name} is our own film studio. It films your teachers building and testing the projects, for your website and admissions.
           </p>
         </div>
 
         <ul className="absolute grid grid-cols-2 gap-x-[5mm]" style={at(80, 7, 103, 70)} data-fit="in-media-items">
-          {mediaPack.items.map((m, i) => {
-            const Icon = mediaIcon(m.title);
+          {trainingFilm.items.map((m, i) => {
+            const Icon = filmIcon(m.title);
             return (
-              <li key={m.title} className={cn("flex h-[23.2mm] items-start gap-[2.6mm] pt-[3.4mm]", i > 1 && "border-t-[0.2mm] border-paper/30")}>
+              <li key={m.title} className={cn("flex items-start gap-[2.6mm] pt-[3.4mm]", i > 1 && "border-t-[0.2mm] border-paper/30")}>
                 <span className="grid size-[8.4mm] shrink-0 place-items-center rounded-full border-[0.25mm] border-paper/70">
                   <Icon className="size-[4.4mm]" strokeWidth={1.5} aria-hidden />
                 </span>
                 <div className="min-w-0">
                   <p className="text-balance text-[9.6pt] font-bold leading-[1.16] tracking-[-0.01em]">{m.title}</p>
-                  <p className="mt-[1.3mm] font-mono text-[6.5pt] uppercase leading-[1.3] tracking-[0.1em] text-paper/75">{m.delivery}</p>
+                  <p className="mt-[1.3mm] text-[8.4pt] leading-[1.36] text-paper/80">{m.detail}</p>
                 </div>
               </li>
             );
@@ -702,7 +593,7 @@ function InsideRight() {
         </ul>
 
         <p className="absolute border-t-[0.25mm] border-paper/40 pt-[2.6mm] text-[8.4pt] leading-[1.4] text-paper/90" style={at(6, 80.6, 177, 18)} data-fit="in-media-note">
-          <span className="font-bold text-paper">Consent forms go to parents first: no consent, no camera.</span> Drone shots are subject to local drone rules and school permission. {mediaPack.rights}
+          <span className="font-bold text-paper">We film only with the school&apos;s permission, and any teacher can ask to be left out.</span> {trainingFilm.rights}
         </p>
       </div>
     </>
@@ -738,7 +629,7 @@ export function IntroBrochure({ q }: { q: Q }) {
             <Dim />
           </div>
           <p className="absolute bg-paper px-[2.2mm] font-mono text-[6.8pt] font-medium uppercase leading-none tracking-[0.17em]" style={{ left: "255mm", top: "83.7mm" }}>
-            Grades {GRADE_MIN} to {GRADE_MAX} · youngest to oldest
+            Grades {GRADE_MIN} to {GRADE_MAX} · school price per kit
           </p>
           <span aria-hidden className="absolute h-[0.3mm] bg-graphite" style={at(15, BAND_Y, 207)} />
           <span aria-hidden className="absolute h-[0.22mm] bg-graphite" style={at(198, TEXT_Y + TEXT_H - 1.31, 22.4)} />
