@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/form";
 import { useCollection, useHq } from "@/components/hq/data";
 import { Panel } from "@/components/hq/ui";
-import { mediaPack } from "@/lib/content/business";
-import { addDays, dayMonth, isIso, MEDIA_PACK_ITEMS, str, type Rec } from "./logic";
+import { mediaPack, trainingFilm } from "@/lib/content/business";
+import { addDays, dayMonth, isIso, isTraining, mediaItemsFor, str, type Rec } from "./logic";
 import { Notice, ProgressBar } from "./bits";
 
 const STATUSES = getCollection("mediaJobs")?.fields.find((f) => f.key === "status")?.options ?? [];
@@ -27,12 +27,13 @@ export function MediaTab({ w, schoolName, today }: { w: Rec; schoolName: string;
 
   const jobs = useMemo(() => records.filter((j) => j.workshopId === w.id).sort((a, b) => str(a.dueDate).localeCompare(str(b.dueDate)) || str(a.title).localeCompare(str(b.title))), [records, w.id]);
   const label = schoolName || str(w.title);
-  const noDrone = str(w.droneAllowed) === "Not allowed";
+  const training = isTraining(w);
+  const noDrone = !training && str(w.droneAllowed) === "Not allowed";
 
   const toCreate = useMemo(() => {
     const have = new Set(jobs.map((j) => str(j.title).trim().toLowerCase()));
-    return MEDIA_PACK_ITEMS.filter((i) => !(i.needsDrone && noDrone)).filter((i) => !have.has(i.title.toLowerCase()) && !have.has(`${i.title} — ${label}`.toLowerCase()));
-  }, [jobs, label, noDrone]);
+    return mediaItemsFor(w).filter((i) => !(i.needsDrone && noDrone)).filter((i) => !have.has(i.title.toLowerCase()) && !have.has(`${i.title} — ${label}`.toLowerCase()));
+  }, [jobs, label, noDrone, w]);
 
   const delivered = jobs.filter((j) => DONE.includes(str(j.status))).length;
   const overdue = jobs.filter((j) => isIso(j.dueDate) && str(j.dueDate) < today && !DONE.includes(str(j.status)));
@@ -74,15 +75,15 @@ export function MediaTab({ w, schoolName, today }: { w: Rec; schoolName: string;
   return (
     <div className="space-y-5">
       <Panel
-        title={mediaPack.name}
-        subtitle="Included free with every JOVE Day · produced by FrameMind AI Studio"
+        title={training ? trainingFilm.name : mediaPack.name}
+        subtitle={training ? "Included with Kits + Teacher Training · teachers who do not want to appear are left out" : "Included free with every JOVE Day · produced by FrameMind AI Studio"}
         action={
           <Link href="/hq/media" className="inline-flex items-center gap-1 text-xs font-semibold underline-offset-2 hover:underline">
             Media board <ArrowUpRight className="size-3.5" aria-hidden />
           </Link>
         }
       >
-        {!w.mediaPack && <Notice tone="warn" className="mb-4">The Media Pack is switched off for this workshop (Overview → Media & permissions). You can still create deliverables if the school is getting some of it.</Notice>}
+        {!w.mediaPack && <Notice tone="warn" className="mb-4">{training ? "The training film is switched off for this training (Overview). You can still create deliverables if the school is getting some of it." : "The Media Pack is switched off for this workshop (Overview → Media & permissions). You can still create deliverables if the school is getting some of it."}</Notice>}
         {noDrone && <Notice className="mb-4">Drone permission is “Not allowed” — the drone deliverable is skipped.</Notice>}
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <div className="min-w-48 flex-1">
@@ -96,9 +97,9 @@ export function MediaTab({ w, schoolName, today }: { w: Rec; schoolName: string;
           {canWrite && (
             <div className="flex flex-col items-start gap-1">
               <Button size="sm" onClick={generate} disabled={busy || !toCreate.length || !isIso(w.date)}>
-                {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Sparkles className="size-4" aria-hidden />} Generate Media Pack deliverables
+                {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Sparkles className="size-4" aria-hidden />} {training ? "Generate the training film deliverables" : "Generate Media Pack deliverables"}
               </Button>
-              <p className="text-[11px] text-blueprint">{toCreate.length ? `Creates ${toCreate.length} missing item${toCreate.length === 1 ? "" : "s"}: reels due +5 days, photos & posting kit +5, film, drone & testimonial +10.` : jobs.length ? "All Media Pack deliverables already exist." : "Set the workshop date first."}</p>
+              <p className="text-[11px] text-blueprint">{toCreate.length ? `Creates ${toCreate.length} missing item${toCreate.length === 1 ? "" : "s"}: ${toCreate.map((i) => `${i.title.toLowerCase()} +${i.days} days`).join(", ")}.` : jobs.length ? "All deliverables already exist." : "Set the date first."}</p>
             </div>
           )}
         </div>
@@ -165,7 +166,7 @@ export function MediaTab({ w, schoolName, today }: { w: Rec; schoolName: string;
           <div className="flex flex-col items-center gap-2 px-5 py-10 text-center">
             <Clapperboard className="size-6 text-blueprint" aria-hidden />
             <p className="text-sm font-medium">No deliverables yet</p>
-            <p className="max-w-sm text-xs text-blueprint">Generate the Media Pack deliverables to give FrameMind AI Studio a due-dated list for this school.</p>
+            <p className="max-w-sm text-xs text-blueprint">Generate the deliverables to give FrameMind AI Studio a due-dated list for this school.</p>
           </div>
         )}
       </Panel>

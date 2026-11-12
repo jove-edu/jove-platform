@@ -83,7 +83,7 @@ function DeckCard({ deck, schools }: { deck: Deck; schools: CrmSchool[] }) {
   );
 }
 
-/** HQ → Presentations: the decks, grouped, and what to send or print for a JOVE Day. */
+/** HQ → Presentations: the decks, grouped, and what to send or print for a teacher training. */
 export function DeckLibrary({ schools = [] }: { schools?: CrmSchool[] }) {
   const groups: DeckGroup[] = ["school", "classroom", "trainer"];
   return (
@@ -92,7 +92,7 @@ export function DeckLibrary({ schools = [] }: { schools?: CrmSchool[] }) {
         eyebrow="Knowledge"
         title="Presentations"
         icon="Presentation"
-        description="Slides for school meetings, every grade group on the JOVE Day, and training trainers. Present from a laptop, or save a PDF to present offline. Only in HQ."
+        description="Slides for school meetings, a lesson for every grade group for teachers to use in class, and training trainers. Present from a laptop, or save a PDF to present offline. Only in HQ."
       />
       <div className="space-y-12">
         {groups.map((g) => (
@@ -111,42 +111,39 @@ export function DeckLibrary({ schools = [] }: { schools?: CrmSchool[] }) {
 
         <section aria-labelledby="send-print" className="rounded-[var(--radius-md)] border border-graphite/12 bg-paper-50 p-5" data-guide>
           <h2 id="send-print" className="text-base font-bold text-graphite">
-            Before a JOVE Day: what to send and what to print
+            Before a teacher training: what to send and what to print
           </h2>
           <div className="mt-3 grid gap-6 text-sm leading-relaxed text-charcoal md:grid-cols-3">
             <div>
-              <p className="annot mb-1.5 text-blueprint">Send to each trainer (a week before)</p>
+              <p className="annot mb-1.5 text-blueprint">Send to the trainer (a week before)</p>
               <ul className="list-disc space-y-1 pl-5">
-                <li>Their grade group&apos;s classroom presentation as <strong>PDF with notes</strong> (above), to rehearse</li>
+                <li>The lesson presentations for the kits the school ordered, as <strong>PDF with notes</strong> (above), to rehearse</li>
                 <li>
-                  The <strong>complete trainer pack</strong> for that grade: <Link href="/hq/curriculum" className="font-semibold underline underline-offset-2">Curriculum</Link> → the grade → Complete trainer pack
+                  The <strong>complete trainer pack</strong> for those grades: <Link href="/hq/curriculum" className="font-semibold underline underline-offset-2">Curriculum</Link> → the grade → Complete trainer pack
                 </li>
-                <li>The workshop&apos;s <strong>run sheet</strong>: Workshops → the workshop → Run sheet</li>
+                <li>The training&apos;s <strong>checklist</strong>: Trainings → the training → Checklist</li>
               </ul>
             </div>
             <div>
-              <p className="annot mb-1.5 text-blueprint">Print for the students</p>
+              <p className="annot mb-1.5 text-blueprint">Print for the teachers</p>
               <ul className="list-disc space-y-1 pl-5">
                 <li>
-                  <strong>Worksheets and activity cards</strong> for each grade: Curriculum → the grade → Student material (one per student)
-                </li>
-                <li>The <strong>parent take-home note</strong>, in the same grade folder</li>
-                <li>
-                  <strong>Certificates</strong>: <Link href="/hq/printables" className="font-semibold underline underline-offset-2">Printables</Link> → Certificates
+                  <strong>Lesson plans and student worksheets</strong> for each grade ordered: Curriculum → the grade (one set per teacher)
                 </li>
                 <li>
-                  <strong>Attendance sheets</strong>: Workshops → the workshop → Attendance sheets
+                  <strong>Teacher certificates</strong>: <Link href="/hq/printables" className="font-semibold underline underline-offset-2">Printables</Link> → Certificates
+                </li>
+                <li>
+                  <strong>Training feedback forms</strong>: Printables → Teacher training feedback
                 </li>
               </ul>
             </div>
             <div>
               <p className="annot mb-1.5 text-blueprint">On the day</p>
               <ul className="list-disc space-y-1 pl-5">
-                <li>Present the grade&apos;s deck on the hall projector; the notes and the next slide stay on your laptop</li>
+                <li>Present each lesson on the projector as the teachers will in class; the notes stay on your laptop</li>
                 <li>Keep a PDF of each deck on the laptop in case the internet fails</li>
-                <li>
-                  Run the day from <strong>Day mode</strong> on your phone: Workshops → the workshop → Day mode
-                </li>
+                <li>Hand each school the decks as PDFs, so its teachers can present them in class</li>
               </ul>
             </div>
           </div>

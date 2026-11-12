@@ -70,7 +70,7 @@ export function UpcomingWorkshops({
         <WidgetEmpty
           icon="CalendarRange"
           title="No workshops in the next 30 days"
-          hint={canPlan ? "Once a school confirms, schedule the JOVE Day so the team, kits, transport and media crew line up." : "Workshops you're assigned to will appear here once scheduled."}
+          hint={canPlan ? "Once a school confirms, schedule the teacher training so the kits, the trainer, travel and the film crew line up." : "Trainings you're assigned to will appear here once scheduled."}
           action={
             canPlan ? (
               <Link href="/hq/workshops" className="text-xs font-semibold text-graphite underline underline-offset-4">
@@ -233,7 +233,7 @@ export function LowStock({ index, items, loading }: { index: string; items: Base
       {loading ? (
         <WidgetSkeleton rows={2} />
       ) : !items.length ? (
-        <WidgetEmpty icon="PackageCheck" title="Stock levels healthy" hint="Set a “Reorder at” level on components and kits to get warned before a JOVE Day." />
+        <WidgetEmpty icon="PackageCheck" title="Stock levels healthy" hint="Set a “Reorder at” level on components and kits to get warned before a school order runs short." />
       ) : (
         <>
           <ul className="divide-y divide-graphite/[0.07]">
@@ -284,7 +284,7 @@ export function MediaDue({ index, items, today, loading, workshops }: { index: s
       {loading ? (
         <WidgetSkeleton rows={2} />
       ) : !items.length ? (
-        <WidgetEmpty icon="Clapperboard" title="No deliverables due this week" hint="Every JOVE Day promises reels, a full-day film and drone shots — they're tracked in Media Studio." />
+        <WidgetEmpty icon="Clapperboard" title="No deliverables due this week" hint="Every Kits + Teacher Training order includes a film of the training — it's tracked in Media Studio." />
       ) : (
         <>
           <ul className="divide-y divide-graphite/[0.07]">

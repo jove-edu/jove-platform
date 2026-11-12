@@ -80,7 +80,7 @@ const SHARES = [
 /* ───────────────────────────── type ───────────────────────────── */
 
 const SCALE: { style: string; font: string; size: string; px: number; line: number; track: string; use: string; sample: string; cls: string }[] = [
-  { style: "Display / H1", font: "Montserrat 800", size: "64 / 72", px: 64, line: 72, track: "-1%", use: "Hero lines, covers", sample: "JOVE Day", cls: "font-extrabold tracking-[-0.01em]" },
+  { style: "Display / H1", font: "Montserrat 800", size: "64 / 72", px: 64, line: 72, track: "-1%", use: "Hero lines, covers", sample: "Kits + Training", cls: "font-extrabold tracking-[-0.01em]" },
   { style: "H2", font: "Montserrat 700", size: "44 / 52", px: 44, line: 52, track: "-1%", use: "Section titles", sample: "Build it", cls: "font-bold tracking-[-0.01em]" },
   { style: "H3", font: "Montserrat 700", size: "28 / 36", px: 28, line: 36, track: "-0.5%", use: "Sub-sections", sample: "Sense, think, act", cls: "font-bold tracking-[-0.005em]" },
   { style: "H4", font: "Montserrat 700", size: "20 / 28", px: 20, line: 28, track: "0", use: "Card titles", sample: "Inside the kit", cls: "font-bold" },
@@ -88,7 +88,7 @@ const SCALE: { style: string; font: string; size: string; px: number; line: numb
   { style: "Body", font: "Montserrat 400 / 500", size: "16 / 26", px: 16, line: 26, track: "0", use: "Paragraphs", sample: "Every kit, trainer and cable is ours.", cls: "font-normal" },
   { style: "Small", font: "Montserrat 500", size: "14 / 22", px: 14, line: 22, track: "0", use: "Captions, help text", sample: "The film is on us.", cls: "font-medium" },
   { style: "Caption", font: "Montserrat 500", size: "12 / 18", px: 12, line: 18, track: "+1%", use: "Photo credits, footnotes", sample: "Film by FrameMind AI Studio", cls: "font-medium tracking-[0.01em]" },
-  { style: "Label", font: "JetBrains Mono 500, uppercase", size: "11 / 16", px: 11, line: 16, track: "+12%", use: "Section index, spec tags", sample: "JOVE Day · 01", cls: "font-mono font-medium uppercase tracking-[0.12em]" },
+  { style: "Label", font: "JetBrains Mono 500, uppercase", size: "11 / 16", px: 11, line: 16, track: "+12%", use: "Section index, spec tags", sample: "Teacher training · 01", cls: "font-mono font-medium uppercase tracking-[0.12em]" },
   { style: "Numerals", font: "JetBrains Mono 500", size: "any", px: 16, line: 26, track: "0", use: "Prices, codes, schedules", sample: "08:30 · 1080 × 1350", cls: "font-mono font-medium tabular" },
 ];
 

@@ -69,7 +69,7 @@ function Analytics({ records }: { records: Fb[] }) {
         <EmptyState
           icon="MessageSquareHeart"
           title="No feedback recorded yet"
-          description="After each JOVE Day, print the feedback forms, collect them, and enter the responses below. Results appear here automatically."
+          description="After each teacher training, print the feedback forms, collect them, and enter the responses below. Results appear here automatically."
           action={<Button size="sm" href="/hq/printables" variant="secondary"><Printer className="size-4" /> Print feedback forms</Button>}
         />
       ) : (
@@ -143,7 +143,7 @@ export function FeedbackTab() {
   return (
     <div>
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-md)] border border-graphite/12 bg-paper-200/40 px-4 py-3">
-        <p className="text-sm text-charcoal">Collect feedback on paper in the hall, then key it in below. Print the forms for your next JOVE Day:</p>
+        <p className="text-sm text-charcoal">Collect feedback on paper at the training, then key it in below. Print the forms for your next training:</p>
         <div className="flex flex-wrap gap-2">
           <Button size="sm" variant="secondary" href="/hq/print/forms/student-feedback?version=smiley&pages=5" external>
             <Printer className="size-3.5" /> Student (Gr 1–5)

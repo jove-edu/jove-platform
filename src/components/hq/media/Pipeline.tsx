@@ -5,6 +5,7 @@ import { AlertTriangle, CalendarClock, Clapperboard, Film, Loader2, Plus, Sparkl
 import { getCollection, type BaseRecord } from "@/lib/hq/collections";
 import { can, OPS_MEDIA } from "@/lib/hq/roles";
 import { mediaPack } from "@/lib/content/business";
+import { isTraining, TRAINING_FILM_ITEMS } from "@/components/hq/workshops/logic";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Kanban } from "@/components/hq/Kanban";
@@ -64,7 +65,9 @@ export function Pipeline({ workshopId }: { workshopId: string }) {
   }, [jobs, today]);
 
   const workshop = workshopId ? workshops.get(workshopId) : undefined;
-  const hasPack = !!workshopId && records.some((r) => r.workshopId === workshopId && mediaPack.items.some((i) => String(r.title ?? "").startsWith(i.title)));
+  const training = !!workshop && isTraining(workshop);
+  const packTitles = training ? TRAINING_FILM_ITEMS.map((i) => i.title) : mediaPack.items.map((i) => i.title);
+  const hasPack = !!workshopId && records.some((r) => r.workshopId === workshopId && packTitles.some((t) => String(r.title ?? "").startsWith(t)));
 
   async function addPack() {
     if (!workshop || !isIso(workshop.date)) return;
@@ -72,6 +75,21 @@ export function Pipeline({ workshopId }: { workshopId: string }) {
     setNotice("");
     try {
       const wDate = String(workshop.date).slice(0, 10);
+      if (training) {
+        await saveMany(
+          TRAINING_FILM_ITEMS.map((item) => ({
+            workshopId,
+            deliverable: item.deliverable,
+            title: `${item.title}: ${String(workshop.title ?? "training")}`,
+            status: "planned",
+            dueDate: addDays(wDate, item.days),
+            assignee: "Chinmay R M",
+            notes: item.notes,
+          })),
+        );
+        setNotice(`Added ${TRAINING_FILM_ITEMS.length} training film deliverables.`);
+        return;
+      }
       await saveMany(
         mediaPack.items.map((item, i) => {
           const days = Number(/(\d+)\s*working days/i.exec(item.delivery)?.[1]);
@@ -120,7 +138,7 @@ export function Pipeline({ workshopId }: { workshopId: string }) {
         )}
         {canWrite && workshop && isIso(workshop.date) && !hasPack && (
           <Button size="sm" variant="secondary" onClick={addPack} disabled={busy}>
-            {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Sparkles className="size-4" aria-hidden />} Add the standard Media Pack ({mediaPack.items.length})
+            {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Sparkles className="size-4" aria-hidden />} {training ? `Add the training film (${TRAINING_FILM_ITEMS.length})` : `Add the standard Media Pack (${mediaPack.items.length})`}
           </Button>
         )}
         <p className="ml-auto hidden text-xs text-blueprint md:block">Drag cards between columns to update status. Click a card to edit.</p>
@@ -129,8 +147,8 @@ export function Pipeline({ workshopId }: { workshopId: string }) {
       {!jobs.length ? (
         <EmptyState
           icon="Clapperboard"
-          title={workshopId ? "No deliverables for this workshop yet" : "No deliverables yet"}
-          description={workshopId ? "Add the standard Media Pack to plan the reels, film, drone shots, photos and testimonial in one click." : "Every JOVE Day promises a Media Pack. Pick a workshop above to add its deliverables, or create one manually."}
+          title={workshopId ? "No deliverables for this training yet" : "No deliverables yet"}
+          description={workshopId ? (training ? "Add the training film to plan the short film and the photos in one click." : "Add the standard Media Pack to plan the reels, film, drone shots, photos and testimonial in one click.") : "Every Kits + Teacher Training order includes a film of the training. Pick a training above to add its deliverables, or create one manually."}
           action={canWrite ? <Button size="sm" onClick={() => setEditing(blankRecord("mediaJobs", { workshopId: workshopId || undefined }))}><Plus className="size-4" /> New deliverable</Button> : undefined}
         />
       ) : (

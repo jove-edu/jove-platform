@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Practice Lab" };
 
 const KITS = ["Spark", "Explorer", "Builder", "Innovator"] as const;
 
-/** HQ → Practice Lab: every JOVE Day build on the 3D bench, for the team to practise and to project in class. */
+/** HQ → Practice Lab: every kit build on the 3D bench, for trainers and teachers to practise and to project in class. */
 export default async function PracticePage() {
   await requireUser(ALL);
   return (
@@ -20,7 +20,7 @@ export default async function PracticePage() {
         eyebrow="Knowledge"
         title="Practice Lab"
         icon="CircuitBoard"
-        description="The builds we teach, on a 3D bench with the same parts as our kits. Wire them pin by pin, switch on, and see what happens. Practise before a JOVE Day, then put it on the projector in full screen."
+        description="The builds we teach, on a 3D bench with the same parts as our kits. Wire them pin by pin, switch on, and see what happens. Practise before a training or a class, then put it on the projector in full screen."
       />
       <div className="space-y-10">
         {KITS.map((kit) => {

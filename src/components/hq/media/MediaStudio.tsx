@@ -17,7 +17,8 @@ type Tab = "pipeline" | "deliverables" | "guides";
 const TABS: Tab[] = ["pipeline", "deliverables", "guides"];
 
 /**
- * Media Studio: what a school is promised from its JOVE Day (reels, film, drone shots, photos) and nothing else.
+ * Media Studio: what a school is promised on film: the film of its teacher training (since Nov 2026), or the Media Pack
+ * of a JOVE Day before then, and nothing else.
  * JOVE's own posts and content plan live in Social Studio.
  */
 export function MediaStudio({ initialTab, initialWorkshop, closedDocs }: { initialTab?: string; initialWorkshop?: string; /** library documents this account may not open */ closedDocs?: string[] }) {
@@ -98,7 +99,7 @@ export function MediaStudio({ initialTab, initialWorkshop, closedDocs }: { initi
               },
             },
           ]}
-          emptyText="Pick a workshop in the Pipeline tab and add its standard Media Pack, or create deliverables here."
+          emptyText="Pick a training in the Pipeline tab and add its training film, or create deliverables here."
         />
       )}
 

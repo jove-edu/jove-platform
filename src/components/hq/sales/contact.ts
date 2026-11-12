@@ -47,13 +47,13 @@ export function firstName(name: unknown) {
 type IntroKind = "workshop" | "trainer" | "contact" | "kits" | "studio" | "partner" | "school";
 
 const TOPIC: Record<IntroKind, string> = {
-  workshop: "a Robotics & AI workshop",
+  workshop: "Robotics & AI kits and teacher training",
   trainer: "joining JOVE as a trainer",
   contact: "JOVE",
   kits: "JOVE robotics kits for your students",
   studio: "media and film services from our in-house studio, FrameMind AI Studio",
   partner: "partnering with JOVE",
-  school: "a Robotics & AI programme",
+  school: "Robotics & AI kits and teacher training",
 };
 
 /** A warm, short first message — used for WhatsApp and email bodies. */
@@ -76,7 +76,7 @@ export function introMessage({ kind, name, organisation, sender, applyingFor }: 
       return `${hello} ${me} Thank you for reaching out about ${TOPIC.partner}. I'd be glad to understand your idea and explore how we could work together. Would a quick call this week suit you?`;
     case "workshop":
     case "school":
-      return `${hello} ${me} Thank you for your interest in ${TOPIC[k]}${org ? ` for ${org}` : ""}. I'd love to understand your requirements and share our JOVE Day plan — every school also receives a free Media Pack (reels, a full-day film and drone shots) from our in-house film studio. When would be a good time for a quick call or a visit?`;
+      return `${hello} ${me} Thank you for your interest in ${TOPIC[k]}${org ? ` for ${org}` : ""}. I'd love to understand your classes and share a quote: kits for the grades you want, and hands-on training that certifies your teachers to teach with them, filmed by our in-house studio. When would be a good time for a quick call or a visit with a kit?`;
     default:
       return `${hello} ${me} Thank you for reaching out to us. How can we help? Happy to set up a quick call at a time that suits you.`;
   }
@@ -95,7 +95,7 @@ export function introSubject(kind: string, organisation?: unknown) {
       return "Partnering with JOVE";
     case "workshop":
     case "school":
-      return `Robotics & AI workshop${org ? ` for ${org}` : ""} — JOVE`;
+      return `Robotics & AI kits and teacher training${org ? ` for ${org}` : ""} — JOVE`;
     default:
       return "Thank you for contacting JOVE";
   }

@@ -12,6 +12,7 @@ import {
   mediaPack,
   showpieces,
   teacherTraining,
+  trainingFilm,
   type GradeBand,
   type GradeBandId,
   type Kit,
@@ -777,6 +778,21 @@ export const MEDIA_PACK_ITEMS: PackItem[] = [
   { key: "testimonial", deliverable: "Testimonial clip", title: "Principal testimonial clip", days: 10, notes: mp(4) },
   { key: "posting-kit", deliverable: "Posting kit", title: "Captions & posting kit", days: 5, notes: mp(5) },
 ];
+
+/**
+ * The film of a teacher training (Kits + Teacher Training, since Nov 2026). The due dates are a starting point for
+ * FrameMind AI Studio's own planning, changed on each deliverable.
+ */
+export const TRAINING_FILM_ITEMS: PackItem[] = trainingFilm.items.map((i, n) => ({
+  key: `training-${n}`,
+  deliverable: /photo/i.test(i.title) ? "Photos" : "Training film",
+  title: i.title,
+  days: /photo/i.test(i.title) ? 5 : 7,
+  notes: i.detail,
+}));
+
+/** What is filmed for this record: the training film for a training, the Media Pack for a JOVE Day. */
+export const mediaItemsFor = (r: Record<string, unknown>) => (isTraining(r) ? TRAINING_FILM_ITEMS : MEDIA_PACK_ITEMS);
 
 /* ─────────────────────────── drafts ─────────────────────────── */
 
