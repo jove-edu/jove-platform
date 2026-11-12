@@ -1,5 +1,5 @@
 /**
- * Robo Engineers (Grades 6–8), "Sense · Think · Act": the JOVE Day session (150 minutes) as a story in six chapters,
+ * Robo Engineers (Grades 6–8), "Sense · Think · Act": the lesson (150 minutes) as a story in six chapters,
  * with the obstacle-avoiding Arduino car as a step-by-step tutorial: every connection drawn, every sketch shown.
  * Follows OPERATIONS/02_CURRICULUM/G06-08_Robo_Engineers/01_JOVE_Day_Session_Plan.md, the pin map and Sketches 1–5 of
  * its 08_Code_Library.md (shortened to what fits a slide), and 06_ROBOTICS_KITS/05_Assembly_Instructions_Builder.md.
@@ -99,7 +99,7 @@ export const roboDeck: Deck = {
       tip: "No port? Use the data cable from the kit; install the CH340 driver",
       icon: "Laptop",
       phase: "Build",
-      notes: "Trainers set the laptops up the day before; this slide is for checking. Serial Monitor baud rate: 9600.",
+      notes: "Teachers set the laptops up the day before; this slide is for checking. Serial Monitor baud rate: 9600.",
     },
     {
       kind: "code",
@@ -119,11 +119,11 @@ export const roboDeck: Deck = {
       bullets: ["for repeats a block", "tone() makes a sound", "Make your own pattern!"],
       phase: "Test",
       minutes: 5,
-      notes: "Sketch 1 in the Code Library. The buzzer goes on A4 (wired in step 9; for now use the one on the trainer's demo board or the built-in LED only).",
+      notes: "Sketch 1 in the Code Library. The buzzer goes on A4 (wired in step 9; for now use the one on the teacher's demo board or the built-in LED only).",
     },
 
     /* ── Chapter 4: build the car ──────────────────────────── */
-    { kind: "chapter", n: 4, title: "Build the car", sub: "One connection at a time. Test as you go.", icon: "Wrench", phase: "Build", notes: "Roles rotate: Builder, Reader (the build guide), Tester, Recorder (change → prediction → result), Captain (talks to the trainer)." },
+    { kind: "chapter", n: 4, title: "Build the car", sub: "One connection at a time. Test as you go.", icon: "Wrench", phase: "Build", notes: "Roles rotate: Builder, Reader (the build guide), Tester, Recorder (change → prediction → result), Captain (talks to the teacher)." },
     { kind: "build", step: 2, of: OF, title: "Chassis, motors and wheels", need: ["Chassis plate", "2 BO motors", "Wheels", "Castor"], do: ["Screw a motor on each side", "Push on the wheels", "Fix the castor at the front", "Battery box underneath"], check: "Wheels spin freely; the car sits level", icon: "Wrench", phase: "Build", minutes: 10 },
     { kind: "build", step: 3, of: OF, title: "Stack the shield on the Uno", need: ["Uno", "L293D shield"], do: ["Line up every shield pin with its socket", "Press down evenly", "Fix the Uno on the chassis"], warn: "A bent pin = a dead connection. Check before you press.", icon: "Layers", phase: "Build", minutes: 5 },
     { kind: "build", step: 4, of: OF, title: "Motors to M1 and M2", do: ["Left motor's two wires → M1", "Right motor's two wires → M2", "Tighten the screw terminals"], tip: "A wheel spins the wrong way later? Swap its two wires.", diagram: builderCircuit("motors"), phase: "Build", minutes: 5, notes: "In code: AF_DCMotor leftMotor(1); AF_DCMotor rightMotor(2);" },

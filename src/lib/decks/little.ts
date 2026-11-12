@@ -1,9 +1,9 @@
 /**
- * Little Inventors (Grades 1–2), "Meet the Robots": the JOVE Day session (75 minutes) told as a story, with the
+ * Little Inventors (Grades 1–2), "Meet the Robots": the lesson (75 minutes) told as a story, with the
  * Robot Buddy build as a step-by-step tutorial: a wiring picture for every clip, from an empty battery holder to a
  * glowing, spinning, beeping robot. Follows OPERATIONS/02_CURRICULUM/G01-02_Little_Inventors/01_JOVE_Day_Session_Plan.md
  * and OPERATIONS/06_ROBOTICS_KITS/03_Assembly_Instructions_Spark.md. Children of 6 and 7 read little: the slide shows
- * the idea, the trainer says the rest (notes).
+ * the idea, the teacher says the rest (notes).
  */
 import { sparkCircuit } from "./circuits";
 import type { Deck } from "./types";
@@ -66,7 +66,7 @@ export const littleDeck: Deck = {
       ],
       phase: "Why",
       minutes: 3,
-      notes: "Trainer is the robot: “I am a robot. I only do what the cards say. Not more, not less. Who will give me the first card?”",
+      notes: "Teacher is the robot: “I am a robot. I only do what the cards say. Not more, not less. Who will give me the first card?”",
     },
     { kind: "statement", big: "Oops! A bug!", sub: "Was it the robot, or the cards? We fix bugs together.", icon: "Bug", phase: "Test", minutes: 2, notes: "Make a silly mistake on purpose. “Oh no! I went the wrong way! Was it the robot's fault, or the cards' fault? That is called a bug. We fix bugs together.”" },
     {
@@ -85,7 +85,7 @@ export const littleDeck: Deck = {
     },
 
     /* ── Chapter 3: build a Robot Buddy ─────────────────────── */
-    { kind: "chapter", n: 3, title: "Build a Robot Buddy", sub: "A robot that glows, spins and says hello", icon: "Sparkles", phase: "Build", notes: "Trainers insert the AA cells. Children press the switch. One Spark Kit, a tray and a wet wipe per station of 4." },
+    { kind: "chapter", n: 3, title: "Build a Robot Buddy", sub: "A robot that glows, spins and says hello", icon: "Sparkles", phase: "Build", notes: "Teachers insert the AA cells. Children press the switch. One Spark Kit, a tray and a wet wipe per station of 4." },
     {
       kind: "parts",
       title: "What is in the box?",
@@ -100,7 +100,7 @@ export const littleDeck: Deck = {
         { name: "Stickers + eyes", job: "Make it yours", icon: "Smile" },
       ],
       phase: "Build",
-      notes: "Hold up each part as you name it. Parts stay in the tray. The 2 AA cells are in a separate small bag: trainers keep them until the circuit step. The kit also has copper tape for the circuit track, used after the first try with clips.",
+      notes: "Hold up each part as you name it. Parts stay in the tray. The 2 AA cells are in a separate small bag: teachers keep them until the circuit step. The kit also has copper tape for the circuit track, used after the first try with clips.",
     },
     {
       kind: "cards",
@@ -125,9 +125,9 @@ export const littleDeck: Deck = {
     },
     { kind: "statement", big: "An LED has a long leg and a short leg.", sub: "Long leg = red clip. Short leg = black clip.", icon: "Lightbulb", phase: "Why", notes: "Hold up an LED. “The long leg is the plus leg: it wants the red clip. The short leg goes back home with the black clip. Show me: long leg, short leg!”" },
 
-    { kind: "build", step: 1, of: OF, title: "Pop and fold your robot", need: ["Robot body sheet"], do: ["Pop the pieces out", "Fold on the lines", "Give your robot a name!"], check: "Your robot stands up!", icon: "Bot", phase: "Build", minutes: 4, notes: "Trainers hold the scissors for die-cut parts; pre-fold tabs for children who find it hard. “Give your robot a name! Say it to your neighbour.”" },
+    { kind: "build", step: 1, of: OF, title: "Pop and fold your robot", need: ["Robot body sheet"], do: ["Pop the pieces out", "Fold on the lines", "Give your robot a name!"], check: "Your robot stands up!", icon: "Bot", phase: "Build", minutes: 4, notes: "Teachers hold the scissors for die-cut parts; pre-fold tabs for children who find it hard. “Give your robot a name! Say it to your neighbour.”" },
     { kind: "build", step: 2, of: OF, title: "Decorate it", need: ["Stickers", "Googly eyes"], do: ["Stick on the eyes", "Add stickers", "Leave a space for the light"], check: "Your robot has a face!", icon: "Smile", phase: "Build", minutes: 3, notes: "Leave the front panel clear where the LED will poke through." },
-    { kind: "build", step: 3, of: OF, title: "Batteries in (trainer)", need: ["Battery box", "2 cells"], do: ["Trainer puts in the cells", "Flat end on the spring", "Switch stays OFF"], warn: "Only trainers handle the cells.", diagram: sparkCircuit("battery"), phase: "Build", notes: "Check polarity at every station before the first switch-on. Count the cells out; they are counted back in at the end." },
+    { kind: "build", step: 3, of: OF, title: "Batteries in (teacher)", need: ["Battery box", "2 cells"], do: ["Teacher puts in the cells", "Flat end on the spring", "Switch stays OFF"], warn: "Only teachers handle the cells.", diagram: sparkCircuit("battery"), phase: "Build", notes: "Check polarity at every station before the first switch-on. Count the cells out; they are counted back in at the end." },
     { kind: "build", step: 4, of: OF, title: "Red clip from the battery", need: ["Red clip wire"], do: ["Clip the red wire to the battery's red lead", "Clip the other end to the switch"], check: "Red goes from the battery to the switch", diagram: sparkCircuit("red1"), phase: "Build", minutes: 2, notes: "“Red to red.” Squeeze the clip open like a crocodile's mouth." },
     { kind: "build", step: 5, of: OF, title: "Red clip to the long leg", need: ["LED", "Red clip wire"], do: ["Find the LED's long leg", "Clip red from the switch to the long leg"], tip: "Long leg = plus = red!", diagram: sparkCircuit("red2"), phase: "Build", minutes: 2, notes: "Ask each child to show you the long leg before they clip it." },
     { kind: "build", step: 6, of: OF, title: "Black clip back home", need: ["Black clip wire"], do: ["Clip black to the short leg", "Clip the other end to the battery's black lead"], check: "The circle is closed!", diagram: sparkCircuit("closed"), phase: "Build", minutes: 2, notes: "“Now the electricity has a way back home. The circle is complete. Fingers ready on the switch…”" },
@@ -137,14 +137,14 @@ export const littleDeck: Deck = {
     { kind: "build", step: 8, of: OF, title: "Spinning fan hat", need: ["Motor", "Fan"], do: ["Push the fan onto the motor", "Clip the motor where the LED was", "Switch ON: it spins!"], check: "The fan hat spins!", diagram: sparkCircuit("fan"), phase: "Build", minutes: 6, notes: "“Watch the fan! What if we turn the battery around?” A motor does not mind which way round: it just spins the other way. (An LED does mind: backwards, it stays dark.)" },
     { kind: "statement", big: "Swap the clips: the fan spins the other way!", sub: "A motor works both ways. An LED only works one way.", icon: "RotateCw", phase: "Test", notes: "Let one station swap the red and black clips on the motor and show the class." },
     { kind: "build", step: 9, of: OF, title: "Robot says hello!", need: ["Buzzer", "2 clip wires"], do: ["Clip the buzzer next to the LED", "Red to red, black to black", "Switch ON: beep and glow!"], check: "Your robot glows and beeps", tip: "Two parts can share one battery", diagram: sparkCircuit("buzzer"), phase: "Build", minutes: 5, notes: "Only if time. The buzzer goes in a second loop beside the LED. Keep buzzers low: hand over the switch to quiet them. Stretch for fast children: light two LEDs; which is brighter? Fan and lights together?" },
-    { kind: "build", step: 10, of: OF, title: "Switch OFF. Robots nap!", do: ["Switch OFF", "Line up your robots", "Hands on your head!"], check: "All robots are asleep… until the show", icon: "Smile", phase: "Build", minutes: 2, notes: "“Everybody switch OFF, robot buddies nap until the show.” Children who did not finish: a trainer finishes the last clip with them now." },
+    { kind: "build", step: 10, of: OF, title: "Switch OFF. Robots nap!", do: ["Switch OFF", "Line up your robots", "Hands on your head!"], check: "All robots are asleep… until the show", icon: "Smile", phase: "Build", minutes: 2, notes: "“Everybody switch OFF, robot buddies nap until the show.” Children who did not finish: a teacher finishes the last clip with them now." },
     {
       kind: "points",
       title: "No light? Let's check!",
       points: ["Is the switch ON?", "Is it a full circle?", "Red clip to the long leg?", "Are clips touching each other?"],
       icon: "Search",
       phase: "Test",
-      notes: "Usual faults: LED backwards (flip it), loose clip (squeeze), flat cell (trainer swaps), switch off, clips touching (spread them). “Who can help their friend without touching their robot?”",
+      notes: "Usual faults: LED backwards (flip it), loose clip (squeeze), flat cell (teacher swaps), switch off, clips touching (spread them). “Who can help their friend without touching their robot?”",
     },
 
     /* ── Chapter 4: Show & Glow ────────────────────────────── */

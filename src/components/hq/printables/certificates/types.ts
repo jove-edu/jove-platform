@@ -26,14 +26,15 @@ export interface CertTypeMeta {
   school: boolean;
 }
 
+/** Teacher training first: since Nov 2026 JOVE trains teachers; the student types stay for earlier JOVE Days. */
 export const CERT_TYPES: CertTypeMeta[] = [
   { value: "Participation", title: "Certificate of Participation", presentedTo: "This certificate is proudly presented to", citation: "for taking part, with curiosity and teamwork, in", school: true },
   { value: "Merit", title: "Certificate of Merit", presentedTo: "This certificate of merit is awarded to", citation: "in recognition of outstanding effort and performance in", school: true },
   { value: "Winner", title: "Certificate of Achievement", presentedTo: "This certificate of achievement is awarded to", citation: "for winning the challenge round of", school: true },
-  { value: "Teacher training", title: "Certificate of Training", presentedTo: "This certificate is awarded to", citation: "for completing the JOVE teacher training programme", school: true },
+  { value: "Teacher training", title: "Certificate of Training", presentedTo: "This certificate is awarded to", citation: "for completing, hands-on, the JOVE teacher training in", school: true },
   { value: "Trainer", title: "Certificate of Recognition", presentedTo: "This certificate of recognition is awarded to", citation: "in recognition of qualifying and serving as a JOVE Trainer for", school: false },
 ];
 
 export const certMeta = (type?: string): CertTypeMeta => CERT_TYPES.find((t) => t.value === type) ?? CERT_TYPES[0];
 
-export const DEFAULT_PROGRAM = "JOVE Day: Robotics, AI & ML Workshop";
+export const DEFAULT_PROGRAM = "Robotics & AI in the Classroom";

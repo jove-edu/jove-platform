@@ -1,5 +1,5 @@
 /**
- * AI Innovators (Grades 9–10), "Build an AI that Sees": the JOVE Day session (180 minutes) as a story in five
+ * AI Innovators (Grades 9–10), "Build an AI that Sees": the lesson (180 minutes) as a story in five
  * chapters, with the AI vision pan-tilt robot as a step-by-step tutorial: the wiring, the board settings, the data,
  * the training and the browser code that joins the model to the servos. Follows
  * OPERATIONS/02_CURRICULUM/G09-10_AI_Innovators/01_JOVE_Day_Session_Plan.md, its 08_Code_Library.md (sections 0–3
@@ -111,7 +111,7 @@ export const aiDeck: Deck = {
         { name: "USB cables", qty: "2", job: "Data, not charge-only", icon: "Usb" },
       ],
       phase: "Build",
-      notes: "Count parts against the station card. Boards are pre-flashed by trainers the night before (pan-tilt server on the DevKit, CameraWebServer on the ESP32-CAM); students wire, mount, train and tune.",
+      notes: "Count parts against the station card. Boards are pre-flashed by teachers the night before (pan-tilt server on the DevKit, CameraWebServer on the ESP32-CAM); students wire, mount, train and tune.",
     },
     {
       kind: "build",
@@ -123,7 +123,7 @@ export const aiDeck: Deck = {
       check: "Tools → Board lists “AI Thinker ESP32-CAM”",
       icon: "Laptop",
       phase: "Build",
-      notes: "Trainers do this the day before; the slide is for checking and for the take-home. Boards URL: https://espressif.github.io/arduino-esp32/package_esp32_index.json",
+      notes: "Teachers do this the day before; the slide is for checking and for the take-home. Boards URL: https://espressif.github.io/arduino-esp32/package_esp32_index.json",
     },
     { kind: "build", step: 2, of: OF, title: "Assemble the pan-tilt head", need: ["Acrylic base", "Bracket", "2 SG90"], do: ["Fit the pan servo into the base", "Fit the tilt servo into the bracket", "Centre both at 90° before the horns go on"], check: "At 90° the head looks straight ahead", warn: "Servos can pinch fingers", icon: "Wrench", phase: "Build", minutes: 10, notes: "Safe travel limits in the code: pan 20–160°, tilt 50–130°. Reduce them if the camera hits the base." },
     {
@@ -174,7 +174,7 @@ export const aiDeck: Deck = {
     },
     {
       kind: "table",
-      title: "Step 7: the camera's settings (trainer)",
+      title: "Step 7: the camera's settings (teacher)",
       head: ["Tools menu", "Value"],
       rows: [
         ["Board", "AI Thinker ESP32-CAM"],
@@ -187,7 +187,7 @@ export const aiDeck: Deck = {
       foot: "Upload, open the Serial Monitor at 115200, press RST: “Camera Ready! Use http://<IP>”. Open it and press Start Stream.",
       phase: "Build",
       minutes: 8,
-      notes: "Trainers pre-flash this; students open the stream. The raw stream for the browser page is http://<IP>:81/stream. “Camera init failed”: reseat the ribbon cable (flip the black latch).",
+      notes: "Teachers pre-flash this; students open the stream. The raw stream for the browser page is http://<IP>:81/stream. “Camera init failed”: reseat the ribbon cable (flip the black latch).",
     },
     {
       kind: "build",
@@ -277,7 +277,7 @@ export const aiDeck: Deck = {
       sub: "3 minutes to pitch",
       phase: "Show",
       minutes: 35,
-      notes: "15 minutes to build the pitch; the top 4–5 teams pitch on stage, the rest to a neighbouring team with the same rubric. Judges: trainer, school teacher, one student captain.",
+      notes: "15 minutes to build the pitch; the top 4–5 teams pitch on stage, the rest to a neighbouring team with the same rubric. Judges: two teachers and one student captain.",
     },
     { kind: "closing", title: "Exit ticket", sub: "One thing the model does well · one thing it does badly · one rule we should follow", points: ["Keep exploring: jove.website/labs"], phase: "Show", minutes: 4, notes: "Certificates: participation for all; Merit and Winner per the framework. Station reset: wipe training projects and images from laptops and Teachable Machine; power off the boards." },
   ],

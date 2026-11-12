@@ -11,7 +11,7 @@ import { CollectionManager, downloadText } from "@/components/hq/CollectionManag
 import { certificateCodes, useCollection, useHq, useLookup } from "@/components/hq/data";
 import { EmptyState, PageHeader, Panel } from "@/components/hq/ui";
 import { can, OPS_TRAINER } from "@/lib/hq/roles";
-import { gradeBands, packages } from "@/lib/content/business";
+import { gradeBands, kits, packages } from "@/lib/content/business";
 import { uid } from "@/lib/utils";
 import { isIso, parseNameLines, qs, shortDate } from "../util";
 import { useToday } from "../hooks";
@@ -30,8 +30,8 @@ interface Wk {
 }
 
 function suggestProgram(type: string, workshop: Wk | undefined, bandId: string) {
-  if (type === "Teacher training") return "JOVE Teacher Training: Robotics & AI in the Classroom";
-  if (type === "Trainer") return "JOVE Day workshops (Robotics, AI & ML)";
+  if (type === "Teacher training") return DEFAULT_PROGRAM;
+  if (type === "Trainer") return "JOVE teacher training (Robotics, AI & ML)";
   const pkg = packages.find((p) => p.id === workshop?.package)?.name ?? "JOVE Day";
   const band = gradeBands.find((b) => b.id === bandId);
   return band ? `${pkg}: ${band.name} (${band.grades})` : pkg === "JOVE Day" ? DEFAULT_PROGRAM : `${pkg}: Robotics, AI & ML Workshop`;
@@ -45,7 +45,7 @@ function IssueFlow({ initialWorkshop }: { initialWorkshop?: string }) {
   const { saveMany } = useCollection<CertRecord & Record<string, unknown>>("certificates");
 
   const [workshopId, setWorkshopId] = useState(initialWorkshop ?? "");
-  const [type, setType] = useState("Participation");
+  const [typeInput, setType] = useState<string | null>(null);
   const [bandInput, setBandInput] = useState<string | null>(null);
   const [programInput, setProgramInput] = useState<string | null>(null);
   const today = useToday();
@@ -58,11 +58,13 @@ function IssueFlow({ initialWorkshop }: { initialWorkshop?: string }) {
   const [issued, setIssued] = useState<{ batch: string; count: number; rows: { code: string; name: string; grade: string }[] } | null>(null);
 
   const workshops = useMemo(() => [...workshopRecords].sort((a, b) => String(b.date ?? "").localeCompare(String(a.date ?? ""))), [workshopRecords]);
-  const meta = certMeta(type);
 
   // Everything the chosen workshop can pre-fill is derived, so it works whichever collection finishes loading first,
   // and a value the person typed always wins over the pre-fill.
   const workshop = workshops.find((w) => w.id === workshopId);
+  // a teacher training (or no workshop at all) issues teacher certificates; a JOVE Day from before Nov 2026, student ones
+  const type = typeInput ?? (workshop && !["kits-training", "training"].includes(String(workshop.package)) ? "Participation" : "Teacher training");
+  const meta = certMeta(type);
   const activeBands = workshop
     ? ([["g1-2", workshop.studentsG12], ["g3-5", workshop.studentsG35], ["g6-8", workshop.studentsG68], ["g9-10", workshop.studentsG910]] as const).filter(([, n]) => Number(n) > 0)
     : [];
@@ -74,6 +76,7 @@ function IssueFlow({ initialWorkshop }: { initialWorkshop?: string }) {
 
   function pickWorkshop(id: string) {
     setWorkshopId(id);
+    setType(null);
     setSchoolInput(null);
     setDateInput(null);
     setBandInput(null);
@@ -142,7 +145,7 @@ function IssueFlow({ initialWorkshop }: { initialWorkshop?: string }) {
           <div className="flex items-center gap-3 rounded-[var(--radius-md)] border border-ok/30 bg-ok/10 px-4 py-3 text-sm text-ok">
             <ShieldCheck className="size-5 shrink-0" aria-hidden />
             <span>
-              <strong>{issued.count}</strong> certificate{issued.count === 1 ? "" : "s"} for <strong>{school || "your students"}</strong> are live in the registry.
+              <strong>{issued.count}</strong> certificate{issued.count === 1 ? "" : "s"} for <strong>{school || "your school"}</strong> are live in the registry.
             </span>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -151,7 +154,7 @@ function IssueFlow({ initialWorkshop }: { initialWorkshop?: string }) {
             </Button>
             <Button
               variant="secondary"
-              onClick={() => downloadText(`jove-certificates-${issueDate}.csv`, ["Certificate ID,Student,Grade", ...issued.rows.map((r) => [r.code, r.name, r.grade].map((v) => `"${v.replace(/"/g, '""')}"`).join(","))].join("\n"))}
+              onClick={() => downloadText(`jove-certificates-${issueDate}.csv`, ["Certificate ID,Name,Grade", ...issued.rows.map((r) => [r.code, r.name, r.grade].map((v) => `"${v.replace(/"/g, '""')}"`).join(","))].join("\n"))}
             >
               <Download className="size-4" /> Download ID list (CSV)
             </Button>
@@ -169,12 +172,12 @@ function IssueFlow({ initialWorkshop }: { initialWorkshop?: string }) {
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
       <Panel title="1. Certificate details" subtitle="Everything here is printed on the certificate, so check spelling.">
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Workshop (optional)" htmlFor="c-workshop" help="Pre-fills school, date and programme." className="sm:col-span-2">
+          <Field label="Training or workshop (optional)" htmlFor="c-workshop" help="Pre-fills school, date and programme." className="sm:col-span-2">
             <Select id="c-workshop" value={workshopId} onChange={(e) => pickWorkshop(e.target.value)}>
-              <option value="">No workshop: enter details manually</option>
+              <option value="">None: enter details manually</option>
               {workshops.map((w) => (
                 <option key={w.id} value={w.id}>
-                  {w.title || "Untitled workshop"}
+                  {w.title || "Untitled"}
                   {isIso(w.date) ? ` · ${shortDate(w.date)}` : ""}
                 </option>
               ))}
@@ -219,7 +222,7 @@ function IssueFlow({ initialWorkshop }: { initialWorkshop?: string }) {
           </Field>
 
           <Field label={meta.school ? "School" : "School / organisation (optional)"} htmlFor="c-school">
-            <Input id="c-school" value={school} onChange={(e) => setSchoolInput(e.target.value)} placeholder="Printed under the student name" />
+            <Input id="c-school" value={school} onChange={(e) => setSchoolInput(e.target.value)} placeholder="Printed under the name" />
           </Field>
           <Field label="Issue date" htmlFor="c-date" required>
             <Input id="c-date" type="date" value={issueDate} onChange={(e) => setDateInput(e.target.value)} />
@@ -285,7 +288,7 @@ function IssueFlow({ initialWorkshop }: { initialWorkshop?: string }) {
               <Eye className="size-4" /> Preview design
             </Button>
           </div>
-          <p className="text-xs text-blueprint">Saving gives every student a unique ID and QR code and records them in the registry. You can print right after.</p>
+          <p className="text-xs text-blueprint">Saving gives every person a unique ID and QR code and records them in the registry. You can print right after.</p>
         </div>
       </Panel>
     </div>
@@ -426,7 +429,7 @@ export function CertificatesApp({ initialTab, initialWorkshop }: { initialTab?: 
           {showTip && (
             <div className="mb-5 flex items-start justify-between gap-4 rounded-[var(--radius-md)] border border-graphite/12 bg-paper-200/40 px-4 py-3 text-sm text-charcoal">
               <p>
-                Tip: for school workshops, open a workshop in HQ → Workshops and choose <strong>Issue certificates</strong>, or pick the workshop below. QR codes point to <span className="font-mono text-xs">/verify/&lt;ID&gt;</span> on the live site, so set the
+                Tip: for a teacher training, open it in HQ → Trainings and choose <strong>Issue certificates</strong>, or pick the training below. QR codes point to <span className="font-mono text-xs">/verify/&lt;ID&gt;</span> on the live site, so set the
                 site URL before printing the real batch.
               </p>
               <button type="button" onClick={() => setShowTip(false)} className="shrink-0 text-xs font-semibold text-charcoal underline underline-offset-2 hover:text-graphite">
@@ -437,7 +440,7 @@ export function CertificatesApp({ initialTab, initialWorkshop }: { initialTab?: 
           <IssueFlow initialWorkshop={initialWorkshop} />
         </>
       ) : records.length === 0 ? (
-        <EmptyState icon="Award" title="No certificates issued yet" description={canIssue ? "Issue your first batch and it will appear here, searchable by ID or name." : "Certificates issued after a workshop appear here, searchable by ID or name."} action={canIssue ? <Button size="sm" onClick={() => setTab("issue")}>Issue certificates</Button> : undefined} />
+        <EmptyState icon="Award" title="No certificates issued yet" description={canIssue ? "Issue your first batch and it will appear here, searchable by ID or name." : "Certificates issued after a training appear here, searchable by ID or name."} action={canIssue ? <Button size="sm" onClick={() => setTab("issue")}>Issue certificates</Button> : undefined} />
       ) : (
         <Registry />
       )}

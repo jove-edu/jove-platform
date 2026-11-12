@@ -9,7 +9,7 @@ import { CornerMarks } from "@/components/brand/Blueprint";
 import { site } from "@/lib/site";
 import { Annot, Mark, Sheet, Wordmark } from "../PrintBits";
 import { plainDate } from "../util";
-import { certMeta, type CertRecord } from "./types";
+import { DEFAULT_PROGRAM, certMeta, type CertRecord } from "./types";
 
 function Signature({ name, role }: { name: string; role: string }) {
   return (
@@ -59,7 +59,7 @@ export function CertificateSheet({ cert, qr, verifyUrl, specimen }: { cert: Omit
           <p className="mt-[3.4mm] text-[8.5pt] font-semibold uppercase tracking-[0.26em] text-blueprint">{meta.presentedTo}</p>
 
           <p className="mt-[3.6mm] max-w-[230mm] font-bold leading-[1.05] tracking-[-0.03em]" style={{ fontSize: nameSize }}>
-            {name || "Student name"}
+            {name || "Name"}
           </p>
           <div className="mt-[2mm] h-[0.4mm] w-[170mm] bg-graphite/80" aria-hidden />
           {placeLine && <p className="mt-[2.6mm] text-[11.5pt] font-semibold text-charcoal">{placeLine}</p>}
@@ -67,7 +67,7 @@ export function CertificateSheet({ cert, qr, verifyUrl, specimen }: { cert: Omit
           <p className="mt-[4.4mm] max-w-[205mm] text-[11pt] leading-[1.5] text-charcoal">
             {meta.citation}
             <br />
-            <strong className="text-[13pt] font-bold tracking-[-0.01em] text-graphite">{cert.program || "JOVE Robotics, AI & ML Workshop"}</strong>
+            <strong className="text-[13pt] font-bold tracking-[-0.01em] text-graphite">{cert.program || DEFAULT_PROGRAM}</strong>
           </p>
 
           <div className="mt-auto grid w-full grid-cols-[1fr_auto_1fr] items-end gap-x-[8mm]">

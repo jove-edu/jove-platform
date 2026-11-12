@@ -11,6 +11,6 @@ export const deckById = (id: string) => DECKS.find((d) => d.id === id);
 
 export const GROUP_LABEL: Record<DeckGroup, { title: string; blurb: string }> = {
   school: { title: "For school meetings", blurb: "Present to a principal or the management. Type the school's name and it goes on the cover." },
-  classroom: { title: "On the JOVE Day", blurb: "One presentation per grade group: the whole day as a story, with the build as a step-by-step tutorial (every wire drawn, every step checked). The trainer's words are in the speaker notes." },
-  trainer: { title: "For trainers", blurb: "Training new trainers before their shadow day." },
+  classroom: { title: "Lessons for the classroom", blurb: "One presentation per grade group for teachers to run in class: the lesson as a story, with the build as a step-by-step tutorial (every wire drawn, every step checked). What to say is in the speaker notes. " },
+  trainer: { title: "For trainers", blurb: "Training new JOVE trainers before they lead a teacher training." },
 };

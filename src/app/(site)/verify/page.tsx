@@ -86,7 +86,7 @@ export default function VerifyPage() {
               <CornerMarks />
               <p className="annot text-blueprint">What this page shows</p>
               <p className="mt-3 text-sm leading-relaxed text-charcoal">
-                Verification shows only what is printed on the certificate: the student&rsquo;s name, the programme, the school, the grade and the date of issue. Nothing else about a student is public. We process
+                Verification shows only what is printed on the certificate: the person&rsquo;s name, the programme, the school, the grade (for students) and the date of issue. Nothing else about them is public. We process
                 children&rsquo;s details only with parental consent given through the school. Read more in our <Link href="/privacy" className="font-semibold text-graphite underline decoration-graphite/40 underline-offset-4 hover:decoration-graphite">Privacy Policy</Link>.
               </p>
               <p className="mt-4 text-sm leading-relaxed text-charcoal">

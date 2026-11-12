@@ -60,7 +60,7 @@ export function CertificateCard({ cert }: { cert: VerifiedCertificate }) {
         />
         <p className="annot text-blueprint">Certificate of {cert.type.toLowerCase()}</p>
         <p className={cn("mt-2 text-[clamp(1.9rem,4.5vw,3rem)] font-bold leading-[1.05] tracking-[-0.03em] text-graphite", state === "revoked" && "line-through decoration-bad/60 decoration-2")}>
-          {cert.studentName || "Student"}
+          {cert.studentName || "Name"}
         </p>
         <dl className="relative mt-7">
           {cert.program && <Row label="Programme">{cert.program}</Row>}

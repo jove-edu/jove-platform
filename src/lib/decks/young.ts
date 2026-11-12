@@ -1,5 +1,5 @@
 /**
- * Young Makers (Grades 3–5), "Circuits & Smart Machines": the JOVE Day session (105 minutes) as a story in five
+ * Young Makers (Grades 3–5), "Circuits & Smart Machines": the lesson (105 minutes) as a story in five
  * chapters, with the circuit missions and the light-seeking car as step-by-step tutorials, each with its wiring
  * picture. Follows OPERATIONS/02_CURRICULUM/G03-05_Young_Makers/01_JOVE_Day_Session_Plan.md and
  * OPERATIONS/06_ROBOTICS_KITS/04_Assembly_Instructions_Explorer.md. Short sentences, an analogy for every idea,
@@ -118,10 +118,10 @@ export const youngDeck: Deck = {
       phase: "Why",
       notes: "The transistor is a tap: a small current into its base opens the big flow from collector to emitter through the motor.",
     },
-    { kind: "statement", big: "The eye on the left tells the right wheel to push.", sub: "So the car turns toward the light.", icon: "Flashlight", phase: "Why", notes: "Trainer level: each light sensor switches the motor on the opposite side (a Braitenberg vehicle). More light on the left makes the right motor spin faster, so the car turns left toward the light." },
-    { kind: "build", step: 1, of: OF, title: "Motors and wheels", need: ["Chassis plate", "2 BO motors", "2 wheels", "Screws"], do: ["Screw a motor on each side, shafts out", "Push a wheel onto each shaft", "Spin each wheel by hand"], check: "Both wheels spin freely", icon: "Wrench", phase: "Build", minutes: 6, notes: "Checkpoint: call the trainer. Wires from the motors point toward the middle of the chassis." },
+    { kind: "statement", big: "The eye on the left tells the right wheel to push.", sub: "So the car turns toward the light.", icon: "Flashlight", phase: "Why", notes: "Teacher level: each light sensor switches the motor on the opposite side (a Braitenberg vehicle). More light on the left makes the right motor spin faster, so the car turns left toward the light." },
+    { kind: "build", step: 1, of: OF, title: "Motors and wheels", need: ["Chassis plate", "2 BO motors", "2 wheels", "Screws"], do: ["Screw a motor on each side, shafts out", "Push a wheel onto each shaft", "Spin each wheel by hand"], check: "Both wheels spin freely", icon: "Wrench", phase: "Build", minutes: 6, notes: "Checkpoint: call the teacher. Wires from the motors point toward the middle of the chassis." },
     { kind: "build", step: 2, of: OF, title: "The castor wheel", need: ["Castor ball", "Standoffs"], do: ["Fix the castor at the front", "Use the standoffs to make it level"], check: "The car sits flat and rolls straight", icon: "Car", phase: "Build", minutes: 3 },
-    { kind: "build", step: 3, of: OF, title: "Battery box and breadboard", need: ["4 × AA box", "Breadboard"], do: ["Fix the battery box at the back", "Stick the breadboard on top", "Cells in, switch OFF"], warn: "Check the + and − marks before the cells go in", icon: "Battery", phase: "Build", minutes: 4, notes: "Trainer checks battery polarity at every station before the first switch-on." },
+    { kind: "build", step: 3, of: OF, title: "Battery box and breadboard", need: ["4 × AA box", "Breadboard"], do: ["Fix the battery box at the back", "Stick the breadboard on top", "Cells in, switch OFF"], warn: "Check the + and − marks before the cells go in", icon: "Battery", phase: "Build", minutes: 4, notes: "Teacher checks battery polarity at every station before the first switch-on." },
     {
       kind: "build",
       step: 4,
@@ -155,7 +155,7 @@ export const youngDeck: Deck = {
         ["Motors spin all the time", "Too bright here", "Shade the sensors · move to a dimmer spot"],
         ["Car runs away from the torch", "Motors on the wrong sides", "Swap the left and right motor wires"],
         ["One motor never spins", "Transistor backwards or a loose wire", "Check the flat face · push the wire in"],
-        ["Nothing works", "Switch off or flat cells", "Switch on · ask the trainer for cells"],
+        ["Nothing works", "Switch off or flat cells", "Switch on · ask the teacher for cells"],
       ],
       phase: "Test",
     },

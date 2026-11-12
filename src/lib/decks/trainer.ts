@@ -1,5 +1,6 @@
 /**
- * The trainer handbook as a presentation: for training new trainers before their shadow day.
+ * The trainer handbook as a presentation: for training new trainers before their shadow day. Since Nov 2026 JOVE trainers
+ * train school teachers; the classroom craft below is what they teach the teachers to do.
  * Follows OPERATIONS/04_TRAINER_MANUAL (README one-pager, chapters 01 and 05, with pointers to 06, 07, 09 and 11).
  */
 import { gradeBands } from "@/lib/content/business";
@@ -17,7 +18,7 @@ export const trainerDeck: Deck = {
   theme: { accent: "#2b2b2b", tint: "#ede7da", level: 4, palette: ["#2b2b2b", "#7a5c2e", "#3d5a80"] },
   sources: ["04_TRAINER_MANUAL/README.md", "04_TRAINER_MANUAL/01_Welcome_and_the_JOVE_Way.md", "04_TRAINER_MANUAL/05_Session_Delivery_Playbook.md"],
   slides: () => [
-    { kind: "cover", kicker: "For JOVE trainers", title: "The JOVE Trainer Handbook", sub: "How a JOVE trainer thinks, behaves and delivers", art: "/images/studio/trainer-class.webp" },
+    { kind: "cover", kicker: "For JOVE trainers", title: "The JOVE Trainer Handbook", sub: "How a JOVE trainer thinks, behaves and trains teachers", art: "/images/studio/trainer-class.webp" },
     { kind: "statement", big: "You are the face of the promise.", sub: "A parent may never meet a founder. They will meet you.", icon: "Users" },
     {
       kind: "cards",
@@ -79,8 +80,8 @@ export const trainerDeck: Deck = {
     { kind: "cards", title: "Children first, always", cards: [{ icon: "ShieldCheck", title: "Never alone with a child" }, { icon: "Battery", title: "Battery power only", text: "No soldering, no hot glue for children" }, { icon: "Package", title: "Count parts out and in", text: "Batteries and small parts" }], sub: "Chapter 07 is mandatory and signed before day 1. A concern about a child goes to the Safeguarding Lead at once." },
     { kind: "points", title: "The camera is a guest, and a guard", points: ["Consent first, always", "Only the media team films; no personal phones", "Children without consent are not filmed or are blurred"], icon: "Camera" },
     { kind: "points", title: "What we do not do", points: ["Promise outcomes we cannot deliver", "Criticise other organisations or schools", "Claim past events, awards or numbers we do not have", "Publish a child's image or name without consent"], icon: "Scale" },
-    { kind: "table", title: "Your first 30 days", head: ["Week", "Goal"], rows: [["1", "Read the handbook · sign the child-protection declaration · build each kit once"], ["2", "Shadow a full JOVE Day; watch every role"], ["3", "Co-deliver one band under a Lead"], ["4", "Deliver one session with a Lead observing; written feedback"]] },
+    { kind: "table", title: "Your first 30 days", head: ["Week", "Goal"], rows: [["1", "Read the handbook · sign the child-protection declaration · build each kit once"], ["2", "Shadow a full teacher training; watch every role"], ["3", "Co-deliver one kit's training under a Lead"], ["4", "Lead one teacher training with a Lead observing; written feedback"]] },
     { kind: "points", title: "After every session", points: ["Did every child build or touch the kit?", "Did I talk less than I planned?", "Did every team show something?", "Did I include the quiet students?", "One thing to change next time: write it in the end-of-day report"], icon: "ClipboardList" },
-    { kind: "closing", title: "Welcome to JOVE", sub: "Questions: Shivaprasad (operations) · Chinmay (curriculum and technology)", points: ["Keep chapters 05, 06 and 07 on your phone on every workshop day"] },
+    { kind: "closing", title: "Welcome to JOVE", sub: "Questions: Shivaprasad (operations) · Chinmay (curriculum and technology)", points: ["Keep chapters 05, 06 and 07 on your phone on every training day"] },
   ],
 };
