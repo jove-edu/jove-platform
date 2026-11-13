@@ -12,7 +12,7 @@
  * Options
  *   --email you@example.com     public contact email shown on the website
  *   --site  https://…           public site address        [https://www.jove.website]
- *   --repo  owner/name          private data repository    [framemindaistudio/jove-hq-data]
+ *   --repo  owner/name          private data repository    [jove-edu/jove-hq-data]
  *   --local                     also add the logins to .env.local, so they work on this computer
  *   --force                     replace existing .env.vercel / .env.hq-logins (this changes the passwords)
  *
@@ -37,7 +37,7 @@ const FOUNDERS = [
   { username: "shiva", name: "Shivaprasad Reddy S S", role: "founder" },
   { username: "chinmay", name: "Chinmay R M", role: "founder" },
 ];
-const DEFAULT_REPO = "framemindaistudio/jove-hq-data";
+const DEFAULT_REPO = "jove-edu/jove-hq-data";
 const DEFAULT_SITE = "https://www.jove.website";
 
 function stop(message) {
@@ -81,7 +81,7 @@ const clean = {
     return value === "" || /^[^\s@#$]+@[^\s@#$]+\.[^\s@#$]+$/.test(value) ? value : null;
   },
 };
-const HINT = { site: "a web address such as https://www.jove.website", repo: "owner/name, for example framemindaistudio/jove-hq-data", email: "an email address" };
+const HINT = { site: "a web address such as https://www.jove.website", repo: "owner/name, for example jove-edu/jove-hq-data", email: "an email address" };
 
 function fromFlag(name, fallback) {
   if (args[name] === undefined) return fallback;
